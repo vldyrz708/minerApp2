@@ -6,6 +6,17 @@ async function loadAdminHeader() {
       const html = await res.text();
       const container = document.getElementById('header-container');
       if (container) container.innerHTML = html;
+          // After injecting the header partial, ensure nav helpers run
+          try {
+            // mark active link now that links exist
+            if (typeof markActiveNav === 'function') markActiveNav();
+            // enable mobile toggle behavior for the newly added elements
+            if (typeof setupMobileNavToggle === 'function') setupMobileNavToggle();
+            // notify any other listeners that header is ready
+            document.dispatchEvent(new Event('admin:headerLoaded'));
+          } catch (e) {
+            // ignore errors here to avoid breaking header load
+          }
     }
   } catch (err) {
     console.warn('No se pudo cargar el header partial', err);
