@@ -189,3 +189,41 @@ const AdminPreview = (function(){
 window.AdminPreview = AdminPreview;
 window.swalConfirm = swalConfirm;
 window.swalToast = swalToast;
+
+// Abrir modal para crear categoría y notificar actualización
+async function openCategoriaModal() {
+  try {
+    const Swal = await ensureSwal();
+    const { value: nombre } = await Swal.fire({
+      title: 'Nueva categoría',
+      input: 'text',
+      inputLabel: 'Nombre de la categoría',
+      inputPlaceholder: 'Ej. Gastronomía',
+      showCancelButton: true,
+      confirmButtonText: 'Crear',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (val) => (!val || !val.trim()) ? 'El nombre no puede estar vacío' : null
+    });
+    if (!nombre) return null;
+    const res = await fetch('/admin/categorias/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: nombre.trim() }),
+      credentials: 'same-origin'
+    });
+    if (res.ok) {
+      if (window.swalToast) window.swalToast('success', 'Categoría creada');
+      // Notificar a otras vistas que pueden necesitar recargar
+      document.dispatchEvent(new CustomEvent('categorias:updated'));
+      return true;
+    } else {
+      const txt = await res.text();
+      if (window.swalToast) window.swalToast('error', txt || 'Error creando categoría');
+      return false;
+    }
+  } catch (err) {
+    if (window.swalToast) window.swalToast('error', 'Error de conexión');
+    return false;
+  }
+}
+window.openCategoriaModal = openCategoriaModal;
