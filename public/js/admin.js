@@ -130,7 +130,8 @@ async function swalConfirm(options = {}) {
 
 async function swalToast(type = 'success', title = '') {
   const Swal = await ensureSwal();
-  return Swal.fire({ position: 'top-end', icon: type, title, showConfirmButton: false, timer: 1500 });
+  // position: 'top' centers at the top horizontally
+  return Swal.fire({ position: 'top', icon: type, title, showConfirmButton: false, timer: 1500 });
 }
 
 // Modal genérico centrado (errores, info, etc.)
