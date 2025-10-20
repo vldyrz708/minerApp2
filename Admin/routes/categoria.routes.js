@@ -10,5 +10,6 @@ router.get('/', authController.isAuthenticated, categoriaController.showListView
 router.get('/api', authController.isAuthenticated, categoriaController.list);
 router.post('/api', authController.isAuthenticated, categoriaController.create);
 router.delete('/api/:id', authController.isAuthenticated, categoriaController.remove);
+router.put('/api/:id', authController.isAuthenticated, categoriaController.update);
 
 module.exports = router;

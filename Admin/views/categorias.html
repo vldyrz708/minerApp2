@@ -17,6 +17,7 @@
         </div>
         <div class="flex items-center gap-3">
           <a href="/admin/lugares" class="text-sm text-indigo-600 hover:underline">Volver a Lugares</a>
+          <input id="searchCat" placeholder="Buscar categoría..." class="px-3 py-2 border rounded text-sm" />
           <button id="btnRefreshCats" title="Recargar" class="px-3 py-2 border rounded text-sm hover:bg-gray-100">Recargar</button>
           <button id="btnAddCat" class="bg-green-600 text-white px-4 py-2 rounded shadow text-sm hover:bg-green-700">+ Agregar categoría</button>
         </div>
@@ -56,15 +57,19 @@
           loader.classList.add('hidden');
           return;
         }
-        // responsive grid: 1-col mobile, 2-cols md, 3-cols lg
+        // responsive grid: 1-col mobile, 2-cols sm, 3-cols lg
         cont.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
-        cats.forEach(c => {
+        // aplicar filtro de búsqueda si hay término
+        const q = (document.getElementById('searchCat')?.value || '').trim().toLowerCase();
+        const filtered = q ? cats.filter(x => x.nombre.toLowerCase().includes(q)) : cats;
+        filtered.forEach(c => {
           const card = document.createElement('div');
           card.className = 'border p-3 rounded flex flex-col justify-between h-28';
           card.innerHTML = `<div class="font-medium">${c.nombre}</div>
             <div class="mt-3 flex items-center justify-between">
               <small class="text-xs text-gray-500">id: ${c._id.slice(-6)}</small>
-              <div>
+              <div class="flex gap-2">
+                <button data-id="${c._id}" class="btn-edit-cat text-indigo-600 text-sm">Editar</button>
                 <button data-id="${c._id}" class="btn-delete-cat text-red-600 text-sm">Eliminar</button>
               </div>
             </div>`;
@@ -117,31 +122,63 @@
   document.getElementById('lista').addEventListener('click', async (e) => {
       if (e.target && e.target.dataset && e.target.dataset.id) {
         const id = e.target.dataset.id;
-        try {
-          let confirmRes = true;
-          if (window.swalConfirm) {
-            const r = await window.swalConfirm({ title: 'Eliminar categoría', text: '¿Deseas eliminar esta categoría?', icon: 'warning' });
-            confirmRes = !!r.isConfirmed;
-          } else {
-            confirmRes = confirm('Eliminar categoría?');
-          }
-          if (!confirmRes) return;
-          const res = await fetch('/admin/categorias/api/' + id, { method: 'DELETE', credentials: 'same-origin' });
-          if (res.ok) {
-            if (window.swalToast) window.swalToast('success', 'Categoría eliminada');
-            load();
-          } else {
-            const txt = await res.text();
-            if (window.swalToast) window.swalToast('error', txt || 'Error eliminando');
-          }
-        } catch (err) {
-          if (window.swalToast) window.swalToast('error', 'Error de conexión');
+        // Editar
+        if (e.target.classList.contains('btn-edit-cat')) {
+          try {
+            const Swal = await ensureSwal();
+            // obtener nombre actual (podríamos pedir al servidor, pero usamos texto del card)
+            const card = e.target.closest('div.border');
+            const current = card ? card.querySelector('.font-medium')?.textContent.trim() : '';
+            const { value: nombre } = await Swal.fire({
+              title: 'Editar categoría',
+              input: 'text',
+              inputLabel: 'Nombre de la categoría',
+              inputValue: current || '',
+              showCancelButton: true,
+              confirmButtonText: 'Guardar',
+              cancelButtonText: 'Cancelar',
+              inputValidator: (val) => (!val || !val.trim()) ? 'El nombre no puede estar vacío' : null
+            });
+            if (!nombre) return;
+            const res = await fetch('/admin/categorias/api/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: nombre.trim() }), credentials: 'same-origin' });
+            if (res.ok) {
+              if (window.swalToast) window.swalToast('success', 'Categoría actualizada');
+              document.dispatchEvent(new CustomEvent('categorias:updated'));
+            } else {
+              const txt = await res.text();
+              if (window.swalToast) window.swalToast('error', txt || 'Error actualizando');
+            }
+          } catch (err) { if (window.swalToast) window.swalToast('error', 'Error de conexión'); }
+          return;
+        }
+        // Eliminar
+        if (e.target.classList.contains('btn-delete-cat')) {
+          try {
+            let confirmRes = true;
+            if (window.swalConfirm) {
+              const r = await window.swalConfirm({ title: 'Eliminar categoría', text: '¿Deseas eliminar esta categoría?', icon: 'warning' });
+              confirmRes = !!r.isConfirmed;
+            } else {
+              confirmRes = confirm('Eliminar categoría?');
+            }
+            if (!confirmRes) return;
+            const res = await fetch('/admin/categorias/api/' + id, { method: 'DELETE', credentials: 'same-origin' });
+            if (res.ok) {
+              if (window.swalToast) window.swalToast('success', 'Categoría eliminada');
+              load();
+            } else {
+              const txt = await res.text();
+              if (window.swalToast) window.swalToast('error', txt || 'Error eliminando');
+            }
+          } catch (err) { if (window.swalToast) window.swalToast('error', 'Error de conexión'); }
         }
       }
   });
 
   // Reload listener and external update listener
   document.getElementById('btnRefreshCats')?.addEventListener('click', () => load());
+  // filtro en tiempo real
+  document.getElementById('searchCat')?.addEventListener('input', () => load());
   document.addEventListener('categorias:updated', () => load());
 
   // Inicial load

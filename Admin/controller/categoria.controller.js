@@ -40,3 +40,18 @@ exports.remove = async (req, res) => {
     return res.status(500).json({ message: 'Error eliminando categoria' });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre } = req.body;
+    if (!nombre) return res.status(400).json({ message: 'Nombre requerido' });
+    const slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const cat = await Categoria.findByIdAndUpdate(id, { nombre, slug }, { new: true });
+    if (!cat) return res.status(404).json({ message: 'Categoría no encontrada' });
+    return res.status(200).json(cat);
+  } catch (err) {
+    console.error('Error actualizando categoria', err);
+    return res.status(500).json({ message: 'Error actualizando categoria' });
+  }
+};
