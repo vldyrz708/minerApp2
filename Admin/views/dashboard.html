@@ -8,19 +8,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
   <div class="min-h-screen flex flex-col">
-    <header class="bg-white border-b shadow-sm">
-      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <img src="/logo.png" alt="logo" class="w-10 h-10 rounded" onerror="this.style.display='none'" />
-          <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
-        </div>
-        <nav class="flex items-center gap-4 text-sm text-gray-600">
-          <a href="/admin/dashboard" class="hover:text-gray-900">Dashboard</a>
-          <a href="/admin/lugares" class="hover:text-gray-900">Lugares</a>
-          <button id="logout" class="bg-red-600 text-white px-3 py-1 rounded">Cerrar sesión</button>
-        </nav>
-      </div>
-    </header>
+    <div id="header-container"></div>
 
     <main class="flex-1 p-6">
       <div class="container mx-auto">
@@ -45,11 +33,9 @@
     </main>
   </div>
 
+  <script src="/js/admin.js"></script>
   <script>
-    document.getElementById('logout').addEventListener('click', async () => {
-      // redirigir a la ruta logout (que destruye la sesión y redirige a login)
-      window.location.href = '/admin/logout';
-    });
+    // el botón logout está manejado en admin.js si el partial lo incluye
   </script>
 </body>
 </html>

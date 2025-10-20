@@ -7,19 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
-    <div class="min-h-screen flex flex-col">
-        <header class="bg-white border-b shadow-sm">
-            <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img src="/logo.png" alt="logo" class="w-10 h-10 rounded" onerror="this.style.display='none'" />
-                    <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
-                </div>
-                <nav class="space-x-4 text-sm text-gray-600">
-                    <a href="/" class="hover:text-gray-900">Sitio público</a>
-                    <a href="/admin/register" class="hover:text-gray-900">Crear cuenta</a>
-                </nav>
-            </div>
-        </header>
+        <div class="min-h-screen flex flex-col">
+            <div id="header-container"></div>
 
         <main class="flex-1 flex items-center justify-center p-6">
             <div class="w-full max-w-md">
@@ -54,8 +43,8 @@
             </div>
         </main>
     </div>
-
-    <script>
+        <script src="/js/admin.js"></script>
+        <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             

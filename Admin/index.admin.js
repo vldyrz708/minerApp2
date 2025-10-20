@@ -8,6 +8,7 @@ const router = express.Router();
 const authRoutes = require('./routes/auth.routes');
 const lugarRoutes = require('./routes/lugar.routes');
 const aiRoutes = require('./routes/ai.routes');
+const partialsRoutes = require('./routes/partials.routes');
 
 // Montar las rutas de auth dentro del router. auth.routes ya usa rutas relativas
 router.use('/', authRoutes);
@@ -16,6 +17,8 @@ router.use('/', authRoutes);
 router.use('/lugares', lugarRoutes);
 // Rutas de AI demo
 router.use('/ai', aiRoutes);
+// Rutas para partials (header, footer)
+router.use('/partials', partialsRoutes);
 
 
 // Ruta inicial para /admin -> redirige a /admin/login

@@ -8,15 +8,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
   <div class="min-h-screen flex flex-col">
-    <header class="bg-white border-b shadow-sm">
-      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-        <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
-        <div class="flex items-center gap-2">
-          <a href="/admin/lugares" class="text-indigo-600 hover:underline">Volver a lista</a>
-          <button id="logout" class="bg-red-600 text-white px-3 py-1 rounded">Cerrar sesión</button>
-        </div>
-      </div>
-    </header>
+    <div id="header-container"></div>
 
     <main class="flex-1 p-6">
       <div class="container mx-auto max-w-2xl">
@@ -131,9 +123,9 @@
       }
     });
 
-    document.getElementById('logout').addEventListener('click', () => {
-      window.location.href = '/admin/logout';
-    });
+    // admin.js cargará el header y manejará logout
+  </script>
+  <script src="/js/admin.js"></script>
   </script>
 </body>
 </html>
