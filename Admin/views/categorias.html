@@ -9,42 +9,76 @@
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
   <div id="header-container"></div>
   <main class="p-6 container mx-auto">
-    <div class="bg-white p-4 rounded shadow max-w-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-bold">Categorías</h1>
-        <a href="/admin/lugares" class="text-indigo-600">Volver a Lugares</a>
+    <div class="bg-white p-6 rounded shadow w-full">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h1 class="text-2xl font-bold">Categorías</h1>
+          <p class="text-sm text-gray-500">Gestiona las categorías usadas en lugares. Crea, elimina y mantén ordenada la lista.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="/admin/lugares" class="text-sm text-indigo-600 hover:underline">Volver a Lugares</a>
+          <button id="btnRefreshCats" title="Recargar" class="px-3 py-2 border rounded text-sm hover:bg-gray-100">Recargar</button>
+          <button id="btnAddCat" class="bg-green-600 text-white px-4 py-2 rounded shadow text-sm hover:bg-green-700">+ Agregar categoría</button>
+        </div>
       </div>
 
-      <div class="flex gap-2 mb-4">
-        <button id="btnAddCat" class="bg-indigo-600 text-white px-3 py-2 rounded">Agregar categoría</button>
-        <div class="text-sm text-gray-500 self-center">Usa el modal para crear una nueva categoría</div>
-      </div>
+      <div id="catsContainer">
+        <div id="catsLoader" class="flex items-center justify-center py-8">
+          <svg class="animate-spin h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        </div>
 
-      <div id="lista" class="space-y-2"></div>
+        <div id="lista" class="grid gap-3"></div>
+
+        <div id="catsEmpty" class="hidden text-center text-gray-500 py-8">
+          No hay categorías aún. Usa "Agregar categoría" para crear la primera.
+        </div>
+      </div>
     </div>
   </main>
 
   <script src="/js/admin.js"></script>
   <script>
     async function load() {
+      const loader = document.getElementById('catsLoader');
+      const empty = document.getElementById('catsEmpty');
+      const cont = document.getElementById('lista');
       try {
+        loader.classList.remove('hidden');
+        empty.classList.add('hidden');
+        cont.innerHTML = '';
         const res = await fetch('/admin/categorias/api', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
         const cats = await res.json();
-        const cont = document.getElementById('lista');
-        cont.innerHTML = '';
+        if (!cats || !cats.length) {
+          empty.classList.remove('hidden');
+          loader.classList.add('hidden');
+          return;
+        }
+        // responsive grid: 1-col mobile, 2-cols md, 3-cols lg
+        cont.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
         cats.forEach(c => {
-          const el = document.createElement('div');
-          el.className = 'flex justify-between items-center border p-2 rounded';
-          el.innerHTML = `<div>${c.nombre}</div><button data-id="${c._id}" class="text-red-600 btn-delete-cat">Eliminar</button>`;
-          cont.appendChild(el);
+          const card = document.createElement('div');
+          card.className = 'border p-3 rounded flex flex-col justify-between h-28';
+          card.innerHTML = `<div class="font-medium">${c.nombre}</div>
+            <div class="mt-3 flex items-center justify-between">
+              <small class="text-xs text-gray-500">id: ${c._id.slice(-6)}</small>
+              <div>
+                <button data-id="${c._id}" class="btn-delete-cat text-red-600 text-sm">Eliminar</button>
+              </div>
+            </div>`;
+          cont.appendChild(card);
         });
+        loader.classList.add('hidden');
       } catch (e) {
+        loader.classList.add('hidden');
         console.warn('Error cargando categorias', e);
         if (window.swalToast) window.swalToast('error', 'No se pudieron cargar las categorías');
       }
     }
 
-    document.getElementById('btnAddCat').addEventListener('click', async (e) => {
+  document.getElementById('btnAddCat').addEventListener('click', async (e) => {
       // abrir modal SweetAlert para input
       if (!window.ensureSwal) {
         // fallback simple prompt
@@ -80,7 +114,7 @@
       }
     });
 
-    document.getElementById('lista').addEventListener('click', async (e) => {
+  document.getElementById('lista').addEventListener('click', async (e) => {
       if (e.target && e.target.dataset && e.target.dataset.id) {
         const id = e.target.dataset.id;
         try {
@@ -104,9 +138,14 @@
           if (window.swalToast) window.swalToast('error', 'Error de conexión');
         }
       }
-    });
+  });
 
-    load();
+  // Reload listener and external update listener
+  document.getElementById('btnRefreshCats')?.addEventListener('click', () => load());
+  document.addEventListener('categorias:updated', () => load());
+
+  // Inicial load
+  load();
   </script>
 </body>
 </html>
