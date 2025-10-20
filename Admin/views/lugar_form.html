@@ -43,15 +43,10 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Latitud</label>
-                <input id="lat" name="lat" type="number" step="any" class="w-full border p-2 rounded-lg bg-gray-50" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Longitud</label>
-                <input id="lng" name="lng" type="number" step="any" class="w-full border p-2 rounded-lg bg-gray-50" />
-              </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Link de Google Maps (pega el enlace)</label>
+              <input id="googleMapsLink" name="googleMapsLink" type="url" placeholder="https://maps.google.com/..." class="w-full border p-2 rounded-lg bg-gray-50" />
+              <p class="text-xs text-gray-500 mt-1">Si completas este campo, no es necesario ingresar lat/lng.</p>
             </div>
 
             <div>
@@ -83,8 +78,7 @@
           document.getElementById('descripcion').value = l.descripcion || '';
           document.getElementById('categoria').value = l.categoria || '';
           document.getElementById('tags').value = (l.tags || []).join(', ');
-          document.getElementById('lat').value = l.location && l.location.lat ? l.location.lat : '';
-          document.getElementById('lng').value = l.location && l.location.lng ? l.location.lng : '';
+          document.getElementById('googleMapsLink').value = l.googleMapsLink || '';
 
           // mostrar imágenes existentes
           const container = document.getElementById('existingImages');
@@ -108,8 +102,7 @@
       formData.append('descripcion', document.getElementById('descripcion').value);
       formData.append('categoria', document.getElementById('categoria').value);
       formData.append('tags', document.getElementById('tags').value);
-      formData.append('lat', document.getElementById('lat').value);
-      formData.append('lng', document.getElementById('lng').value);
+      formData.append('googleMapsLink', document.getElementById('googleMapsLink').value);
 
       const files = document.getElementById('images').files;
       for (let i = 0; i < files.length; i++) {
@@ -118,10 +111,18 @@
 
       const method = id ? 'PUT' : 'POST';
       const url = id ? '/admin/lugares/' + id : '/admin/lugares';
-      const res = await fetch(url, { method, body: formData });
-      if (res.ok) window.location.href = '/admin/lugares'; else {
-        const txt = await res.text();
-        alert('Error guardando: ' + txt);
+      // usar SweetAlert para feedback
+      try {
+        const swalLib = await loadSweet();
+        const res = await fetch(url, { method, body: formData, credentials: 'same-origin' });
+        if (res.ok) {
+          swalLib.fire({ icon: 'success', title: 'Guardado', text: 'Lugar guardado correctamente' }).then(() => window.location.href = '/admin/lugares');
+        } else {
+          const txt = await res.text();
+          swalLib.fire({ icon: 'error', title: 'Error', text: txt || 'Error guardando lugar' });
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
     });
     // cargar categorias y seleccionar si estamos editando
@@ -148,6 +149,18 @@
     (async () => {
       await loadCategorias(document.getElementById('categoria').value || '');
     })();
+
+    // carga dinámica de SweetAlert desde CDN
+    function loadSweet() {
+      if (window.Swal) return Promise.resolve(window.Swal);
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        s.onload = () => resolve(window.Swal);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
 
     // admin.js cargará el header y manejará logout
   </script>

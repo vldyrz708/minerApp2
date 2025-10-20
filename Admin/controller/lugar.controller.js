@@ -47,7 +47,7 @@ exports.showForm = (req, res) => {
 // Crear lugar
 exports.create = async (req, res) => {
   try {
-    const { nombre, descripcion, categoria, tags, lat, lng } = req.body;
+    const { nombre, descripcion, categoria, tags, lat, lng, googleMapsLink } = req.body;
     if (!nombre) return res.status(400).json({ message: 'El nombre es requerido' });
 
     const lugar = new Lugar({
@@ -56,7 +56,9 @@ exports.create = async (req, res) => {
       categoria,
       tags: Array.isArray(tags) ? tags : (tags ? String(tags).split(',').map(s => s.trim()) : []),
       images: [],
-      location: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined,
+      // preferir link si viene
+      googleMapsLink: googleMapsLink && String(googleMapsLink).trim() ? String(googleMapsLink).trim() : undefined,
+      location: (!googleMapsLink && lat && lng) ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined,
       creadoPor: req.session.adminId
     });
 
@@ -88,7 +90,7 @@ exports.get = async (req, res) => {
 // Actualizar lugar
 exports.update = async (req, res) => {
   try {
-    const { nombre, descripcion, categoria, tags, lat, lng } = req.body;
+    const { nombre, descripcion, categoria, tags, lat, lng, googleMapsLink } = req.body;
     if (!nombre) return res.status(400).json({ message: 'El nombre es requerido' });
 
     const update = {
@@ -97,7 +99,14 @@ exports.update = async (req, res) => {
       categoria,
       tags: Array.isArray(tags) ? tags : (tags ? String(tags).split(',').map(s => s.trim()) : []),
     };
-    if (lat && lng) update.location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+    if (googleMapsLink && String(googleMapsLink).trim()) {
+      update.googleMapsLink = String(googleMapsLink).trim();
+      // opcional: eliminar coordenadas si se actualiza con link
+      update.location = undefined;
+    } else if (lat && lng) {
+      update.location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+      update.googleMapsLink = undefined;
+    }
     // Si vienen archivos, adjuntarlos a images
     const lugar = await Lugar.findById(req.params.id);
     if (!lugar) return res.status(404).json({ message: 'Lugar no encontrado' });

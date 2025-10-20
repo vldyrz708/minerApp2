@@ -11,6 +11,8 @@ const lugarSchema = new mongoose.Schema({
     lat: { type: Number },
     lng: { type: Number }
   },
+  // Link opcional de Google Maps (preferible a coordenadas manuales)
+  googleMapsLink: { type: String, trim: true },
   creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
   createdAt: { type: Date, default: Date.now }
 });

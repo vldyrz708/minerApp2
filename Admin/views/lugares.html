@@ -40,78 +40,67 @@
   </div>
 
   <script>
+    // Cliente robusto para listar/filtrar lugares
     let currentPage = 1;
 
+    function el(id) { return document.getElementById(id); }
+
     async function load(page = 1) {
-      const q = document.getElementById('q').value;
-      const direccion = document.getElementById('direccion').value;
-    const categoria = document.getElementById('categoria').value;
-      const limit = document.getElementById('limit').value;
+      currentPage = page;
+      const q = (el('q') && el('q').value) || '';
+      const categoria = (el('categoria') && el('categoria').value) || '';
+      const limit = (el('limit') && el('limit').value) || '20';
       const params = new URLSearchParams({ page, limit });
       if (q) params.set('q', q);
-    if (categoria) params.set('categoria', categoria);
+      if (categoria) params.set('categoria', categoria);
 
-      let body = { data: [], total: 0, page: 1, limit: 20 };
+      const listaEl = el('lista');
+      if (!listaEl) return;
+
+      listaEl.innerHTML = '<div class="text-gray-500">Cargando...</div>';
+
+      let body = { data: [], total: 0, page: 1, limit: parseInt(limit, 10) };
       try {
         const res = await fetch('/admin/lugares?' + params.toString(), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
         if (!res.ok) {
           if (res.status === 401) {
-            // mostrar aviso y redirigir a login
-            document.getElementById('lista').innerHTML = '<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">Debes iniciar sesión para ver los lugares. <a href="/admin/login" class="text-blue-600 underline">Iniciar sesión</a></div>';
+            listaEl.innerHTML = '<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">Debes iniciar sesión para ver los lugares. <a href="/admin/login" class="text-blue-600 underline">Iniciar sesión</a></div>';
             return;
           }
           const txt = await res.text();
-          document.getElementById('lista').innerHTML = '<div class="text-red-600">Error al cargar lugares: ' + (txt || res.statusText) + '</div>';
+          listaEl.innerHTML = '<div class="text-red-600">Error al cargar lugares: ' + (txt || res.statusText) + '</div>';
           return;
         }
         body = await res.json();
       } catch (err) {
         console.error('Error fetch lugares:', err);
-        document.getElementById('lista').innerHTML = '<div class="text-red-600">Error al conectar con el servidor</div>';
+        listaEl.innerHTML = '<div class="text-red-600">Error al conectar con el servidor</div>';
         return;
       }
+
       const lugares = body.data || [];
-  const cont = document.getElementById('lista');
-  cont.innerHTML = '';
+      listaEl.innerHTML = '';
+      if (!lugares.length) {
+        listaEl.innerHTML = '<div class="text-gray-600">No se encontraron lugares.</div>';
+        renderPager(body.page, body.limit, body.total);
+        return;
+      }
+
       lugares.forEach(l => {
-        const el = document.createElement('div');
-        el.className = 'bg-white p-4 rounded shadow';
-  el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-gray-600">${l.direccion || ''} ${l.ciudad ? ' - ' + l.ciudad : ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
-    el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
-      let body = { data: [], total: 0, page: 1, limit: parseInt(limit, 10) };
-      });
+        const item = document.createElement('div');
+        item.className = 'bg-white p-4 rounded shadow flex gap-4 items-start';
 
-      renderPager(body.page, body.limit, body.total);
-    }
-
-    function edit(id) {
-      window.location.href = '/admin/lugares/nuevo?id=' + id;
-    }
-
-    async function del(id) {
-      if (!confirm('¿Eliminar lugar?')) return;
-      const res = await fetch('/admin/lugares/' + id, { method: 'DELETE' });
-      if (res.ok) load(currentPage); else alert('Error al eliminar');
-    }
-
-    document.getElementById('filtros').addEventListener('submit', (e) => {
-      e.preventDefault();
-      currentPage = 1;
-      const lugares = body.data || [];
-    });
-
-    document.getElementById('clear').addEventListener('click', () => {
-      document.getElementById('q').value = '';
-      document.getElementById('direccion').value = '';
-        const imgHtml = (l.images && l.images.length) ? `<img src="${l.images[0]}" class="w-28 h-20 object-cover rounded"/>` : `<div class="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">Sin imagen</div>`;
+        const imgHtml = (l.images && l.images.length)
+          ? `<img src="${l.images[0]}" class="w-28 h-20 object-cover rounded" alt="${(l.nombre||'')}."/>`
+          : `<div class="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">Sin imagen</div>`;
 
         const infoHtml = `
           <div class="flex-1">
-            <h3 class="font-bold text-lg">${l.nombre}</h3>
-            <p class="text-sm text-gray-700">${l.descripcion || ''}</p>
+            <h3 class="font-bold text-lg">${l.nombre || ''}</h3>
+            <p class="text-sm text-gray-700 mt-1">${l.descripcion || ''}</p>
             <p class="text-sm text-gray-500 mt-2">${l.categoria ? 'Categoría: ' + l.categoria : ''}${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p>
           </div>
-          <div class="flex flex-col justify-between">
+          <div class="flex flex-col justify-between text-right">
             <div class="text-sm text-gray-500">${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ''}</div>
             <div class="mt-2">
               <button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button>
@@ -120,31 +109,92 @@
           </div>
         `;
 
-        el.innerHTML = imgHtml + infoHtml;
-      currentPage = 1;
-      load(1);
-    });
+        item.innerHTML = imgHtml + infoHtml;
+        listaEl.appendChild(item);
+      });
 
-    document.getElementById('logout').addEventListener('click', () => {
-      window.location.href = '/admin/logout';
-    });
+      renderPager(body.page, body.limit, body.total);
+    }
+
+    function edit(id) { window.location.href = '/admin/lugares/nuevo?id=' + id; }
+
+    async function del(id) {
+      // usar SweetAlert para confirmación
+      try {
+        const Swal = await loadSweet();
+        const result = await Swal.fire({
+          title: '¿Eliminar lugar?',
+          text: 'Esta acción no se puede deshacer',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        });
+        if (!result.isConfirmed) return;
+
+        const res = await fetch('/admin/lugares/' + id, { method: 'DELETE', credentials: 'same-origin' });
+        if (res.ok) {
+          await Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1200, showConfirmButton: false });
+          load(currentPage);
+        } else {
+          const txt = await res.text();
+          Swal.fire({ icon: 'error', title: 'Error', text: txt || 'No se pudo eliminar' });
+        }
+      } catch (err) {
+        alert('Error al eliminar: ' + err.message);
+      }
+    }
+
+    // Attach handlers safely
+    const filtrosForm = el('filtros');
+    if (filtrosForm) {
+      filtrosForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        load(1);
+      });
+    }
+
+    const clearBtn = el('clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (el('q')) el('q').value = '';
+        if (el('categoria')) el('categoria').value = '';
+        load(1);
+      });
+    }
+
+    const logoutBtn = el('logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => { window.location.href = '/admin/logout'; });
+    }
 
     function renderPager(page, limit, total) {
-      const pager = document.getElementById('pager');
+      const pager = el('pager');
+      if (!pager) return;
       pager.innerHTML = '';
-      const pages = Math.max(1, Math.ceil(total / limit));
+      const pages = Math.max(1, Math.ceil((total || 0) / (limit || 1)));
       for (let i = 1; i <= pages; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
         btn.className = 'px-3 py-1 border rounded ' + (i === page ? 'bg-gray-300' : '');
-        btn.onclick = () => { currentPage = i; load(i); };
+        btn.addEventListener('click', () => { currentPage = i; load(i); });
         pager.appendChild(btn);
       }
     }
 
-    load();
-    
-    // admin.js cargará el header y manejará logout
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => { load(1); });
+    // cargar SweetAlert dinámicamente
+    function loadSweet() {
+      if (window.Swal) return Promise.resolve(window.Swal);
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        s.onload = () => resolve(window.Swal);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
   </script>
   <script src="/js/admin.js"></script>
 </body>
