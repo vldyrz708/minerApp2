@@ -38,6 +38,68 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAdminLogoutHandler();
 });
 
+// --- Responsive helpers ---
+function markActiveNav() {
+  try {
+    const links = document.querySelectorAll('.nav-link');
+    const path = window.location.pathname;
+    links.forEach(a => {
+      a.classList.remove('text-indigo-600', 'font-semibold');
+      // consider startsWith for routes
+      if (path === a.getAttribute('href') || path.startsWith(a.getAttribute('href'))) {
+        a.classList.add('text-indigo-600', 'font-semibold');
+      }
+    });
+  } catch (e) { /* ignore */ }
+}
+
+function setupMobileNavToggle() {
+  const toggle = document.getElementById('mobileNavToggle');
+  const nav = document.getElementById('adminNavLinks');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', () => {
+    if (nav.style.display === 'flex') {
+      nav.style.display = 'none';
+    } else {
+      nav.style.display = 'flex';
+      nav.style.flexDirection = 'column';
+      nav.style.position = 'absolute';
+      nav.style.top = '64px';
+      nav.style.right = '24px';
+      nav.style.background = '#fff';
+      nav.style.padding = '8px';
+      nav.style.borderRadius = '8px';
+      nav.style.boxShadow = '0 6px 20px rgba(0,0,0,0.08)';
+    }
+  });
+}
+
+// Fix mobile viewport unit issues and adapt layout
+function setVh() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+function setupIframeAutoResize() {
+  const f = document.getElementById('previewFrame') || document.getElementById('adminPreviewFrame');
+  if (!f) return;
+  const adjust = () => {
+    const containerH = (window.innerHeight - 220); // approx header + margins
+    f.style.height = Math.max(320, containerH) + 'px';
+  };
+  adjust();
+  window.addEventListener('resize', adjust);
+  window.addEventListener('orientationchange', adjust);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  markActiveNav();
+  setupMobileNavToggle();
+  setVh();
+  window.addEventListener('resize', setVh);
+  setupIframeAutoResize();
+});
+
 // --- SweetAlert + UX helpers (centralizados) ---
 async function ensureSwal() {
   if (window.Swal) return window.Swal;

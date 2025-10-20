@@ -4,19 +4,30 @@
       <img src="/logo.png" alt="logo" class="w-10 h-10 rounded" onerror="this.style.display='none'" />
       <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
     </div>
-    <nav class="flex items-center gap-4 text-sm text-gray-600">
-      <a href="/admin/dashboard" class="hover:text-gray-900">Inicio</a>
-      <a href="/admin/lugares" class="hover:text-gray-900">Lugares</a>
-      <a href="/" class="hover:text-gray-900">Sitio público</a>
-      <button id="partialLogout" class="bg-red-600 text-white px-3 py-1 rounded">Cerrar sesión</button>
-    </nav>
+
+    <div class="flex items-center gap-4">
+      <!-- mobile toggle -->
+      <button id="mobileNavToggle" class="md:hidden px-2 py-1 border rounded" aria-label="Abrir menú">☰</button>
+      <nav id="adminNavLinks" class="hidden md:flex items-center gap-4 text-sm text-gray-600">
+        <a href="/admin/dashboard" class="nav-link hover:text-gray-900">Inicio</a>
+        <a href="/admin/lugares" class="nav-link hover:text-gray-900">Lugares</a>
+        <a href="/admin/categorias" class="nav-link hover:text-gray-900">Categorías</a>
+        <a href="/" class="nav-link hover:text-gray-900">Sitio público</a>
+        <button id="partialLogout" class="bg-red-600 text-white px-3 py-1 rounded">Cerrar sesión</button>
+      </nav>
+    </div>
   </div>
 
   <script>
-    // logout desde el partial
+    // logout desde el partial (compatibilidad)
     document.addEventListener('click', function (e) {
       if (e.target && e.target.id === 'partialLogout') {
         window.location.href = '/admin/logout';
+      }
+      // mobile toggle handler (progressive enhancement)
+      if (e.target && e.target.id === 'mobileNavToggle') {
+        const nav = document.getElementById('adminNavLinks');
+        if (nav) nav.style.display = (nav.style.display === 'flex' ? 'none' : 'flex');
       }
     });
   </script>
