@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Lugares</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+  <div class="min-h-screen flex flex-col">
+    <header class="bg-white border-b shadow-sm">
+      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
+        <div class="flex items-center gap-3">
+          <a href="/admin/lugares/nuevo" class="bg-indigo-600 text-white px-4 py-2 rounded">Nuevo Lugar</a>
+          <button id="logout" class="bg-red-600 text-white px-3 py-2 rounded">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6">
+      <div class="container mx-auto">
+        <div class="mb-6 flex flex-col gap-3">
+          <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Lugares</h1>
+            <div class="text-sm text-gray-600">Administra los lugares registrados</div>
+          </div>
+
+          <form id="filtros" class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
+            <input id="q" placeholder="Buscar por nombre o descripción" class="md:col-span-2 border p-2 rounded" />
+            <input id="categoria" placeholder="Filtrar por categoría" class="border p-2 rounded" />
+            <div class="flex items-center gap-2">
+              <select id="limit" class="border p-2 rounded">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+              <button type="submit" class="bg-indigo-600 text-white px-3 py-2 rounded">Buscar</button>
+              <button type="button" id="clear" class="px-3 py-2">Limpiar</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="lista" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="pager" class="mt-6 flex justify-center items-center gap-2"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentPage = 1;
+
+    async function load(page = 1) {
+      const q = document.getElementById('q').value;
+      const direccion = document.getElementById('direccion').value;
+    const categoria = document.getElementById('categoria').value;
+      const limit = document.getElementById('limit').value;
+      const params = new URLSearchParams({ page, limit });
+      if (q) params.set('q', q);
+    if (categoria) params.set('categoria', categoria);
+
+      const res = await fetch('/admin/lugares?' + params.toString(), { headers: { Accept: 'application/json' } });
+      const body = await res.json();
+      const lugares = body.data || [];
+      const cont = document.getElementById('lista');
+      cont.innerHTML = '';
+      lugares.forEach(l => {
+        const el = document.createElement('div');
+        el.className = 'bg-white p-4 rounded shadow';
+  el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-gray-600">${l.direccion || ''} ${l.ciudad ? ' - ' + l.ciudad : ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
+    el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
+        cont.appendChild(el);
+      });
+
+      renderPager(body.page, body.limit, body.total);
+    }
+
+    function edit(id) {
+      window.location.href = '/admin/lugares/nuevo?id=' + id;
+    }
+
+    async function del(id) {
+      if (!confirm('¿Eliminar lugar?')) return;
+      const res = await fetch('/admin/lugares/' + id, { method: 'DELETE' });
+      if (res.ok) load(currentPage); else alert('Error al eliminar');
+    }
+
+    document.getElementById('filtros').addEventListener('submit', (e) => {
+      e.preventDefault();
+      currentPage = 1;
+      load(1);
+    });
+
+    document.getElementById('clear').addEventListener('click', () => {
+      document.getElementById('q').value = '';
+      document.getElementById('direccion').value = '';
+      document.getElementById('limit').value = '20';
+      currentPage = 1;
+      load(1);
+    });
+
+    document.getElementById('logout').addEventListener('click', () => {
+      window.location.href = '/admin/logout';
+    });
+
+    function renderPager(page, limit, total) {
+      const pager = document.getElementById('pager');
+      pager.innerHTML = '';
+      const pages = Math.max(1, Math.ceil(total / limit));
+      for (let i = 1; i <= pages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = 'px-3 py-1 border rounded ' + (i === page ? 'bg-gray-300' : '');
+        btn.onclick = () => { currentPage = i; load(i); };
+        pager.appendChild(btn);
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

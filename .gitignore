@@ -1,0 +1,10 @@
+node_modules/
+uploads/
+.env
+.env.local
+.DS_Store
+npm-debug.log
+package-lock.json
+.vscode/
+.local.settings.json
+

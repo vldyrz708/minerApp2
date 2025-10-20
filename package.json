@@ -1,0 +1,34 @@
+{
+    "name": "minerapp",
+    "version": "1.0.0",
+    "main": "index.js",
+    "type": "commonjs",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "vlad": "node programa.js && node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "API",
+        "REST",
+        "NodeJS",
+        "Express",
+        "MongoDB"
+    ],
+    "author": "Vladimir Alvarez, Alan Perez",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "express-session": "^1.18.2",
+        "mongoose": "^8.19.1",
+        "multer": "^2.0.2",
+        "node-fetch": "^2.6.7",
+        "validator": "^13.15.15"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.10"
+    }
+}
