@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro - Usuarios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-6">
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <div class="text-center mb-4">
+        <div class="mx-auto w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-2">
+          <svg class="h-8 w-8 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/><path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.6"/></svg>
+        </div>
+        <h3 class="text-lg font-semibold">Crear cuenta</h3>
+        <p class="text-sm text-gray-500">Regístrate para acceder</p>
+      </div>
+
+      <form id="userRegisterForm" class="space-y-3">
+        <div>
+          <label class="block text-sm text-gray-700">Nombre</label>
+          <input id="name" type="text" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-gray-700">Email</label>
+          <input id="email" type="email" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-gray-700">Contraseña</label>
+          <input id="password" type="password" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <button class="w-full bg-indigo-600 text-white py-2 rounded">Crear cuenta</button>
+      </form>
+
+      <div class="mt-3 text-center text-sm">
+        <a href="/user/login" class="text-indigo-600">¿Ya tienes cuenta? Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+  <script>
+    document.getElementById('userRegisterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Creando...';
+      try {
+        const res = await fetch('/user/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: document.getElementById('name').value, email: document.getElementById('email').value, password: document.getElementById('password').value }),
+          credentials: 'same-origin'
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (window.swalToast) await window.swalToast('success', 'Cuenta creada');
+          window.location.href = '/user/login';
+        } else {
+          if (window.swalToast) window.swalToast('error', data.message || 'Error');
+          else alert(data.message || 'Error');
+        }
+      } catch (err) {
+        if (window.swalToast) window.swalToast('error', 'Error de conexión');
+        else alert('Error de conexión');
+      } finally { btn.disabled = false; btn.innerHTML = orig; }
+    });
+  </script>
+</body>
+</html>

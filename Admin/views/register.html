@@ -5,15 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#4f46e5">
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
-        <div class="min-h-screen flex flex-col">
-            <div id="header-container"></div>
+    <div class="min-h-screen flex flex-col">
+        <div id="header-container"></div>
 
         <main class="flex-1 flex items-center justify-center p-6">
             <div class="w-full max-w-md">
                 <div class="bg-white rounded-2xl shadow-xl p-8">
                     <div class="text-center mb-6">
+                                                <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-indigo-100 to-indigo-50 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                                                        <svg class="h-10 w-10 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                            <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor" opacity="0.9"/>
+                                                            <path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.6"/>
+                                                        </svg>
+                                                </div>
                         <h2 class="text-2xl font-bold text-gray-900">Registro de Administrador</h2>
                         <p class="text-sm text-gray-500">Crea una cuenta para gestionar el contenido</p>
                     </div>
@@ -37,7 +44,7 @@
                                 class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
                         </div>
 
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">Registrar</button>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">Crear cuenta</button>
                     </form>
 
                     <div class="mt-4 text-center text-sm text-gray-600">
@@ -45,40 +52,49 @@
                     </div>
                 </div>
             </div>
-            </main>
-            </div>
+        </main>
+    </div>
 
-            <script src="/js/admin.js"></script>
-            <script>
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Creando...';
-            const payload = {
-                username: document.getElementById('username').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            };
-            try {
-                const response = await fetch('/admin/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                    credentials: 'same-origin'
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    if (window.swalToast) await window.swalToast('success', 'Registro completado');
-                    window.location.href = '/admin/login';
-                } else {
-                    if (window.swalToast) window.swalToast('error', data.message || 'Error al registrar');
-                    else alert(data.message || 'Error al registrar');
-                }
-            } catch (err) {
-                if (window.swalToast) window.swalToast('error', 'Error de conexión');
-                else alert('Error al conectar con el servidor');
-            } finally { btn.disabled = false; btn.innerHTML = orig; }
-        });
-        </script>
+    <script src="/js/admin.js"></script>
+    <script>
+    // registro de administrador
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Creando...';
+        const payload = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        };
+        try {
+            const response = await fetch('/admin/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                credentials: 'same-origin'
+            });
+            const data = await response.json();
+            if (response.ok) {
+                if (window.swalToast) await window.swalToast('success', 'Registro completado');
+                window.location.href = '/admin/login';
+            } else {
+                if (window.swalToast) window.swalToast('error', data.message || 'Error al registrar');
+                else alert(data.message || 'Error al registrar');
+            }
+        } catch (err) {
+            if (window.swalToast) window.swalToast('error', 'Error de conexión');
+            else alert('Error al conectar con el servidor');
+        } finally { btn.disabled = false; btn.innerHTML = orig; }
+    });
+
+    // cuando el header esté listo, podemos mostrar mensajes si vienen en query
+    document.addEventListener('admin:headerLoaded', () => {
+        const msg = new URLSearchParams(window.location.search).get('msg');
+        if (msg) {
+            if (window.swalToast) window.swalToast('info', msg);
+        }
+    });
+    </script>
 </body>
 </html>

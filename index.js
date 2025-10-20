@@ -22,6 +22,8 @@ conection();
 
 // Importar router de Admin (ahora exportado desde Admin/index.admin.js)
 const adminRouter = require('./Admin/index.admin');
+// Router de usuarios
+const userRouter = require('./User/routes/auth.routes');
 
 // Ruta principal (User)
 app.get('/', (req, res) => {
@@ -31,10 +33,14 @@ app.get('/', (req, res) => {
 // Rutas de Admin (solo accesibles mediante /admin/...)
 app.use('/admin', adminRouter);
 
+// Rutas de User (frontend y auth)
+app.use('/user', userRouter);
+
 // Archivos estáticos para User
 // Servir carpeta pública (css compilado, uploads, etc.) y la carpeta User
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'User')));
+app.use('/user/static', express.static(path.join(__dirname, 'User')));
 
 // Servir archivos subidos (imágenes)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

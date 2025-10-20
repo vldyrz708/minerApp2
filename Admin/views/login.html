@@ -13,10 +13,17 @@
         <main class="flex-1 flex items-center justify-center p-6">
             <div class="w-full max-w-md">
                 <div class="bg-white rounded-2xl shadow-xl p-8">
-                    <div class="text-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Iniciar sesión</h2>
-                        <p class="text-sm text-gray-500">Accede al panel de administración</p>
-                    </div>
+                        <div class="text-center mb-6">
+                                                        <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-indigo-100 to-indigo-50 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                                                                <!-- improved user icon -->
+                                                                <svg class="h-10 w-10 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                                    <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor" opacity="0.9"/>
+                                                                    <path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.6"/>
+                                                                </svg>
+                                                        </div>
+                            <h2 class="text-2xl font-bold text-gray-900">Iniciar sesión</h2>
+                            <p class="text-sm text-gray-500">Accede al panel de administración</p>
+                        </div>
 
                     <div id="message" class="mb-4 text-sm text-red-600 hidden"></div>
 
@@ -37,7 +44,8 @@
                     </form>
 
                     <div class="mt-4 text-center text-sm text-gray-600">
-                        <a href="/admin/register" class="text-indigo-600 hover:underline">¿No tienes cuenta? Regístrate</a>
+                        <!-- Registro deshabilitado desde el formulario de login por seguridad -->
+                        <span class="text-xs text-gray-400">Si necesitas crear una cuenta, contacta al administrador.</span>
                     </div>
                 </div>
             </div>
