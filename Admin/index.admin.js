@@ -7,6 +7,7 @@ const router = express.Router();
 // Rutas de autenticación (definidas en /Admin/routes)
 const authRoutes = require('./routes/auth.routes');
 const lugarRoutes = require('./routes/lugar.routes');
+const categoriaRoutes = require('./routes/categoria.routes');
 const aiRoutes = require('./routes/ai.routes');
 const partialsRoutes = require('./routes/partials.routes');
 
@@ -15,6 +16,8 @@ router.use('/', authRoutes);
 
 // Montar rutas de lugares en /admin/lugares
 router.use('/lugares', lugarRoutes);
+// Rutas de categorias
+router.use('/categorias', categoriaRoutes);
 // Rutas de AI demo
 router.use('/ai', aiRoutes);
 // Rutas para partials (header, footer)

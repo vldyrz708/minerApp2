@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Categorías - Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+  <div id="header-container"></div>
+  <main class="p-6 container mx-auto">
+    <div class="bg-white p-4 rounded shadow max-w-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">Categorías</h1>
+        <a href="/admin/lugares" class="text-indigo-600">Volver a Lugares</a>
+      </div>
+
+      <form id="formCat" class="flex gap-2 mb-4">
+        <input id="nombre" placeholder="Nueva categoría" class="flex-1 border p-2 rounded" />
+        <button class="bg-indigo-600 text-white px-3 py-2 rounded">Crear</button>
+      </form>
+
+      <div id="lista" class="space-y-2"></div>
+    </div>
+  </main>
+
+  <script src="/js/admin.js"></script>
+  <script>
+    async function load() {
+      const res = await fetch('/admin/categorias/api');
+      const cats = await res.json();
+      const cont = document.getElementById('lista');
+      cont.innerHTML = '';
+      cats.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'flex justify-between items-center border p-2 rounded';
+        el.innerHTML = `<div>${c.nombre}</div><button data-id="${c._id}" class="text-red-600">Eliminar</button>`;
+        cont.appendChild(el);
+      });
+    }
+
+    document.getElementById('formCat').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value.trim();
+      if (!nombre) return;
+      await fetch('/admin/categorias/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre }) });
+      document.getElementById('nombre').value = '';
+      load();
+    });
+
+    document.getElementById('lista').addEventListener('click', async (e) => {
+      if (e.target && e.target.dataset && e.target.dataset.id) {
+        if (!confirm('Eliminar categoría?')) return;
+        await fetch('/admin/categorias/api/' + e.target.dataset.id, { method: 'DELETE' });
+        load();
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>

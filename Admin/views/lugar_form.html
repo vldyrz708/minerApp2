@@ -33,7 +33,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-1">Categoría</label>
-                <input id="categoria" name="categoria" class="w-full border p-2 rounded-lg bg-gray-50" />
+                <select id="categoria" name="categoria" class="w-full border p-2 rounded-lg bg-gray-50">
+                  <option value="">-- Seleccionar categoría --</option>
+                </select>
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Tags (separados por coma)</label>
@@ -122,6 +124,30 @@
         alert('Error guardando: ' + txt);
       }
     });
+    // cargar categorias y seleccionar si estamos editando
+    async function loadCategorias(selected = '') {
+      try {
+        const res = await fetch('/admin/categorias/api');
+        if (!res.ok) return;
+        const cats = await res.json();
+        const sel = document.getElementById('categoria');
+        sel.innerHTML = '<option value="">-- Seleccionar categoría --</option>';
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.nombre;
+          opt.textContent = c.nombre;
+          if (c.nombre === selected) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn('No se pudieron cargar categorias', e);
+      }
+    }
+
+    // si ya se cargaron datos en modo edición, recargar categorias con el valor
+    (async () => {
+      await loadCategorias(document.getElementById('categoria').value || '');
+    })();
 
     // admin.js cargará el header y manejará logout
   </script>
