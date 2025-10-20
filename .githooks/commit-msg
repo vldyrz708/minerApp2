@@ -1,0 +1,18 @@
+#!/bin/sh
+# Simple commit-msg hook: checks for presence of common Spanish words to encourage Spanish commit messages.
+MSG_FILE="$1"
+if [ -z "$MSG_FILE" ]; then
+  exit 0
+fi
+MSG=$(cat "$MSG_FILE" | tr '[:upper:]' '[:lower:]')
+
+# Keywords that likely indicate Spanish message (simple heuristic)
+KEYWORDS="arregl|fix|corrig|añad|agreg|elimin|borr|init|inicio|actualiz|cambiar|mejor|refactor|docs|document|estilos|estilo|optim|prueba|test|config|configur|deploy|depuración|bug|error|login|logout|sesión|sesion"
+
+echo "$MSG" | grep -E "$KEYWORDS" > /dev/null
+if [ $? -ne 0 ]; then
+  echo "[githook] Aviso: tu mensaje de commit no parece estar en español o no contiene palabras clave en español." >&2
+  echo "Por favor escribe el mensaje en español. Si necesitas forzar el commit, ejecuta: git commit --no-verify" >&2
+  # exit 1
+fi
+exit 0

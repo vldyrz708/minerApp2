@@ -1,0 +1,11 @@
+% Tipo: feat|fix|chore|docs|refactor|test|style
+
+Resumen breve en español (máx 50 caracteres):
+
+Descripción más completa (opcional):
+- Qué se cambió:
+- Por qué / contexto:
+- Notas de migración / breaking changes:
+
+Ejemplo:
+fix: corregir render de lista de lugares
