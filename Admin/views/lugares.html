@@ -20,7 +20,12 @@
 
           <form id="filtros" class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
             <input id="q" placeholder="Buscar por nombre o descripción" class="md:col-span-2 border p-2 rounded" />
-            <input id="categoria" placeholder="Filtrar por categoría" class="border p-2 rounded" />
+            <div class="flex gap-2 items-center">
+              <select id="categoria" class="border p-2 rounded">
+                <option value="">-- Todas las categorías --</option>
+              </select>
+              <a href="/admin/categorias" id="addCategoria" class="px-3 py-2 text-sm bg-green-600 text-white rounded">Agregar categoría</a>
+            </div>
             <div class="flex items-center gap-2">
               <select id="limit" class="border p-2 rounded">
                 <option value="10">10</option>
@@ -174,19 +179,28 @@
       }
     }
 
-    // Inicializar
-    document.addEventListener('DOMContentLoaded', () => { load(1); });
-    // cargar SweetAlert dinámicamente
-    function loadSweet() {
-      if (window.Swal) return Promise.resolve(window.Swal);
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
-        s.onload = () => resolve(window.Swal);
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
+    // cargar categorias para el filtro
+    async function loadCategoriasForFilter(selected = '') {
+      try {
+        const res = await fetch('/admin/categorias/api', { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+        if (!res.ok) return;
+        const cats = await res.json();
+        const sel = document.getElementById('categoria');
+        sel.innerHTML = '<option value="">-- Todas las categorías --</option>';
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.nombre;
+          opt.textContent = c.nombre;
+          if (c.nombre === selected) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn('No se pudieron cargar categorías', e);
+      }
     }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', async () => { await loadCategoriasForFilter(); load(1); });
   </script>
   <script src="/js/admin.js"></script>
 </body>
