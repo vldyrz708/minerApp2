@@ -50,36 +50,35 @@
 
             <script src="/js/admin.js"></script>
             <script>
-                    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const formData = {
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Creando...';
+            const payload = {
                 username: document.getElementById('username').value,
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value
             };
-
             try {
                 const response = await fetch('/admin/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
-                    alert('Registro exitoso');
+                    if (window.swalToast) await window.swalToast('success', 'Registro completado');
                     window.location.href = '/admin/login';
                 } else {
-                    alert(data.message || 'Error al registrar');
+                    if (window.swalToast) window.swalToast('error', data.message || 'Error al registrar');
+                    else alert(data.message || 'Error al registrar');
                 }
-            } catch (error) {
-                alert('Error al conectar con el servidor');
-            }
+            } catch (err) {
+                if (window.swalToast) window.swalToast('error', 'Error de conexión');
+                else alert('Error al conectar con el servidor');
+            } finally { btn.disabled = false; btn.innerHTML = orig; }
         });
-    </script>
+        </script>
 </body>
 </html>

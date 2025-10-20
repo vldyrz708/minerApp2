@@ -47,8 +47,11 @@
         <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const formData = {
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = 'Validando...';
+
+            const payload = {
                 username: document.getElementById('username').value,
                 password: document.getElementById('password').value
             };
@@ -56,22 +59,31 @@
             try {
                 const response = await fetch('/admin/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
-                    window.location.href = '/admin/dashboard'; // Redirigir al dashboard
+                    if (window.swalToast) await window.swalToast('success', 'Bienvenido, redirigiendo...');
+                    window.location.href = '/admin/dashboard';
                 } else {
-                    alert(data.message || 'Error al iniciar sesión');
+                    if (window.swalToast) window.swalToast('error', data.message || 'Error al iniciar sesión');
+                    else alert(data.message || 'Error al iniciar sesión');
                 }
-            } catch (error) {
-                alert('Error al conectar con el servidor');
+            } catch (err) {
+                if (window.swalToast) window.swalToast('error', 'Error de conexión');
+                else alert('Error al conectar con el servidor');
+            } finally {
+                btn.disabled = false; btn.innerHTML = originalText;
             }
+        });
+        // cuando el header se cargue, ocultar mensaje si corresponde
+        document.addEventListener('admin:headerLoaded', () => {
+          const msg = new URLSearchParams(window.location.search).get('error');
+          if (msg) {
+            if (window.swalToast) window.swalToast('error', 'Sesión cerrada. Vuelve a iniciar sesión.');
+          }
         });
     </script>
 </body>

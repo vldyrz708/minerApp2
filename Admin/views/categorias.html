@@ -15,10 +15,10 @@
         <a href="/admin/lugares" class="text-indigo-600">Volver a Lugares</a>
       </div>
 
-      <form id="formCat" class="flex gap-2 mb-4">
-        <input id="nombre" placeholder="Nueva categoría" class="flex-1 border p-2 rounded" />
-        <button class="bg-indigo-600 text-white px-3 py-2 rounded">Crear</button>
-      </form>
+      <div class="flex gap-2 mb-4">
+        <button id="btnAddCat" class="bg-indigo-600 text-white px-3 py-2 rounded">Agregar categoría</button>
+        <div class="text-sm text-gray-500 self-center">Usa el modal para crear una nueva categoría</div>
+      </div>
 
       <div id="lista" class="space-y-2"></div>
     </div>
@@ -27,32 +27,82 @@
   <script src="/js/admin.js"></script>
   <script>
     async function load() {
-      const res = await fetch('/admin/categorias/api');
-      const cats = await res.json();
-      const cont = document.getElementById('lista');
-      cont.innerHTML = '';
-      cats.forEach(c => {
-        const el = document.createElement('div');
-        el.className = 'flex justify-between items-center border p-2 rounded';
-        el.innerHTML = `<div>${c.nombre}</div><button data-id="${c._id}" class="text-red-600">Eliminar</button>`;
-        cont.appendChild(el);
-      });
+      try {
+        const res = await fetch('/admin/categorias/api', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+        const cats = await res.json();
+        const cont = document.getElementById('lista');
+        cont.innerHTML = '';
+        cats.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'flex justify-between items-center border p-2 rounded';
+          el.innerHTML = `<div>${c.nombre}</div><button data-id="${c._id}" class="text-red-600 btn-delete-cat">Eliminar</button>`;
+          cont.appendChild(el);
+        });
+      } catch (e) {
+        console.warn('Error cargando categorias', e);
+        if (window.swalToast) window.swalToast('error', 'No se pudieron cargar las categorías');
+      }
     }
 
-    document.getElementById('formCat').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById('nombre').value.trim();
+    document.getElementById('btnAddCat').addEventListener('click', async (e) => {
+      // abrir modal SweetAlert para input
+      if (!window.ensureSwal) {
+        // fallback simple prompt
+        const nombre = prompt('Nombre de la nueva categoría');
+        if (!nombre) return;
+        await fetch('/admin/categorias/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre }), credentials: 'same-origin' });
+        load();
+        return;
+      }
+      const Swal = await ensureSwal();
+      const { value: nombre } = await Swal.fire({
+        title: 'Nueva categoría',
+        input: 'text',
+        inputLabel: 'Nombre de la categoría',
+        inputPlaceholder: 'Ej. Gastronomía',
+        showCancelButton: true,
+        confirmButtonText: 'Crear',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (val) => (!val || !val.trim()) ? 'El nombre no puede estar vacío' : null
+      });
       if (!nombre) return;
-      await fetch('/admin/categorias/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre }) });
-      document.getElementById('nombre').value = '';
-      load();
+      try {
+        const res = await fetch('/admin/categorias/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: nombre.trim() }), credentials: 'same-origin' });
+        if (res.ok) {
+          if (window.swalToast) window.swalToast('success', 'Categoría creada');
+          load();
+        } else {
+          const txt = await res.text();
+          if (window.swalToast) window.swalToast('error', txt || 'Error creando categoría');
+        }
+      } catch (err) {
+        if (window.swalToast) window.swalToast('error', 'Error de conexión');
+      }
     });
 
     document.getElementById('lista').addEventListener('click', async (e) => {
       if (e.target && e.target.dataset && e.target.dataset.id) {
-        if (!confirm('Eliminar categoría?')) return;
-        await fetch('/admin/categorias/api/' + e.target.dataset.id, { method: 'DELETE' });
-        load();
+        const id = e.target.dataset.id;
+        try {
+          let confirmRes = true;
+          if (window.swalConfirm) {
+            const r = await window.swalConfirm({ title: 'Eliminar categoría', text: '¿Deseas eliminar esta categoría?', icon: 'warning' });
+            confirmRes = !!r.isConfirmed;
+          } else {
+            confirmRes = confirm('Eliminar categoría?');
+          }
+          if (!confirmRes) return;
+          const res = await fetch('/admin/categorias/api/' + id, { method: 'DELETE', credentials: 'same-origin' });
+          if (res.ok) {
+            if (window.swalToast) window.swalToast('success', 'Categoría eliminada');
+            load();
+          } else {
+            const txt = await res.text();
+            if (window.swalToast) window.swalToast('error', txt || 'Error eliminando');
+          }
+        } catch (err) {
+          if (window.swalToast) window.swalToast('error', 'Error de conexión');
+        }
       }
     });
 
