@@ -125,13 +125,21 @@ async function ensureSwal() {
 
 async function swalConfirm(options = {}) {
   const Swal = await ensureSwal();
-  return Swal.fire(Object.assign({ icon: 'warning', showCancelButton: true, confirmButtonText: 'Continuar', cancelButtonText: 'Cancelar' }, options));
+  return Swal.fire(Object.assign({ position: 'center', icon: 'warning', showCancelButton: true, confirmButtonText: 'Continuar', cancelButtonText: 'Cancelar' }, options));
 }
 
 async function swalToast(type = 'success', title = '') {
   const Swal = await ensureSwal();
   return Swal.fire({ position: 'top-end', icon: type, title, showConfirmButton: false, timer: 1500 });
 }
+
+// Modal genérico centrado (errores, info, etc.)
+async function swalModal(icon = 'info', title = '', text = '', options = {}) {
+  const Swal = await ensureSwal();
+  return Swal.fire(Object.assign({ position: 'center', icon, title, text, showConfirmButton: true }, options));
+}
+
+window.swalModal = swalModal;
 
 /* Reusable preview overlay component
    Usage:

@@ -134,11 +134,11 @@
         } else {
           const txt = await res.text();
           const Swal = await ensureSwal();
-          Swal.fire({ icon: 'error', title: 'Error', text: txt || 'No se pudo eliminar' });
+          Swal.fire({ position: 'center', icon: 'error', title: 'Error', text: txt || 'No se pudo eliminar' });
         }
       } catch (err) {
-        const Swal = await ensureSwal();
-        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+  const Swal = await ensureSwal();
+  Swal.fire({ position: 'center', icon: 'error', title: 'Error', text: err.message });
       }
     }
 

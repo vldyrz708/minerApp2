@@ -119,11 +119,11 @@
         } else {
           const txt = await res.text();
           const Swal = await ensureSwal();
-          Swal.fire({ icon: 'error', title: 'Error', text: txt || 'Error guardando lugar' });
+          Swal.fire({ position: 'center', icon: 'error', title: 'Error', text: txt || 'Error guardando lugar' });
         }
       } catch (err) {
-        const Swal = await ensureSwal();
-        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+  const Swal = await ensureSwal();
+  Swal.fire({ position: 'center', icon: 'error', title: 'Error', text: err.message });
       }
     });
     // cargar categorias y seleccionar si estamos editando

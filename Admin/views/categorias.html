@@ -95,6 +95,7 @@
       }
       const Swal = await ensureSwal();
       const { value: nombre } = await Swal.fire({
+        position: 'center',
         title: 'Nueva categoría',
         input: 'text',
         inputLabel: 'Nombre de la categoría',
@@ -130,6 +131,7 @@
             const card = e.target.closest('div.border');
             const current = card ? card.querySelector('.font-medium')?.textContent.trim() : '';
             const { value: nombre } = await Swal.fire({
+              position: 'center',
               title: 'Editar categoría',
               input: 'text',
               inputLabel: 'Nombre de la categoría',
