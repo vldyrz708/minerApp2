@@ -119,29 +119,21 @@
     function edit(id) { window.location.href = '/admin/lugares/nuevo?id=' + id; }
 
     async function del(id) {
-      // usar SweetAlert para confirmación
       try {
-        const Swal = await loadSweet();
-        const result = await Swal.fire({
-          title: '¿Eliminar lugar?',
-          text: 'Esta acción no se puede deshacer',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        });
+        const result = await swalConfirm({ title: '¿Eliminar lugar?', text: 'Esta acción no se puede deshacer', confirmButtonText: 'Sí, eliminar' });
         if (!result.isConfirmed) return;
-
         const res = await fetch('/admin/lugares/' + id, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
-          await Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1200, showConfirmButton: false });
+          await swalToast('success', 'Lugar eliminado');
           load(currentPage);
         } else {
           const txt = await res.text();
+          const Swal = await ensureSwal();
           Swal.fire({ icon: 'error', title: 'Error', text: txt || 'No se pudo eliminar' });
         }
       } catch (err) {
-        alert('Error al eliminar: ' + err.message);
+        const Swal = await ensureSwal();
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
       }
     }
 

@@ -111,18 +111,19 @@
 
       const method = id ? 'PUT' : 'POST';
       const url = id ? '/admin/lugares/' + id : '/admin/lugares';
-      // usar SweetAlert para feedback
       try {
-        const swalLib = await loadSweet();
         const res = await fetch(url, { method, body: formData, credentials: 'same-origin' });
         if (res.ok) {
-          swalLib.fire({ icon: 'success', title: 'Guardado', text: 'Lugar guardado correctamente' }).then(() => window.location.href = '/admin/lugares');
+          await swalToast('success', 'Lugar guardado');
+          window.location.href = '/admin/lugares';
         } else {
           const txt = await res.text();
-          swalLib.fire({ icon: 'error', title: 'Error', text: txt || 'Error guardando lugar' });
+          const Swal = await ensureSwal();
+          Swal.fire({ icon: 'error', title: 'Error', text: txt || 'Error guardando lugar' });
         }
       } catch (err) {
-        alert('Error: ' + err.message);
+        const Swal = await ensureSwal();
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
       }
     });
     // cargar categorias y seleccionar si estamos editando
@@ -150,17 +151,7 @@
       await loadCategorias(document.getElementById('categoria').value || '');
     })();
 
-    // carga dinámica de SweetAlert desde CDN
-    function loadSweet() {
-      if (window.Swal) return Promise.resolve(window.Swal);
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
-        s.onload = () => resolve(window.Swal);
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
+    // usar helpers centralizados en public/js/admin.js
 
     // admin.js cargará el header y manejará logout
   </script>
