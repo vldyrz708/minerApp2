@@ -12,7 +12,7 @@
 
     <main class="flex-1 p-6">
       <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="bg-white p-6 rounded-lg shadow">
             <h3 class="text-lg font-semibold">Bienvenido</h3>
             <p class="text-sm text-gray-600 mt-2">Panel de administración para gestionar lugares, administradores y contenido.</p>
@@ -28,6 +28,21 @@
             <h3 class="text-lg font-semibold">Soporte</h3>
             <p class="text-sm text-gray-600 mt-2">Contacta al equipo para soporte o revisa la documentación del sistema.</p>
           </div>
+          <div class="bg-white p-4 rounded-lg shadow col-span-1 md:col-span-1">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold">Vista previa del sitio público</h3>
+              <div class="flex gap-2">
+                <button id="reloadPreview" class="px-2 py-1 text-sm border rounded">Recargar</button>
+                <button id="openPreview" class="px-2 py-1 text-sm bg-indigo-600 text-white rounded">Abrir</button>
+              </div>
+            </div>
+            <div class="border rounded overflow-hidden">
+              <div class="w-full h-48 bg-white" style="position:relative">
+                <iframe id="previewFrame" src="/" class="w-full h-full" style="border:0; width:100%; height:100%;"></iframe>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">Puedes interactuar con la vista previa; usa "Abrir" para verla en ventana nueva.</div>
+          </div>
         </div>
       </div>
     </main>
@@ -35,7 +50,16 @@
 
   <script src="/js/admin.js"></script>
   <script>
-    // el botón logout está manejado en admin.js si el partial lo incluye
+    // preview controls
+    document.getElementById('reloadPreview')?.addEventListener('click', () => {
+      const f = document.getElementById('previewFrame');
+      if (f) {
+        f.src = f.src.split('#')[0].split('?')[0] + '?t=' + Date.now();
+      }
+    });
+    document.getElementById('openPreview')?.addEventListener('click', () => {
+      window.open('/', '_blank');
+    });
   </script>
 </body>
 </html>
