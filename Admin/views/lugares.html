@@ -78,7 +78,7 @@
         el.className = 'bg-white p-4 rounded shadow';
   el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-gray-600">${l.direccion || ''} ${l.ciudad ? ' - ' + l.ciudad : ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
     el.innerHTML = `<h3 class="font-bold">${l.nombre}</h3><p>${l.descripcion || ''}</p><p class="text-sm text-muted">${l.categoria ? 'Categoría: ' + l.categoria : ''} ${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p><div class="mt-2"><button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button><button onclick="del('${l._id}')" class="text-red-600">Eliminar</button></div>`;
-        cont.appendChild(el);
+      let body = { data: [], total: 0, page: 1, limit: parseInt(limit, 10) };
       });
 
       renderPager(body.page, body.limit, body.total);
@@ -97,13 +97,30 @@
     document.getElementById('filtros').addEventListener('submit', (e) => {
       e.preventDefault();
       currentPage = 1;
-      load(1);
+      const lugares = body.data || [];
     });
 
     document.getElementById('clear').addEventListener('click', () => {
       document.getElementById('q').value = '';
       document.getElementById('direccion').value = '';
-      document.getElementById('limit').value = '20';
+        const imgHtml = (l.images && l.images.length) ? `<img src="${l.images[0]}" class="w-28 h-20 object-cover rounded"/>` : `<div class="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">Sin imagen</div>`;
+
+        const infoHtml = `
+          <div class="flex-1">
+            <h3 class="font-bold text-lg">${l.nombre}</h3>
+            <p class="text-sm text-gray-700">${l.descripcion || ''}</p>
+            <p class="text-sm text-gray-500 mt-2">${l.categoria ? 'Categoría: ' + l.categoria : ''}${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p>
+          </div>
+          <div class="flex flex-col justify-between">
+            <div class="text-sm text-gray-500">${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ''}</div>
+            <div class="mt-2">
+              <button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button>
+              <button onclick="del('${l._id}')" class="text-red-600">Eliminar</button>
+            </div>
+          </div>
+        `;
+
+        el.innerHTML = imgHtml + infoHtml;
       currentPage = 1;
       load(1);
     });
