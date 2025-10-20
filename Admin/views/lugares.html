@@ -51,11 +51,28 @@
       if (q) params.set('q', q);
     if (categoria) params.set('categoria', categoria);
 
-      const res = await fetch('/admin/lugares?' + params.toString(), { headers: { Accept: 'application/json' } });
-      const body = await res.json();
+      let body = { data: [], total: 0, page: 1, limit: 20 };
+      try {
+        const res = await fetch('/admin/lugares?' + params.toString(), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+        if (!res.ok) {
+          if (res.status === 401) {
+            // mostrar aviso y redirigir a login
+            document.getElementById('lista').innerHTML = '<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">Debes iniciar sesión para ver los lugares. <a href="/admin/login" class="text-blue-600 underline">Iniciar sesión</a></div>';
+            return;
+          }
+          const txt = await res.text();
+          document.getElementById('lista').innerHTML = '<div class="text-red-600">Error al cargar lugares: ' + (txt || res.statusText) + '</div>';
+          return;
+        }
+        body = await res.json();
+      } catch (err) {
+        console.error('Error fetch lugares:', err);
+        document.getElementById('lista').innerHTML = '<div class="text-red-600">Error al conectar con el servidor</div>';
+        return;
+      }
       const lugares = body.data || [];
-      const cont = document.getElementById('lista');
-      cont.innerHTML = '';
+  const cont = document.getElementById('lista');
+  cont.innerHTML = '';
       lugares.forEach(l => {
         const el = document.createElement('div');
         el.className = 'bg-white p-4 rounded shadow';
