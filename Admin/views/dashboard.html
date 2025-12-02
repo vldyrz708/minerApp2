@@ -70,9 +70,9 @@
       window.open('/', '_blank');
     });
 
-    // Botón rápido para abrir modal de nueva categoría
-    document.getElementById('dashAddCategoria')?.addEventListener('click', async () => {
-      if (window.openCategoriaModal) await window.openCategoriaModal();
+    // Botón rápido para ir a categorías
+    document.getElementById('dashAddCategoria')?.addEventListener('click', () => {
+      window.location.href = '/admin/categorias';
     });
   </script>
   

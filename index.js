@@ -24,6 +24,8 @@ conection();
 const adminRouter = require('./Admin/index.admin');
 // Router de usuarios
 const userRouter = require('./User/routes/auth.routes');
+// API routes
+const apiRoutes = require('./routes/api');
 
 // Ruta principal (User)
 app.get('/', (req, res) => {
@@ -32,6 +34,9 @@ app.get('/', (req, res) => {
 
 // Rutas de Admin (solo accesibles mediante /admin/...)
 app.use('/admin', adminRouter);
+
+// API routes para acceso público
+app.use('/api', apiRoutes);
 
 // Rutas de User (frontend y auth)
 app.use('/user', userRouter);

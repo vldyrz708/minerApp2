@@ -1,52 +1,293 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real del Monte - Turismo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MinerApp</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Animación suave de aparición */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease;
+    }
+
+    .fade-in.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Asegurar visibilidad inicial para depuración */
+    .fade-in {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-    <header class="bg-blue-900 text-white p-4">
-        <div class="container mx-auto flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold">Real del Monte</h1>
-                <p class="text-lg">Portal Turístico</p>
-            </div>
-            <div class="space-x-2">
-                <a href="/user/login" class="bg-white text-blue-900 px-4 py-2 rounded hover:opacity-90">Iniciar sesión</a>
-                <a href="/user/register" class="border border-white px-4 py-2 rounded hover:bg-white hover:text-blue-900">Registrarse</a>
-            </div>
-        </div>
-    </header>
+<body class="bg-white text-gray-800 scroll-smooth">
 
-    <main class="container mx-auto mt-8 p-4">
-        <h2 class="text-2xl font-bold mb-4">¡Bienvenidos a Real del Monte!</h2>
-        <p class="text-lg mb-4">Descubre la magia de nuestro Pueblo Mágico.</p>
+  <!-- Section 1: Inicio -->
+  <section id="inicio" class="min-h-screen flex flex-col items-center justify-center text-center p-8 fade-in">
+    <h1 class="text-5xl md:text-6xl font-extrabold mb-4 text-black">MinerApp</h1>
+    <p class="text-lg md:text-xl text-gray-600 mb-8">Tu aventura en Mineral del Monte comienza aquí.</p>
+
+    <div class="flex gap-4 mb-10">
+      <a href="/user/login" class="bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition text-decoration-none">Iniciar sesión</a>
+      <a href="/user/register" class="border border-gray-300 px-5 py-2 rounded-lg hover:bg-gray-100 transition text-decoration-none text-gray-800">
+        ¿Eres nuevo?, regístrate
+      </a>
+    </div>
+
+    <div class="max-w-5xl w-full">
+      <img src="https://www.viajabonito.mx/wp-content/uploads/2019/12/real-del-monte-pueblo-minero-100.jpg" 
+           alt="Mineral del Monte"
+           class="rounded-2xl shadow-lg w-full object-cover">
+    </div>
+
+    <p class="text-sm text-gray-500 mt-6">Creada por alumnos de</p>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwMLaeTwL13e5InpMtZmU-254DGIQ_8PK5yg&s" 
+         alt="Logo UTSH" 
+         class="mt-2 w-32 h-auto">
+  </section>
+
+    <!-- Seccion 2 -->
+
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historia y Cultura</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playball&display=swap" rel="stylesheet">
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      scroll-behavior: smooth;
+      background-color: #ffffff;
+    }
+
+    /* Animaciones suaves */
+    .fade-item {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 800ms ease-out, transform 800ms ease-out;
+    }
+
+    .fade-item.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+  <!-- Section: Historia y cultura -->
+  <section id="historia" class="py-20 bg-white">
+    <div class="max-w-6xl mx-auto px-6 md:px-10 space-y-20">
+
+      <!-- Bloque 1 -->
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-black" style="font-family: 'Playball', cursive;">
+            ¿Sabías que?
+          </h2>
+          <p class="text-gray-700 leading-relaxed text-lg">
+            El fundador del Nacional Monte de Piedad, el Conde de Regla, hizo su fortuna con la plata de Real del Monte.
+          </p>
+        </div>
+
+        <div class="fade-item overflow-hidden rounded-2xl shadow-md">
+          <img src="https://www.eluniversalhidalgo.com.mx/resizer/v2/WPEAUPUVKFDX7JX6DIIZYK7KZA.jpeg?auth=e1e3fdd6b65970f5d8456d26ee9c78b227352af8ec23ecf13b23950e35d555aa"
+               alt="Calles de Real del Monte"
+               class="w-full h-64 md:h-80 object-cover rounded-2xl">
+        </div>
+      </div>
+
+      <!-- Bloque 2 -->
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div class="fade-item overflow-hidden rounded-2xl shadow-md">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9R-uUl4kbG_Y7tNroD5tU_GjoWu_oSS0Q_g&s"
+               alt="Kiosko de Real del Monte"
+               class="w-full h-64 md:h-80 object-cover rounded-2xl">
+        </div>
+
+        <div>
+          <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-black" style="font-family: 'Playball', cursive;">
+            La Herencia británica
+          </h2>
+          <p class="text-gray-700 leading-relaxed text-lg mb-5">
+            Gracias a los mineros de Cornualles, Real del Monte es la cuna del <span class="font-semibold">fútbol</span> y el <span class="font-semibold">paste</span> en México.
+          </p>
+          <button class="inline-block bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition">
+            Descubre lugares increíbles
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Script de animación -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.fade-item');
+
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(i => i.classList.add('show'));
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('show');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      items.forEach(item => observer.observe(item));
+    });
+  </script>
+
+     <!-- Bseccion 3  -->
+
+  <!-- SECCIÓN: LUGARES -->
+<section id="lugares" class="py-16 px-6 bg-gray-50 text-gray-800">
+  <h2 class="text-4xl font-playball text-center mb-10 text-pink-600 fade-in">
+    Lugares Destacados
+  </h2>
+
+  <!-- Contenedor deslizable -->
+  <div id="slider" class="flex overflow-x-auto space-x-6 scroll-smooth pb-4">
+    <!-- Los lugares se cargarán dinámicamente desde la API -->
+    <div class="min-w-[350px] bg-white rounded-2xl shadow-md p-6 text-center">
+      <div class="animate-pulse">Cargando lugares...</div>
+    </div>
+  </div>
+
+  <!-- Botones de deslizar -->
+  <div class="flex justify-center mt-8 space-x-4">
+    <button id="prevBtn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full">
+      ◀
+    </button>
+    <button id="nextBtn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full">
+      ▶
+    </button>
+  </div>
+
+  <!-- Script JS -->
+  <script>
+    const slider = document.getElementById('slider');
+
+    // Función para cargar lugares desde la API
+    async function loadLugares() {
+      try {
+        const response = await fetch('/api/lugares');
+        const data = await response.json();
+        const lugares = data.lugares || [];
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Aquí irán las tarjetas de atracciones turísticas -->
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-xl font-bold mb-2">Museo del Sitio</h3>
-                <p>Conoce la historia minera de Real del Monte.</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-xl font-bold mb-2">Pastes</h3>
-                <p>Prueba nuestro famoso paste minero.</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-xl font-bold mb-2">Mina de Acosta</h3>
-                <p>Explora las antiguas minas de plata.</p>
-            </div>
+        // Limpiar el slider
+        slider.innerHTML = '';
+        
+        if (lugares.length === 0) {
+          slider.innerHTML = '<div class="min-w-[350px] bg-white rounded-2xl shadow-md p-6 text-center">No hay lugares disponibles</div>';
+          return;
+        }
+        
+        // Crear tarjetas dinámicamente
+        lugares.forEach(lugar => {
+          const card = createLugarCard(lugar);
+          slider.appendChild(card);
+        });
+        
+      } catch (error) {
+        console.error('Error al cargar lugares:', error);
+        slider.innerHTML = '<div class="min-w-[350px] bg-white rounded-2xl shadow-md p-6 text-center text-red-600">Error al cargar lugares</div>';
+      }
+    }
+    
+    // Función para crear una tarjeta de lugar
+    function createLugarCard(lugar) {
+      const card = document.createElement('div');
+      card.className = 'card min-w-[350px] bg-white rounded-2xl shadow-md p-6 fade-in';
+      
+      // Imagen (usar la primera imagen o una por defecto)
+      const imagen = lugar.images && lugar.images.length > 0 
+        ? lugar.images[0] 
+        : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
+      
+      // Categoría (manejar diferentes estructuras)
+      const categoria = lugar.categoria || (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
+      
+      // Google Maps link (si está disponible)
+      const mapsLink = lugar.googleMapsLink || '#';
+      
+      card.innerHTML = `
+        <img src="${imagen}" 
+             alt="${lugar.nombre}" 
+             class="w-full h-56 object-cover rounded-xl mb-4"
+             onerror="this.src='https://via.placeholder.com/400x300?text=Imagen+no+disponible'">
+        <h3 class="text-2xl text-pink-600 mb-2" style="font-family: 'Playball', cursive;">${lugar.nombre}</h3>
+        <p class="text-sm mt-2 text-gray-600">${lugar.descripcion || 'Sin descripción'}</p>
+        <div class="mt-3 text-sm">
+          <p><span class="font-semibold">Categoría:</span> ${categoria}</p>
         </div>
-    </main>
+        <div class="flex gap-2 mt-4">
+          <a href="${mapsLink}" target="_blank" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">
+            Ver ubicación
+          </a>
+          <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition" onclick="addToFavorites('${lugar._id}')">
+            Agregar a favoritos
+          </button>
+        </div>
+      `;
+      
+      return card;
+    }
+    
+    // Función para agregar a favoritos (placeholder)
+    function addToFavorites(lugarId) {
+      alert('Funcionalidad de favoritos en desarrollo');
+    }
 
-    <footer class="bg-blue-900 text-white p-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2025 Real del Monte - Todos los derechos reservados</p>
-        </div>
-    </footer>
+    // Deslizar con botones
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      slider.scrollBy({ left: 320, behavior: 'smooth' });
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      slider.scrollBy({ left: -320, behavior: 'smooth' });
+    });
+
+    // Cargar lugares al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLugares();
+      // Forzar visibilidad de las animaciones para depuración
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('show'));
+    });
+  </script>
+</section>
+  
+
+  
 </body>
 </html>
