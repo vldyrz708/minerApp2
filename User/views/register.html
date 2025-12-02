@@ -5,42 +5,60 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Registro - Usuarios</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/user.css">
+  <meta name="theme-color" content="#4f46e5">
+  <style>
+    @keyframes floaty { 0% { transform: translateY(0) } 50% { transform: translateY(-6px) } 100% { transform: translateY(0) } }
+    .floaty { animation: floaty 3s ease-in-out infinite; }
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div id="user-header-container"></div>
   <div class="w-full max-w-md p-6">
-    <div class="bg-white p-6 rounded-2xl shadow">
-      <div class="text-center mb-4">
-        <div class="mx-auto w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-2">
-          <svg class="h-8 w-8 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/><path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.6"/></svg>
+    <div class="bg-white p-8 rounded-3xl shadow-xl">
+      <div class="text-center mb-6">
+        <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-indigo-400 to-rose-400 rounded-full flex items-center justify-center mb-3 shadow floaty">
+          <svg class="h-9 w-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/><path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.85"/></svg>
         </div>
-        <h3 class="text-lg font-semibold">Crear cuenta</h3>
-        <p class="text-sm text-gray-500">Regístrate para acceder</p>
+        <h3 class="text-2xl font-bold">Crear cuenta</h3>
+        <p class="text-sm text-slate-500">Regístrate para acceder</p>
       </div>
 
-      <form id="userRegisterForm" class="space-y-3">
+      <form id="userRegisterForm" class="space-y-4">
         <div>
-          <label class="block text-sm text-gray-700">Nombre</label>
-          <input id="name" type="text" required class="w-full border rounded px-3 py-2" />
+          <label class="block text-sm text-slate-700 mb-2">Nombre</label>
+          <input id="name" type="text" required class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" aria-label="Nombre" />
         </div>
         <div>
-          <label class="block text-sm text-gray-700">Email</label>
-          <input id="email" type="email" required class="w-full border rounded px-3 py-2" />
+          <label class="block text-sm text-slate-700 mb-2">Email</label>
+          <input id="email" type="email" required class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" aria-label="Email" />
         </div>
         <div>
-          <label class="block text-sm text-gray-700">Contraseña</label>
-          <input id="password" type="password" required class="w-full border rounded px-3 py-2" />
+          <label class="block text-sm text-slate-700 mb-2">Contraseña</label>
+          <div class="relative">
+            <input id="password" type="password" required class="w-full border border-slate-200 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-200" aria-label="Contraseña" />
+            <button type="button" id="togglePassword" class="absolute right-2 top-2.5 text-slate-500">Mostrar</button>
+          </div>
         </div>
-        <button class="w-full bg-indigo-600 text-white py-2 rounded">Crear cuenta</button>
+        <button class="w-full bg-gradient-to-r from-indigo-600 to-rose-500 text-white py-3 rounded-xl shadow">Crear cuenta</button>
       </form>
 
-      <div class="mt-3 text-center text-sm">
-        <a href="/user/login" class="text-indigo-600">¿Ya tienes cuenta? Inicia sesión</a>
+      <div class="mt-5 text-center text-sm text-slate-600">
+        ¿Ya tienes cuenta? <a href="/user/login" class="text-indigo-600 font-medium">Inicia sesión</a>
       </div>
     </div>
   </div>
 
-  <script src="/js/admin.js"></script>
+  <script src="/js/user.js"></script>
+  <div id="user-footer-container"></div>
   <script>
+    // Toggle show/hide password
+    document.getElementById('togglePassword').addEventListener('click', () => {
+      const p = document.getElementById('password');
+      const btn = document.getElementById('togglePassword');
+      if (p.type === 'password') { p.type = 'text'; btn.textContent = 'Ocultar'; }
+      else { p.type = 'password'; btn.textContent = 'Mostrar'; }
+    });
     document.getElementById('userRegisterForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button');
