@@ -68,6 +68,17 @@
     <div class="max-w-6xl mx-auto">
       <h3 class="text-3xl font-bold text-center mb-8">Lugares destacados</h3>
 
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div class="flex-1">
+          <input id="searchInput" type="search" placeholder="Buscar lugares, categorías o descripciones..." class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" />
+        </div>
+        <div>
+          <select id="categoryFilter" class="border border-slate-200 rounded-lg px-3 py-2">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+      </div>
+
       <div id="lugaresGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Cards serán inyectadas aquí por JS -->
       </div>
@@ -111,16 +122,21 @@
     async function loadLugares() {
       const grid = safeQuery('#lugaresGrid');
       if (!grid) return;
+      // mostrar loader simple
+      grid.innerHTML = '<div class="col-span-full text-center py-12">Cargando lugares...</div>';
       try {
-        // Intentamos obtener datos reales; si falla, usamos un mock local
         const res = await fetch('/api/lugares');
         if (res.ok) {
-          const data = await res.json();
-          renderLugares(data || []);
+          const payload = await res.json();
+          // API devuelve { lugares: [...] } — soportar ambas formas
+          const list = Array.isArray(payload) ? payload : (Array.isArray(payload.lugares) ? payload.lugares : []);
+          console.log('Lugares cargados (cliente):', list.length);
+          renderLugares(list);
+          populateCategoryFilter(list);
           return;
         }
       } catch (err) {
-        // continúa con mock
+        console.warn('No se pudo cargar /api/lugares', err);
       }
 
       // Mock de ejemplo si no hay backend
@@ -130,11 +146,40 @@
         { _id: '3', nombre: 'Pastes', descripcion: 'Prueba el paste tradicional.', images: [], categoria: 'Gastronomía' }
       ];
       renderLugares(mock);
+      populateCategoryFilter(mock);
+    }
+
+    function populateCategoryFilter(list) {
+      const sel = safeQuery('#categoryFilter');
+      if (!sel) return;
+      const cats = Array.from(new Set(list.map(l => (l.categoria && (l.categoria.nombre || l.categoria)) || (l.categoriaId && l.categoriaId.nombre) || '').filter(Boolean)) ).sort();
+      // limpiar y añadir opciones
+      sel.innerHTML = '<option value="">Todas las categorías</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+      sel.addEventListener('change', applyFilters);
+      const search = safeQuery('#searchInput'); if (search) search.addEventListener('input', applyFilters);
+    }
+
+    function applyFilters() {
+      const q = (safeQuery('#searchInput') && safeQuery('#searchInput').value || '').toLowerCase();
+      const cat = (safeQuery('#categoryFilter') && safeQuery('#categoryFilter').value) || '';
+      const items = window.__lugares_cache || [];
+      const filtered = items.filter(l => {
+        const text = ((l.nombre || '') + ' ' + (l.descripcion || '') + ' ' + ((l.categoria && (l.categoria.nombre || l.categoria)) || (l.categoriaId && l.categoriaId.nombre) || '')).toLowerCase();
+        const okText = !q || text.includes(q);
+        const okCat = !cat || ( (l.categoria && (l.categoria.nombre || l.categoria)) === cat ) || (l.categoriaId && l.categoriaId.nombre === cat);
+        return okText && okCat;
+      });
+      renderLugares(filtered);
     }
 
     function renderLugares(list) {
       const grid = safeQuery('#lugaresGrid');
       if (!grid) return;
+      window.__lugares_cache = list.slice(); // cache para filtros
+      if (!list || !list.length) {
+        grid.innerHTML = '<div class="col-span-full text-center py-12 muted">No se encontraron lugares.</div>';
+        return;
+      }
       grid.innerHTML = '';
       list.forEach(l => grid.appendChild(createLugarCard(l)));
       // activar animaciones

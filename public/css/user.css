@@ -2,3 +2,13 @@
 .rounded-3xl-soft { border-radius: 1rem }
 .muted { color: #6b7280 }
 .card-shadow { box-shadow: 0 8px 30px rgba(2,6,23,0.08) }
+
+/* Professional card styles */
+.lugar-card { border-radius: 1rem; overflow: hidden; transition: transform .18s ease, box-shadow .18s ease }
+.lugar-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(15,23,42,0.12) }
+.lugar-card .thumb { height: 200px; object-fit: cover; display:block }
+.lugar-meta { padding: 1rem }
+.lugar-title { font-family: 'Playball', cursive; color: #e11d48; font-size: 1.3rem }
+.lugar-desc { color: #475569 }
+.chip { display:inline-block; padding:6px 10px; border-radius:9999px; background:rgba(15,23,42,0.04); font-size:12px }
+
