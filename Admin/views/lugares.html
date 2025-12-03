@@ -99,11 +99,21 @@
           ? `<img src="${l.images[0]}" class="w-28 h-20 object-cover rounded" alt="${(l.nombre||'')}."/>`
           : `<div class="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">Sin imagen</div>`;
 
+        const favoriteCount = Number(l.favoriteCount || 0);
+        const favoriteUsers = Array.isArray(l.favoriteUsers) ? l.favoriteUsers : [];
+        const extraUsers = Math.max(0, favoriteCount - favoriteUsers.length);
+        const usersLabel = favoriteUsers.length ? favoriteUsers.join(', ') + (extraUsers ? ` +${extraUsers}` : '') : '';
+        const favoriteText = favoriteCount
+          ? `${favoriteCount} ${favoriteCount === 1 ? 'usuario' : 'usuarios'} lo tienen en favoritos${usersLabel ? ' (' + usersLabel + ')' : ''}`
+          : 'Sin favoritos todavía';
+        const favoriteClass = favoriteCount ? 'text-amber-600' : 'text-gray-400';
+
         const infoHtml = `
           <div class="flex-1">
             <h3 class="font-bold text-lg">${l.nombre || ''}</h3>
             <p class="text-sm text-gray-700 mt-1">${l.descripcion || ''}</p>
             <p class="text-sm text-gray-500 mt-2">${l.categoria ? 'Categoría: ' + l.categoria : ''}${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p>
+            <p class="text-sm ${favoriteClass} mt-2">${favoriteText}</p>
           </div>
           <div class="flex flex-col justify-between text-right">
             <div class="text-sm text-gray-500">${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ''}</div>

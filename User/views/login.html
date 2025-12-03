@@ -12,42 +12,89 @@
     .floaty { animation: floaty 3s ease-in-out infinite; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<body class="auth-page">
   <div id="user-header-container"></div>
-  <div class="w-full max-w-md p-6">
-    <div class="bg-white p-8 rounded-3xl shadow-xl">
-      <div class="text-center mb-6">
-        <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-indigo-400 to-rose-400 rounded-full flex items-center justify-center mb-3 shadow-md floaty">
-          <svg class="h-9 w-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/><path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.85"/></svg>
+  <main class="auth-shell">
+    <section class="auth-grid">
+      <div class="auth-panel" style="background:url('https://mexicorutamagica.mx/wp-content/uploads/2021/10/real-del-monte-turismo.jpg') center/cover no-repeat;">
+      <div class="relative text-white space-y-5">
+        <div class="flex items-center gap-3">
+          <span class="plan-pill">Real del Monte</span>
+          <span class="auth-badge">MinerApp Experience</span>
         </div>
-        <h3 class="text-2xl font-bold">Bienvenido</h3>
-        <p class="text-sm text-slate-500">Inicia sesión para continuar</p>
-      </div>
-
-      <form id="userLoginForm" class="space-y-4">
-        <div>
-          <label class="block text-sm text-slate-700 mb-2">Email</label>
-          <input id="email" type="email" required class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" aria-label="Email" />
-        </div>
-        <div>
-          <label class="block text-sm text-slate-700 mb-2">Contraseña</label>
-          <div class="relative">
-            <input id="password" type="password" required class="w-full border border-slate-200 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-200" aria-label="Contraseña" />
-            <button type="button" id="togglePassword" class="absolute right-2 top-2.5 text-slate-500">Mostrar</button>
+        <h2 class="text-4xl font-black leading-tight">Tu acceso privado a historias, minas y gastronomía.</h2>
+        <p class="text-base text-white/85 max-w-md">Disfruta itinerarios a medida, alertas VIP y recomendaciones de expertos locales.</p>
+        <div class="grid gap-4">
+          <div class="feature-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12l5 5L20 7"/></svg>
+            Atención concierge para tus visitas.
+          </div>
+          <div class="feature-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c1.657 0 3-1.343 3-3S13.657 2 12 2 9 3.343 9 5s1.343 3 3 3zM7 22v-2a4 4 0 014-4h2a4 4 0 014 4v2"/></svg>
+            Perfil premium protegido y curado.
           </div>
         </div>
-        <button class="w-full bg-gradient-to-r from-indigo-600 to-rose-500 text-white py-3 rounded-xl shadow">Entrar</button>
-      </form>
-
-      <div class="mt-5 text-center text-sm text-slate-600">
-        ¿No tienes cuenta? <a href="/user/register" class="text-indigo-600 font-medium">Crear cuenta</a>
+        <div class="mini-metric gap-4">
+          <span>+120</span>
+          <p>Experiencias reservadas con éxito este mes.</p>
+        </div>
       </div>
     </div>
-  </div>
+
+      <div class="auth-card">
+        <div class="mb-8">
+          <p class="text-sm uppercase tracking-[0.3em] text-[#b45309]">Accede</p>
+          <h3 class="text-3xl font-bold text-[#422515]">Bienvenido de vuelta</h3>
+          <p class="text-sm text-[#7e5d4c]">Inicia sesión para continuar explorando Real del Monte.</p>
+        </div>
+
+        <form id="userLoginForm" class="space-y-5">
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-[#5b3c2f]">Correo electrónico</label>
+            <div class="input-field">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4h16v16H4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8l8 5 8-5"/></svg>
+              <input id="email" type="email" required class="input-brand" aria-label="Email" placeholder="ejemplo@dominio.com" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-[#5b3c2f]">Contraseña</label>
+            <div class="input-field">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c1.657 0 3-1.57 3-3.5S13.657 4 12 4s-3 1.57-3 3.5S10.343 11 12 11z"/><rect x="6" y="11" width="12" height="9" rx="2"/></svg>
+              <input id="password" type="password" required class="input-brand pr-16" aria-label="Contraseña" placeholder="••••••" />
+              <button type="button" id="togglePassword" class="toggle-password">Mostrar</button>
+            </div>
+          </div>
+          <button class="btn-brand">Entrar</button>
+        </form>
+
+        <div class="auth-footer text-center">
+          ¿No tienes cuenta? <a href="/user/register">Crea una</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script src="/js/user.js"></script>
   <div id="user-footer-container"></div>
   <script>
+    async function fireSweetAlert(options = {}, fallbackMessage = 'Aviso') {
+      try {
+        if (window.userUtils && typeof window.userUtils.ensureSwal === 'function') {
+          const Swal = await window.userUtils.ensureSwal();
+          return Swal.fire({
+            confirmButtonColor: '#b45309',
+            cancelButtonColor: '#6b7280',
+            buttonsStyling: true,
+            ...options
+          });
+        }
+      } catch (err) {
+        console.warn('No se pudo cargar SweetAlert', err);
+      }
+      if (fallbackMessage) alert(fallbackMessage);
+      return null;
+    }
+
     // Toggle show/hide password
     document.getElementById('togglePassword').addEventListener('click', () => {
       const p = document.getElementById('password');
@@ -68,15 +115,39 @@
         });
         const data = await res.json();
         if (res.ok) {
-          if (window.swalToast) await window.swalToast('success', 'Bienvenido');
-          window.location.href = '/';
+          await fireSweetAlert({
+            icon: 'success',
+            title: 'Bienvenido de vuelta',
+            text: data && data.user && data.user.name ? `Hola ${data.user.name}, acceso concedido.` : 'Inicio de sesión exitoso.',
+            confirmButtonText: 'Ir a mi panel'
+          }, 'Inicio de sesión exitoso');
+          const destination = data && data.redirectTo ? data.redirectTo : '/visitante';
+          window.location.href = destination;
+        } else if (res.status === 401) {
+          const modal = await fireSweetAlert({
+            icon: 'warning',
+            title: 'No encontramos tu cuenta',
+            text: 'Verifica tus datos o crea una cuenta nueva para empezar a explorar.',
+            confirmButtonText: 'Registrarme',
+            showCancelButton: true,
+            cancelButtonText: 'Intentar de nuevo'
+          }, data.message || 'Cuenta no encontrada');
+          if (modal && modal.isConfirmed) window.location.href = '/user/register';
         } else {
-          if (window.swalToast) window.swalToast('error', data.message || 'Credenciales inválidas');
-          else alert(data.message || 'Credenciales inválidas');
+          await fireSweetAlert({
+            icon: 'error',
+            title: 'No pudimos iniciar sesión',
+            text: data.message || 'Revisa tus datos e inténtalo nuevamente.',
+            confirmButtonText: 'Entendido'
+          }, data.message || 'Credenciales inválidas');
         }
       } catch (err) {
-        if (window.swalToast) window.swalToast('error', 'Error de conexión');
-        else alert('Error de conexión');
+        await fireSweetAlert({
+          icon: 'error',
+          title: 'Sin conexión',
+          text: 'No pudimos conectarnos al servidor. Revisa tu conexión e inténtalo de nuevo.',
+          confirmButtonText: 'Ok'
+        }, 'Error de conexión');
       } finally { btn.disabled = false; btn.innerHTML = orig; }
     });
   </script>

@@ -1,11 +1,26 @@
+const fs = require('fs/promises');
+const path = require('path');
 const Lugar = require('../model/lugar.model');
+const Favorite = require('../../models/Favorite');
+require('../../User/model/user.model');
+
+async function safeDelete(filePath) {
+  if (!filePath) return;
+  try {
+    await fs.unlink(filePath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.warn('No se pudo eliminar la imagen', filePath, err.message);
+    }
+  }
+}
 
 // Listar lugares
 exports.list = async (req, res) => {
   try {
     // Si la petición es HTML, enviar la vista (la UI hará las peticiones JSON con filtros)
     if (req.accepts('html')) {
-      return res.sendFile(require('path').join(__dirname, '../views/lugares.html'));
+      return res.sendFile(path.join(__dirname, '../views/lugares.html'));
     }
 
     // Parámetros de búsqueda y filtrado
@@ -32,7 +47,33 @@ exports.list = async (req, res) => {
     const docs = await Lugar.find(filter).sort(sortObj).skip(skip).limit(parseInt(limit, 10));
     const total = await Lugar.countDocuments(filter);
 
-    res.json({ data: docs, total, page: parseInt(page, 10), limit: parseInt(limit, 10) });
+    const plainDocs = docs.map(doc => doc.toObject());
+    let favoriteMeta = {};
+    if (plainDocs.length) {
+      const lugarIds = plainDocs.map(doc => doc._id);
+      const favorites = await Favorite.find({ lugar: { $in: lugarIds } })
+        .populate('user', 'name email')
+        .sort({ createdAt: -1 });
+
+      favoriteMeta = favorites.reduce((acc, fav) => {
+        const key = String(fav.lugar);
+        if (!acc[key]) {
+          acc[key] = { count: 0, sampleUsers: [] };
+        }
+        acc[key].count += 1;
+        if (fav.user && acc[key].sampleUsers.length < 3) {
+          acc[key].sampleUsers.push(fav.user.name || fav.user.email || 'Usuario');
+        }
+        return acc;
+      }, {});
+    }
+
+    const data = plainDocs.map(doc => {
+      const meta = favoriteMeta[doc._id.toString()] || { count: 0, sampleUsers: [] };
+      return { ...doc, favoriteCount: meta.count, favoriteUsers: meta.sampleUsers };
+    });
+
+    res.json({ data, total, page: parseInt(page, 10), limit: parseInt(limit, 10) });
   } catch (err) {
     console.error('Error listando lugares:', err);
     res.status(500).json({ message: 'Error al listar lugares' });
@@ -41,7 +82,7 @@ exports.list = async (req, res) => {
 
 // Mostrar formulario para crear o editar
 exports.showForm = (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../views/lugar_form.html'));
+  res.sendFile(path.join(__dirname, '../views/lugar_form.html'));
 };
 
 // Crear lugar
@@ -112,6 +153,30 @@ exports.update = async (req, res) => {
     if (!lugar) return res.status(404).json({ message: 'Lugar no encontrado' });
 
     Object.assign(lugar, update);
+
+    const removeImagesInput = req.body.removeImages ?? req.body['removeImages[]'];
+    const removeImages = Array.isArray(removeImagesInput)
+      ? removeImagesInput
+      : (typeof removeImagesInput === 'string' && removeImagesInput.trim()) ? [removeImagesInput.trim()] : [];
+
+    if (removeImages.length) {
+      const normalized = removeImages.map(src => String(src).trim()).filter(Boolean);
+      if (normalized.length) {
+        const deletionPromises = [];
+        normalized.forEach((src) => {
+          lugar.images = lugar.images.filter(existing => existing !== src);
+          const relativePath = src.replace(/^\/+/, '');
+          if (relativePath) {
+            const absolutePath = path.join(__dirname, '../../', relativePath);
+            deletionPromises.push(safeDelete(absolutePath));
+          }
+        });
+        if (deletionPromises.length) {
+          await Promise.allSettled(deletionPromises);
+        }
+      }
+    }
+
     if (req.files && req.files.length) {
       req.files.forEach(f => lugar.images.push('/uploads/' + f.filename));
     }

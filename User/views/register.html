@@ -12,46 +12,96 @@
     .floaty { animation: floaty 3s ease-in-out infinite; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<body class="auth-page">
   <div id="user-header-container"></div>
-  <div class="w-full max-w-md p-6">
-    <div class="bg-white p-8 rounded-3xl shadow-xl">
-      <div class="text-center mb-6">
-        <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-indigo-400 to-rose-400 rounded-full flex items-center justify-center mb-3 shadow floaty">
-          <svg class="h-9 w-9 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/><path d="M3 20c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="currentColor" opacity="0.85"/></svg>
+  <main class="auth-shell">
+    <section class="auth-grid">
+      <div class="auth-panel" style="background:url('https://www.gob.mx/cms/uploads/image/file/646995/real-del-monte.jpg') center/cover no-repeat;">
+      <div class="relative text-white space-y-5">
+        <div class="flex items-center gap-3">
+          <span class="plan-pill">Nuevo miembro</span>
+          <span class="auth-badge">Registro Premium</span>
         </div>
-        <h3 class="text-2xl font-bold">Crear cuenta</h3>
-        <p class="text-sm text-slate-500">Regístrate para acceder</p>
-      </div>
-
-      <form id="userRegisterForm" class="space-y-4">
-        <div>
-          <label class="block text-sm text-slate-700 mb-2">Nombre</label>
-          <input id="name" type="text" required class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" aria-label="Nombre" />
-        </div>
-        <div>
-          <label class="block text-sm text-slate-700 mb-2">Email</label>
-          <input id="email" type="email" required class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" aria-label="Email" />
-        </div>
-        <div>
-          <label class="block text-sm text-slate-700 mb-2">Contraseña</label>
-          <div class="relative">
-            <input id="password" type="password" required class="w-full border border-slate-200 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-200" aria-label="Contraseña" />
-            <button type="button" id="togglePassword" class="absolute right-2 top-2.5 text-slate-500">Mostrar</button>
+        <h2 class="text-4xl font-black leading-snug">Construye tu pasaporte a Real del Monte.</h2>
+        <p class="text-base text-white/85 max-w-md">Desde minas históricas hasta los mejores pastes: todo personalizado y accesible desde tu panel.</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+            Listas inteligentes de lugares guardados.
+          </div>
+          <div class="feature-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8"/></svg>
+            Alertas automatizadas sobre eventos especiales.
           </div>
         </div>
-        <button class="w-full bg-gradient-to-r from-indigo-600 to-rose-500 text-white py-3 rounded-xl shadow">Crear cuenta</button>
-      </form>
-
-      <div class="mt-5 text-center text-sm text-slate-600">
-        ¿Ya tienes cuenta? <a href="/user/login" class="text-indigo-600 font-medium">Inicia sesión</a>
+        <div class="mini-metric gap-4">
+          <span>92%</span>
+          <p>de los usuarios descubren nuevos sitios en su primera semana.</p>
+        </div>
       </div>
     </div>
-  </div>
+
+      <div class="auth-card">
+        <div class="mb-8">
+          <p class="text-sm uppercase tracking-[0.3em] text-[#b45309]">Regístrate</p>
+          <h3 class="text-3xl font-bold text-[#422515]">Crear cuenta</h3>
+          <p class="text-sm text-[#7e5d4c]">Ingresa tus datos para desbloquear itinerarios personalizados.</p>
+        </div>
+
+        <form id="userRegisterForm" class="space-y-5">
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-[#5b3c2f]">Nombre completo</label>
+            <div class="input-field">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 12a5 5 0 10-5-5 5 5 0 005 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 22v-1a5 5 0 015-5h8a5 5 0 015 5v1"/></svg>
+              <input id="name" type="text" required class="input-brand" aria-label="Nombre" placeholder="Nombre y apellido" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-[#5b3c2f]">Correo electrónico</label>
+            <div class="input-field">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4h16v16H4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8l8 5 8-5"/></svg>
+              <input id="email" type="email" required class="input-brand" aria-label="Email" placeholder="ejemplo@dominio.com" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-[#5b3c2f]">Contraseña</label>
+            <div class="input-field">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c1.657 0 3-1.57 3-3.5S13.657 4 12 4s-3 1.57-3 3.5S10.343 11 12 11z"/><rect x="6" y="11" width="12" height="9" rx="2"/></svg>
+              <input id="password" type="password" required class="input-brand pr-16" aria-label="Contraseña" placeholder="••••••" />
+              <button type="button" id="togglePassword" class="toggle-password">Mostrar</button>
+            </div>
+          </div>
+          <button class="btn-brand">Crear cuenta</button>
+        </form>
+
+        <div class="auth-footer text-center">
+          ¿Ya tienes cuenta? <a href="/user/login">Inicia sesión</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script src="/js/user.js"></script>
   <div id="user-footer-container"></div>
   <script>
+    async function fireSweetAlert(options = {}, fallbackMessage = 'Aviso') {
+      try {
+        if (window.userUtils && typeof window.userUtils.ensureSwal === 'function') {
+          const Swal = await window.userUtils.ensureSwal();
+          return Swal.fire({
+            confirmButtonColor: '#b45309',
+            cancelButtonColor: '#6b7280',
+            buttonsStyling: true,
+            ...options
+          });
+        }
+      } catch (err) {
+        console.warn('No se pudo cargar SweetAlert', err);
+      }
+      if (fallbackMessage) alert(fallbackMessage);
+      return null;
+    }
+
     // Toggle show/hide password
     document.getElementById('togglePassword').addEventListener('click', () => {
       const p = document.getElementById('password');
@@ -72,15 +122,28 @@
         });
         const data = await res.json();
         if (res.ok) {
-          if (window.swalToast) await window.swalToast('success', 'Cuenta creada');
+          await fireSweetAlert({
+            icon: 'success',
+            title: 'Usuario creado con éxito',
+            text: 'Tu cuenta está lista. Te llevaremos al inicio de sesión para continuar.',
+            confirmButtonText: 'Iniciar sesión'
+          }, 'Cuenta creada');
           window.location.href = '/user/login';
         } else {
-          if (window.swalToast) window.swalToast('error', data.message || 'Error');
-          else alert(data.message || 'Error');
+          await fireSweetAlert({
+            icon: 'error',
+            title: 'No pudimos crear tu cuenta',
+            text: data.message || 'Inténtalo de nuevo más tarde.',
+            confirmButtonText: 'Entendido'
+          }, data.message || 'Error al crear cuenta');
         }
       } catch (err) {
-        if (window.swalToast) window.swalToast('error', 'Error de conexión');
-        else alert('Error de conexión');
+        await fireSweetAlert({
+          icon: 'error',
+          title: 'Sin conexión',
+          text: 'No pudimos enviar tus datos. Revisa tu red e inténtalo nuevamente.',
+          confirmButtonText: 'Ok'
+        }, 'Error de conexión');
       } finally { btn.disabled = false; btn.innerHTML = orig; }
     });
   </script>

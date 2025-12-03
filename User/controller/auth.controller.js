@@ -1,4 +1,5 @@
 const User = require('../model/user.model');
+const Favorite = require('../../models/Favorite');
 const bcrypt = require('bcryptjs');
 
 exports.showLogin = (req, res) => {
@@ -35,9 +36,15 @@ exports.login = async (req, res) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: 'Credenciales inválidas' });
 
-    // opcional: establecer sesión
+    // establecer sesión y devolver ruta de redirección
+    const favoriteIds = await Favorite.distinct('lugar', { user: user._id });
     req.session.userId = user._id;
-    return res.json({ message: 'Autenticado' });
+    return res.json({
+      message: 'Autenticado',
+      redirectTo: '/visitante',
+      user: { id: user._id, name: user.name, email: user.email },
+      favoriteIds
+    });
   } catch (err) {
     console.error('User login error', err);
     return res.status(500).json({ message: 'Error interno' });

@@ -21,7 +21,52 @@
 </head>
 <body class="bg-[#fff7ef] text-[#3c2b22] scroll-smooth">
 
-  <div id="user-header-container"></div>
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#f6dcc4] shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4 relative">
+      <a href="/visitante" class="flex items-center gap-3" aria-label="Ir al inicio">
+        <div class="w-10 h-10 bg-gradient-to-tr from-rose-400 to-indigo-500 rounded-lg flex items-center justify-center shadow-md">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.761 0 5-2.239 5-5S14.761 1 12 1 7 3.239 7 6s2.239 5 5 5z"/></svg>
+        </div>
+        <div>
+          <p class="text-lg font-bold leading-tight text-[#3d2619]">Real del Monte</p>
+          <p class="text-xs text-[#a6825a] uppercase tracking-wide">Visitante</p>
+        </div>
+      </a>
+
+      <button type="button" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#f2d5b3] text-[#5b4639]" data-nav-toggle aria-controls="visitante-nav" aria-expanded="false" aria-label="Abrir menú">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <nav id="visitante-nav" data-nav-menu aria-hidden="true" role="navigation" aria-label="Menú principal visitante" class="fixed inset-y-0 right-0 z-40 flex w-72 max-w-[85vw] flex-col gap-2 bg-white/95 border-l border-[#f2d5b3] shadow-2xl px-5 py-6 transform translate-x-full transition-transform duration-300 ease-out pointer-events-none md:pointer-events-auto md:static md:inset-auto md:w-auto md:max-w-none md:flex-row md:items-center md:bg-transparent md:border-0 md:shadow-none md:px-0 md:py-0 md:translate-x-0">
+        <div class="w-full flex items-center justify-between mb-4 md:hidden">
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#a6825a]">Menú</p>
+          <button type="button" class="text-sm text-[#5b4639] px-2 py-1" data-nav-close aria-label="Cerrar menú">Cerrar ✕</button>
+        </div>
+        <a href="#inicio" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l9-8 9 8v7a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg>
+          Inicio
+        </a>
+                <a href="#historia" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 19.5A2.5 2.5 0 016.5 17h11A2.5 2.5 0 0120 19.5V21H4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 3h12v14H6z"/></svg>
+          Historia
+        </a>
+        <a href="#favoritos" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682a4.5 4.5 0 010-6.364z"/></svg>
+          Favoritos
+        </a>
+
+        <a href="#lugares" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5h2l3.6 7.59a1 1 0 00.9.59H17a1 1 0 00.95-.68L20 6H6"/><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+          Lugares
+        </a>
+        <button type="button" data-logout class="nav-link px-4 py-2 rounded-md text-sm flex items-center gap-2 bg-rose-500 text-white hover:bg-rose-600 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4-4-4m4 4H9"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
+          Cerrar sesión
+        </button>
+      </nav>
+    </div>
+    <div class="md:hidden fixed inset-0 z-30 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300" data-nav-backdrop></div>
+  </header>
 
   <!-- Hero -->
   <section id="inicio" class="relative min-h-screen w-full flex flex-col items-center justify-center text-center px-4 py-16 sm:px-8 sm:py-20 overflow-hidden" style="background: radial-gradient(circle at top, rgba(212,164,65,0.25), transparent 55%), linear-gradient(135deg,#fff4e4 0%, #ffe4c1 60%, #fbe7d1 100%);">
@@ -43,8 +88,8 @@
       </p>
 
       <div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6 justify-center w-full sm:w-auto">
-        <a href="/user/login" class="brand-cta px-6 py-3 rounded-2xl text-white text-sm uppercase tracking-wide">Explorar ahora</a>
-        <a href="#lugares" class="glass px-6 py-3 rounded-2xl text-sm font-semibold text-[#3a2d25] hover:-translate-y-0.5 transition">Ver lugares destacados</a>
+        <a href="#lugares" class="brand-cta px-6 py-3 rounded-2xl text-white text-sm uppercase tracking-wide">Explorar lugares</a>
+        <a href="#favoritos" class="glass px-6 py-3 rounded-2xl text-sm font-semibold text-[#3a2d25] hover:-translate-y-0.5 transition">Ver mis favoritos</a>
       </div>
 
       <div class="max-w-5xl w-full px-2 sm:px-0">
@@ -60,17 +105,17 @@
         <div>
           <p class="text-sm uppercase tracking-[0.3em] text-[#c06a1c]">Colección personal</p>
           <h3 class="text-3xl font-extrabold text-[#422515] mt-2">Tus tesoros favoritos de Real del Monte</h3>
-          <p id="favoritesSubtitle" class="text-[#6b4a3b] mt-3 max-w-2xl">Inicia sesión en la experiencia Visitante para guardar y sincronizar tus rutas favoritas.</p>
+          <p id="favoritesSubtitle" class="text-[#6b4a3b] mt-3 max-w-2xl">Tus favoritos se sincronizan automáticamente con tu cuenta.</p>
         </div>
         <div>
-          <a id="favoritesAction" href="/user/login" class="brand-cta inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm uppercase tracking-wide">
+          <a id="favoritesAction" href="#lugares" class="brand-cta inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm uppercase tracking-wide">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
-            Inicia sesión
+            Explorar lugares
           </a>
         </div>
       </div>
       <div id="favoritesEmpty" class="favorites-empty text-center text-[#7a5c4a] bg-white/70 rounded-3xl border border-[#f1dac9] py-10 px-6">
-        Inicia sesión para descubrir tu panel privado de favoritos en MinerApp Visitante.
+        Aún no tienes favoritos guardados. Agrega lugares tocando el corazón en cada tarjeta.
       </div>
       <div id="favoritesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
@@ -158,63 +203,235 @@
         </div>
       </div>
 
-  <div id="user-footer-container"></div>
+  <footer class="bg-[#1f130c] text-[#fbead6] border-t border-[#f6dcc4] mt-20">
+    <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <p class="text-lg font-bold">MinerApp Visitante</p>
+        <p class="text-sm text-[#d6b28e]">Experiencia personalizada para quienes ya forman parte de la comunidad.</p>
+      </div>
+      <div class="flex flex-wrap gap-4 text-sm uppercase tracking-[0.2em] text-[#f7d8b3]">
+        <a href="#inicio" class="hover:text-white transition">Inicio</a>
+                <a href="#historia" class="hover:text-white transition">Historia</a>    
+        <a href="#favoritos" class="hover:text-white transition">Favoritos</a>
+        <a href="#lugares" class="hover:text-white transition">Lugares</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Prompt de autenticación removido para visitantes autenticados -->
 
   <script src="/js/alerts.js"></script>
-  <script src="/js/user.js"></script>
   <script>
     const appState = {
       currentUser: null,
       favoriteIds: new Set(),
+      favoritesList: [],
       lugaresCache: [],
       lugarIndex: {}
     };
 
     const filtersState = { bound: false };
-    const authRedirectDelay = 1400;
+    const navState = { toggle: null, menu: null, backdrop: null, media: null };
     const searchControl = { timer: null, controller: null, warned: false, categoriesLoaded: false };
     const fallbackLugares = [
       { _id: '1', nombre: 'Mina Acosta', descripcion: 'Visitas guiadas por las antiguas minas.', images: [] , categoria: 'Museo' },
       { _id: '2', nombre: 'Museo del Sitio', descripcion: 'Conoce la historia minera.', images: [], categoria: 'Museo' },
       { _id: '3', nombre: 'Pastes', descripcion: 'Prueba el paste tradicional.', images: [], categoria: 'Gastronomía' }
     ];
-    const FALLBACK_MODAL_IMAGE = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
-    const modalGalleryState = { images: [FALLBACK_MODAL_IMAGE], index: 0, title: 'Lugar destacado' };
 
     function notify(type, config) {
       if (window.alertCenter && typeof window.alertCenter[type] === 'function') {
         return window.alertCenter[type](config);
       }
-      const msg = typeof config === 'string' ? config : (config && config.message) || 'Ocurrió un evento';
+      const msg = typeof config === 'string' ? config : (config && config.message) || 'Acción completada';
       return alert(msg);
     }
 
     function safeQuery(selector) { return document.querySelector(selector); }
 
-    async function showAuthPrompt() {
-      if (window.alertCenter) {
-        window.alertCenter.info({
-          title: 'Inicia sesión para continuar',
-          message: 'Necesitas una cuenta activa para guardar tus lugares favoritos.',
-          actionLabel: 'Ir a iniciar sesión',
-          onAction: () => { window.location.href = '/user/login'; },
-          timeout: 6000
+    function setNavMenuVisibility(visible) {
+      const { menu, toggle, backdrop, media } = navState;
+      if (!menu || !toggle) return;
+      if (media && media.matches) return;
+      const showMenu = Boolean(visible);
+      menu.classList.toggle('translate-x-0', showMenu);
+      menu.classList.toggle('translate-x-full', !showMenu);
+      menu.classList.toggle('pointer-events-none', !showMenu);
+      menu.setAttribute('aria-hidden', showMenu ? 'false' : 'true');
+      toggle.setAttribute('aria-expanded', showMenu ? 'true' : 'false');
+      document.body.classList.toggle('overflow-hidden', showMenu);
+      if (backdrop) {
+        backdrop.classList.toggle('opacity-100', showMenu);
+        backdrop.classList.toggle('pointer-events-none', !showMenu);
+      }
+    }
+
+    function collapseNavMenu() {
+      if (navState.media && navState.media.matches) return;
+      setNavMenuVisibility(false);
+    }
+
+    function attachLogoutHandlers() {
+      document.querySelectorAll('[data-logout]').forEach(btn => {
+        if (btn.dataset.logoutBound === 'true') return;
+        btn.dataset.logoutBound = 'true';
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          collapseNavMenu();
+          handleLogout(btn);
         });
-        setTimeout(() => { window.location.href = '/user/login'; }, authRedirectDelay);
+      });
+    }
+
+    async function handleLogout(trigger) {
+      const btn = trigger || document.querySelector('[data-logout]');
+      const label = btn ? btn.querySelector('span') : null;
+      if (btn) btn.disabled = true;
+      if (label) label.dataset.originalText = label.textContent;
+      if (label) label.textContent = 'Cerrando...';
+      try {
+        await fetch('/user/logout', { method: 'POST', credentials: 'include' });
+      } catch (err) {
+        console.warn('No se pudo cerrar sesión', err);
+      } finally {
+        window.location.href = '/';
+      }
+    }
+
+    function initVisitorNav() {
+      navState.toggle = document.querySelector('[data-nav-toggle]');
+      navState.menu = document.querySelector('[data-nav-menu]');
+      navState.backdrop = document.querySelector('[data-nav-backdrop]');
+      navState.media = window.matchMedia('(min-width: 768px)');
+      const { toggle, menu } = navState;
+      if (!toggle || !menu) return;
+
+      const handleBreakpoint = () => {
+        if (navState.media.matches) {
+          menu.classList.remove('translate-x-full');
+          menu.classList.remove('pointer-events-none');
+          menu.classList.add('md:translate-x-0');
+          menu.setAttribute('aria-hidden', 'false');
+          document.body.classList.remove('overflow-hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (navState.backdrop) {
+            navState.backdrop.classList.add('pointer-events-none');
+            navState.backdrop.classList.remove('opacity-100');
+          }
+          return;
+        }
+        menu.classList.add('translate-x-full');
+        menu.classList.remove('translate-x-0');
+        menu.classList.add('pointer-events-none');
+        menu.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('overflow-hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (navState.backdrop) {
+          navState.backdrop.classList.add('pointer-events-none');
+          navState.backdrop.classList.remove('opacity-100');
+        }
+      };
+
+      handleBreakpoint();
+      if (navState.media.addEventListener) {
+        navState.media.addEventListener('change', handleBreakpoint);
+      } else if (navState.media.addListener) {
+        navState.media.addListener(handleBreakpoint);
+      }
+
+      toggle.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('translate-x-0');
+        setNavMenuVisibility(!isOpen);
+      });
+
+      if (navState.backdrop) {
+        navState.backdrop.addEventListener('click', () => setNavMenuVisibility(false));
+      }
+
+      menu.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', () => {
+          collapseNavMenu();
+        });
+      });
+      menu.querySelectorAll('[data-nav-close]').forEach(btn => {
+        btn.addEventListener('click', () => collapseNavMenu());
+      });
+      attachLogoutHandlers();
+    }
+
+    async function fetchSession() {
+      try {
+        const res = await fetch('/api/session', { credentials: 'include' });
+        if (!res.ok) throw new Error('session');
+        const data = await res.json();
+        if (!data.authenticated) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para continuar.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        appState.currentUser = data.user;
+        if (Array.isArray(data.favoriteIds)) {
+          applyFavoriteIds(data.favoriteIds);
+        }
+      } catch (err) {
+        notify('error', { title: 'Sesión no disponible', message: 'Por seguridad te redirigimos al inicio de sesión.' });
+        setTimeout(() => { window.location.href = '/user/login'; }, 800);
         return;
       }
-      alert('Debes iniciar sesión antes de guardar favoritos.');
-      window.location.href = '/user/login';
+    }
+
+    function applyFavoriteIds(ids) {
+      if (!Array.isArray(ids)) return;
+      appState.favoriteIds = new Set(ids.map(String));
+      updateFavoriteButtons();
+    }
+
+    async function fetchFavorites() {
+      if (!appState.currentUser) {
+        appState.favoriteIds = new Set();
+        appState.favoritesList = [];
+        renderFavoritesSection();
+        updateFavoriteButtons();
+        return;
+      }
+      try {
+        const res = await fetch('/api/favorites', { credentials: 'include' });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para ver tus favoritos.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('favorites');
+        const data = await res.json();
+        const raw = Array.isArray(data.favorites) ? data.favorites : [];
+        appState.favoritesList = raw.map(f => f.lugar).filter(Boolean);
+        appState.favoriteIds = new Set(appState.favoritesList.map(l => String(l._id)));
+      } catch (err) {
+        console.warn('No se pudieron cargar favoritos', err);
+        appState.favoritesList = [];
+        notify('info', {
+          title: 'Sincronización pendiente',
+          message: 'Tus favoritos aparecerán en cuanto recuperemos la conexión.'
+        });
+      }
+      renderFavoritesSection();
+      updateFavoriteButtons();
     }
 
     function renderFavoritesSection() {
-      const empty = safeQuery('#favoritesEmpty');
-      if (empty) {
-        empty.textContent = 'Inicia sesión para descubrir tu panel privado de favoritos en MinerApp Visitante.';
-        empty.style.display = '';
-      }
       const grid = safeQuery('#favoritesGrid');
-      if (grid) grid.innerHTML = '';
+      const empty = safeQuery('#favoritesEmpty');
+      if (!grid || !empty) return;
+      if (!appState.favoritesList.length) {
+        empty.textContent = 'Aún no guardas lugares. Pulsa el corazón para tener acceso rápido aquí.';
+        empty.style.display = '';
+        grid.innerHTML = '';
+        return;
+      }
+      empty.style.display = 'none';
+      grid.innerHTML = '';
+      appState.favoritesList.forEach(lugar => grid.appendChild(createLugarCard(lugar)));
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('show'));
     }
 
     function getActiveFilters() {
@@ -242,127 +459,8 @@
     function scheduleSearch() {
       if (searchControl.timer) clearTimeout(searchControl.timer);
       searchControl.timer = setTimeout(() => {
-        loadLugares({ refreshCategories: false, fromSearch: true });
+        loadLugares({ refreshCategories: false, fromSearch: true, silent: true });
       }, 220);
-    }
-
-    function buildLugarImages(lugar) {
-      const sources = [];
-      if (Array.isArray(lugar.images)) sources.push(...lugar.images);
-      if (Array.isArray(lugar.galeria)) sources.push(...lugar.galeria);
-      ['image', 'imagen', 'fotoDestacada', 'cover', 'portada'].forEach(key => {
-        if (typeof lugar[key] === 'string') sources.push(lugar[key]);
-      });
-      const clean = sources.map(src => typeof src === 'string' ? src.trim() : '').filter(Boolean);
-      return clean.length ? Array.from(new Set(clean)) : [FALLBACK_MODAL_IMAGE];
-    }
-
-    function prepareModalGallery(lugar) {
-      modalGalleryState.images = buildLugarImages(lugar);
-      modalGalleryState.index = 0;
-      modalGalleryState.title = lugar.nombre || 'Lugar destacado';
-      updateModalCarousel();
-    }
-
-    function updateModalCarousel() {
-      const imgEl = document.getElementById('modalCarouselImage');
-      const counter = document.getElementById('modalCarouselCounter');
-      const prev = document.querySelector('[data-carousel-prev]');
-      const next = document.querySelector('[data-carousel-next]');
-      const indicators = document.getElementById('modalCarouselIndicators');
-      const total = modalGalleryState.images.length;
-      const src = modalGalleryState.images[modalGalleryState.index] || FALLBACK_MODAL_IMAGE;
-      if (imgEl) {
-        imgEl.src = src;
-        imgEl.alt = `${modalGalleryState.title} (${modalGalleryState.index + 1} de ${total})`;
-      }
-      const hasMultiple = total > 1;
-      if (counter) {
-        counter.textContent = `${modalGalleryState.index + 1} / ${total}`;
-        counter.classList.toggle('is-hidden', !hasMultiple);
-      }
-      if (prev) prev.classList.toggle('is-hidden', !hasMultiple);
-      if (next) next.classList.toggle('is-hidden', !hasMultiple);
-      if (indicators) {
-        if (!hasMultiple) {
-          indicators.innerHTML = '';
-          indicators.classList.add('is-hidden');
-        } else {
-          indicators.classList.remove('is-hidden');
-          indicators.innerHTML = modalGalleryState.images.map((_, idx) => `<button type="button" data-carousel-dot="${idx}" aria-label="Ver imagen ${idx + 1}" class="${idx === modalGalleryState.index ? 'active' : ''}"></button>`).join('');
-        }
-      }
-    }
-
-    function shiftModalCarousel(step) {
-      const total = modalGalleryState.images.length;
-      if (total <= 1) return;
-      modalGalleryState.index = (modalGalleryState.index + step + total) % total;
-      updateModalCarousel();
-    }
-
-    function bindModalCarouselControls() {
-      const prev = document.querySelector('[data-carousel-prev]');
-      if (prev && !prev.dataset.bound) {
-        prev.dataset.bound = 'true';
-        prev.addEventListener('click', () => shiftModalCarousel(-1));
-      }
-      const next = document.querySelector('[data-carousel-next]');
-      if (next && !next.dataset.bound) {
-        next.dataset.bound = 'true';
-        next.addEventListener('click', () => shiftModalCarousel(1));
-      }
-      const indicators = document.getElementById('modalCarouselIndicators');
-      if (indicators && !indicators.dataset.bound) {
-        indicators.dataset.bound = 'true';
-        indicators.addEventListener('click', (event) => {
-          const dot = event.target.closest('[data-carousel-dot]');
-          if (!dot) return;
-          const idx = Number(dot.dataset.carouselDot);
-          if (Number.isNaN(idx)) return;
-          modalGalleryState.index = idx;
-          updateModalCarousel();
-        });
-      }
-    }
-
-    function renderModalMeta(lugar) {
-      const meta = document.getElementById('modalMeta');
-      if (!meta) return;
-      const entries = [
-        { label: 'Ubicación', value: lugar.ubicacion || lugar.direccion || lugar.address || lugar.localizacion },
-        { label: 'Horario', value: lugar.horario || lugar.horarios || lugar.horarioAtencion },
-        { label: 'Contacto', value: lugar.telefono || lugar.contacto || lugar.whatsapp || lugar.email },
-        { label: 'Costo', value: lugar.precio || lugar.costo || lugar.entrada }
-      ].filter(item => item.value);
-      if (!entries.length) {
-        meta.innerHTML = '';
-        meta.classList.add('is-hidden');
-        return;
-      }
-      meta.classList.remove('is-hidden');
-      meta.innerHTML = entries.map(item => `<div class="meta-card"><p class="meta-label">${item.label}</p><p class="meta-value">${item.value}</p></div>`).join('');
-    }
-
-    function renderModalTags(lugar) {
-      const container = document.getElementById('modalTags');
-      if (!container) return;
-      let tags = [];
-      if (Array.isArray(lugar.tags)) tags = tags.concat(lugar.tags);
-      else if (typeof lugar.tags === 'string') tags = tags.concat(lugar.tags.split(',').map(tag => tag.trim()));
-      if (Array.isArray(lugar.amenidades)) tags = tags.concat(lugar.amenidades);
-      if (Array.isArray(lugar.servicios)) tags = tags.concat(lugar.servicios);
-      ['tipo', 'especialidad', 'categoriaSecundaria'].forEach(key => {
-        if (lugar[key]) tags.push(lugar[key]);
-      });
-      tags = tags.map(tag => (typeof tag === 'string' ? tag.trim() : tag)).filter(Boolean);
-      if (!tags.length) {
-        container.innerHTML = '';
-        container.classList.add('is-hidden');
-        return;
-      }
-      container.classList.remove('is-hidden');
-      container.innerHTML = tags.slice(0, 8).map(tag => `<span class="tag-pill">${tag}</span>`).join('');
     }
 
     function createLugarCard(lugar) {
@@ -411,25 +509,21 @@
     function openLugarModal(lugar) {
       try {
         const backdrop = document.getElementById('lugarModalBackdrop');
-        const title = document.getElementById('modalTitle');
-        const categoria = document.getElementById('modalCategoria');
-        const desc = document.getElementById('modalDesc');
-        if (title) title.textContent = lugar.nombre || 'Sin nombre';
-        if (categoria) categoria.textContent = (lugar.categoria && (lugar.categoria.nombre || lugar.categoria)) || (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
-        if (desc) desc.textContent = lugar.descripcion || 'Muy pronto añadiremos una descripción detallada.';
+        document.getElementById('modalTitle').textContent = lugar.nombre || 'Sin nombre';
+        document.getElementById('modalCategoria').textContent = (lugar.categoria && (lugar.categoria.nombre || lugar.categoria)) || (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
+        document.getElementById('modalDesc').textContent = lugar.descripcion || '';
+        document.getElementById('modalMeta').textContent = lugar.tags ? 'Tags: ' + (Array.isArray(lugar.tags)?lugar.tags.join(', '):lugar.tags) : '';
         const maps = document.getElementById('modalMaps');
-        if (maps) maps.href = lugar.googleMapsLink || lugar.maps || '#';
-        renderModalMeta(lugar);
-        renderModalTags(lugar);
-        prepareModalGallery(lugar);
+        maps.href = lugar.googleMapsLink || '#';
+        const gallery = document.getElementById('modalGallery');
+        gallery.innerHTML = '';
+        const imgs = (lugar.images && lugar.images.length) ? lugar.images : ['https://via.placeholder.com/800x600?text=Sin+Imagen'];
+        imgs.forEach(src => { const i = document.createElement('img'); i.src = src; i.className = 'thumb'; gallery.appendChild(i); });
         const modalFav = document.getElementById('modalFav');
         if (modalFav) {
           modalFav.dataset.favId = lugar._id || '';
         }
-        if (backdrop) {
-          backdrop.style.display = 'flex';
-          backdrop.setAttribute('aria-hidden', 'false');
-        }
+        backdrop.style.display = 'flex'; backdrop.setAttribute('aria-hidden', 'false');
         updateFavoriteButtons();
       } catch (e) { console.error(e); }
     }
@@ -461,9 +555,15 @@
       try {
         const url = params.toString() ? `/api/lugares?${params.toString()}` : '/api/lugares';
         const res = await fetch(url, { credentials: 'include', signal: controller.signal });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para seguir explorando.' });
+          window.location.href = '/user/login';
+          return;
+        }
         if (!res.ok) throw new Error('lugares');
         const payload = await res.json();
         list = Array.isArray(payload) ? payload : (Array.isArray(payload.lugares) ? payload.lugares : []);
+        if (Array.isArray(payload.favoriteIds)) applyFavoriteIds(payload.favoriteIds);
         searchControl.warned = false;
       } catch (err) {
         if (err.name === 'AbortError') return;
@@ -471,7 +571,7 @@
         if (!searchControl.warned) {
           notify('warning', {
             title: 'Mostrando datos de ejemplo',
-            message: 'No pudimos obtener los lugares en vivo. Intenta refrescar más tarde.'
+            message: 'No pudimos conectarnos al servidor. Intenta de nuevo más tarde.'
           });
           searchControl.warned = true;
         }
@@ -533,8 +633,34 @@
       });
     }
 
-    async function toggleFavorite() {
-      await showAuthPrompt();
+    async function toggleFavorite(lugarId, triggerEl) {
+      if (!lugarId) return;
+      if (!appState.currentUser) {
+        window.location.href = '/user/login';
+        return;
+      }
+      const isFav = appState.favoriteIds.has(String(lugarId));
+      if (triggerEl) triggerEl.disabled = true;
+      try {
+        const res = await fetch(`/api/favorites/${lugarId}`, {
+          method: isFav ? 'DELETE' : 'POST',
+          credentials: 'include'
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para seguir guardando lugares.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('favorite');
+        await fetchFavorites();
+        notify('success', { message: isFav ? 'Favorito eliminado' : 'Agregado a favoritos' });
+      } catch (err) {
+        console.error('No se pudo actualizar favorito', err);
+        notify('error', { title: 'Sin cambios', message: 'No pudimos actualizar tu favorito. Intenta más tarde.' });
+      } finally {
+        if (triggerEl) triggerEl.disabled = false;
+        updateFavoriteButtons();
+      }
     }
 
     document.addEventListener('click', (e) => {
@@ -554,8 +680,11 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       bindModalClose();
-      renderFavoritesSection();
+      initVisitorNav();
+      attachLogoutHandlers();
+      await fetchSession();
       await loadLugares({ refreshCategories: true });
+      await fetchFavorites();
     });
   </script>
 </body>

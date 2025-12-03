@@ -68,6 +68,147 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
+    const existingImagesContainer = document.getElementById('existingImages');
+    const imagesToRemove = new Set();
+    const replacementFiles = new Map();
+    const previewUrls = new Set();
+
+    function cleanupPreview(url) {
+      if (!url) return;
+      try {
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.warn('No se pudo liberar la previsualización', e);
+      }
+      previewUrls.delete(url);
+    }
+
+    function renderExistingImages(images = []) {
+      if (!existingImagesContainer) return;
+      Array.from(previewUrls).forEach(cleanupPreview);
+      imagesToRemove.clear();
+      replacementFiles.clear();
+      existingImagesContainer.innerHTML = '';
+      if (!images.length) {
+        existingImagesContainer.innerHTML = '<p class="text-sm text-gray-500">Sin imágenes cargadas.</p>';
+        return;
+      }
+      images.forEach((src) => {
+        existingImagesContainer.appendChild(createImageCard(src));
+      });
+    }
+
+    function createImageCard(src) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative flex flex-col items-center gap-2 p-2 border rounded-lg bg-white shadow-sm';
+      wrapper.dataset.originalSrc = src;
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Imagen del lugar';
+      img.className = 'w-24 h-24 object-cover rounded';
+      wrapper.appendChild(img);
+
+      const statusEl = document.createElement('p');
+      statusEl.className = 'text-xs text-gray-500';
+      statusEl.style.minHeight = '1rem';
+      wrapper.appendChild(statusEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'flex gap-2 text-xs';
+      const replaceBtn = document.createElement('button');
+      replaceBtn.type = 'button';
+      replaceBtn.className = 'text-blue-600 hover:underline';
+      replaceBtn.textContent = 'Reemplazar';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'text-red-600 hover:underline';
+      removeBtn.textContent = 'Eliminar';
+      actions.appendChild(replaceBtn);
+      actions.appendChild(removeBtn);
+      wrapper.appendChild(actions);
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.className = 'hidden';
+      wrapper.appendChild(fileInput);
+
+      const originalSrc = src;
+
+      function restoreState() {
+        const previewUrl = wrapper.dataset.previewUrl;
+        if (previewUrl) {
+          cleanupPreview(previewUrl);
+          wrapper.dataset.previewUrl = '';
+        }
+        wrapper.dataset.state = '';
+        wrapper.classList.remove('opacity-60', 'ring-2', 'ring-red-500', 'ring-amber-500');
+        statusEl.textContent = '';
+        statusEl.className = 'text-xs text-gray-500';
+        img.src = originalSrc;
+        imagesToRemove.delete(originalSrc);
+        replacementFiles.delete(originalSrc);
+        fileInput.value = '';
+        removeBtn.textContent = 'Eliminar';
+      }
+
+      function markRemoved() {
+        const previewUrl = wrapper.dataset.previewUrl;
+        if (previewUrl) {
+          cleanupPreview(previewUrl);
+          wrapper.dataset.previewUrl = '';
+          img.src = originalSrc;
+        }
+        wrapper.dataset.state = 'removed';
+        wrapper.classList.remove('ring-amber-500');
+        wrapper.classList.add('opacity-60', 'ring-2', 'ring-red-500');
+        statusEl.textContent = 'Se eliminará al guardar';
+        statusEl.className = 'text-xs text-red-600';
+        imagesToRemove.add(originalSrc);
+        replacementFiles.delete(originalSrc);
+        fileInput.value = '';
+        removeBtn.textContent = 'Restaurar';
+      }
+
+      function markReplaced(file) {
+        wrapper.dataset.state = 'replaced';
+        wrapper.classList.remove('opacity-60', 'ring-red-500');
+        wrapper.classList.add('ring-2', 'ring-amber-500');
+        statusEl.textContent = 'Se reemplazará por ' + file.name;
+        statusEl.className = 'text-xs text-amber-600';
+        imagesToRemove.add(originalSrc);
+        replacementFiles.set(originalSrc, file);
+        removeBtn.textContent = 'Restaurar';
+        const previewUrl = URL.createObjectURL(file);
+        const previousUrl = wrapper.dataset.previewUrl;
+        if (previousUrl) cleanupPreview(previousUrl);
+        wrapper.dataset.previewUrl = previewUrl;
+        previewUrls.add(previewUrl);
+        img.src = previewUrl;
+      }
+
+      replaceBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) {
+          markReplaced(fileInput.files[0]);
+        }
+      });
+
+      removeBtn.addEventListener('click', () => {
+        if (wrapper.dataset.state) {
+          restoreState();
+        } else {
+          markRemoved();
+        }
+      });
+
+      return wrapper;
+    }
+
+    window.addEventListener('beforeunload', () => {
+      Array.from(previewUrls).forEach(cleanupPreview);
+    });
     if (id) {
       // cargar datos
       fetch('/admin/lugares/' + id)
@@ -81,17 +222,7 @@
           document.getElementById('googleMapsLink').value = l.googleMapsLink || '';
 
           // mostrar imágenes existentes
-          const container = document.getElementById('existingImages');
-          container.innerHTML = '';
-          (l.images || []).forEach(src => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'w-24 h-24 overflow-hidden rounded-lg border';
-            const img = document.createElement('img');
-            img.src = src;
-            img.className = 'w-full h-full object-cover';
-            wrapper.appendChild(img);
-            container.appendChild(wrapper);
-          });
+          renderExistingImages(l.images || []);
         });
     }
 
@@ -108,6 +239,8 @@
       for (let i = 0; i < files.length; i++) {
         formData.append('images', files[i]);
       }
+      imagesToRemove.forEach(src => formData.append('removeImages[]', src));
+      replacementFiles.forEach(file => formData.append('images', file));
 
       const method = id ? 'PUT' : 'POST';
       const url = id ? '/admin/lugares/' + id : '/admin/lugares';
@@ -149,6 +282,9 @@
     // si ya se cargaron datos en modo edición, recargar categorias con el valor
     (async () => {
       await loadCategorias(document.getElementById('categoria').value || '');
+      if (!id && existingImagesContainer) {
+        renderExistingImages([]);
+      }
     })();
 
     // usar helpers centralizados en public/js/admin.js

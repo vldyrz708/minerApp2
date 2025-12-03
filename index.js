@@ -27,16 +27,35 @@ const userRouter = require('./User/routes/auth.routes');
 // API routes
 const apiRoutes = require('./routes/api');
 
+function requireUserPage(req, res, next) {
+    if (req.session && req.session.userId) {
+        return next();
+    }
+    return res.redirect('/user/login');
+}
+
+function apiRouteGuard(req, res, next) {
+    const openGet = req.method === 'GET' && /^\/(session|lugares(\/.*)?)/.test(req.path);
+    if (openGet || (req.session && req.session.userId)) {
+        return next();
+    }
+    return res.status(401).json({ error: 'No autenticado' });
+}
+
 // Ruta principal (User)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/User/index.html'));
 });
 
+app.get('/visitante', requireUserPage, (req, res) => {
+    res.sendFile(path.join(__dirname, '/visitante/index.html'));
+});
+
 // Rutas de Admin (solo accesibles mediante /admin/...)
 app.use('/admin', adminRouter);
 
-// API routes para acceso público
-app.use('/api', apiRoutes);
+// API routes con protección selectiva
+app.use('/api', apiRouteGuard, apiRoutes);
 
 // Rutas de User (frontend y auth)
 app.use('/user', userRouter);
