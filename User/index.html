@@ -85,6 +85,28 @@
     </div>
   </section>
 
+      <!-- Modal detalle -->
+      <div id="lugarModalBackdrop" class="modal-backdrop" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <button class="close-btn" id="modalCloseBtn" aria-label="Cerrar">✕</button>
+          <div class="modal-body">
+            <div class="modal-gallery" id="modalGallery">
+              <!-- image -->
+            </div>
+            <div class="modal-info">
+              <h2 id="modalTitle" class="text-2xl font-bold mb-2"></h2>
+              <p id="modalCategoria" class="chip mb-3"></p>
+              <p id="modalDesc" class="text-slate-700 mb-4"></p>
+              <div id="modalMeta" class="text-sm text-slate-500"></div>
+              <div class="mt-6 flex gap-3">
+                <a id="modalMaps" class="brand-cta inline-block px-4 py-2 rounded-md" target="_blank" href="#">Ver en Maps</a>
+                <button id="modalFav" class="px-4 py-2 rounded-md border">Agregar a favoritos</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
   <div id="user-footer-container"></div>
 
   <script src="/js/user.js"></script>
@@ -94,28 +116,65 @@
 
     function createLugarCard(lugar) {
       const card = document.createElement('article');
-      card.className = 'bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition fade-in';
+      card.className = 'bg-white rounded-2xl p-0 shadow-sm hover:shadow-md transition fade-in lugar-card';
       const imagen = (lugar.images && lugar.images.length) ? lugar.images[0] : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
       const categoria = lugar.categoria ? (lugar.categoria.nombre || lugar.categoria) : (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
       const mapsLink = lugar.googleMapsLink || '#';
 
       card.innerHTML = `
-        <div class="h-40 rounded-lg overflow-hidden mb-4">
-          <img src="${imagen}" alt="${lugar.nombre || 'Lugar'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Imagen+no+disponible'">
+        <div class="thumb-wrapper">
+          <img src="${imagen}" alt="${lugar.nombre || 'Lugar'}" class="thumb" onerror="this.src='https://via.placeholder.com/400x300?text=Imagen+no+disponible'">
         </div>
-        <h4 class="text-xl text-pink-600 mb-1" style="font-family: 'Playball', cursive;">${lugar.nombre || 'Sin nombre'}</h4>
-        <p class="text-sm text-slate-600">${lugar.descripcion || 'Sin descripción'}</p>
-        <div class="mt-3 text-sm">
-          <p><span class="font-semibold">Categoría:</span> ${categoria}</p>
-        </div>
-        <div class="flex gap-2 mt-4">
-          <a href="${mapsLink}" target="_blank" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">Ver ubicación</a>
-          <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition" onclick="addToFavorites('${lugar._id || ''}')">Agregar a favoritos</button>
+        <div class="lugar-meta">
+          <h4 class="lugar-title mb-1">${lugar.nombre || 'Sin nombre'}</h4>
+          <p class="lugar-desc text-sm">${(lugar.descripcion || '').slice(0,140)}${(lugar.descripcion && lugar.descripcion.length>140)?'...':''}</p>
+          <div class="mt-3 flex items-center justify-between">
+            <span class="chip">${categoria}</span>
+            <div class="flex gap-2">
+              <button class="px-3 py-2 rounded-md text-sm border btn-detail">Ver detalles</button>
+              <a href="${mapsLink}" target="_blank" class="px-3 py-2 rounded-md text-sm brand-cta">Maps</a>
+            </div>
+          </div>
         </div>
       `;
 
       return card;
     }
+
+    // Modal logic
+    function openLugarModal(lugar) {
+      try {
+        const backdrop = document.getElementById('lugarModalBackdrop');
+        document.getElementById('modalTitle').textContent = lugar.nombre || 'Sin nombre';
+        document.getElementById('modalCategoria').textContent = (lugar.categoria && (lugar.categoria.nombre || lugar.categoria)) || (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
+        document.getElementById('modalDesc').textContent = lugar.descripcion || '';
+        document.getElementById('modalMeta').textContent = lugar.tags ? 'Tags: ' + (Array.isArray(lugar.tags)?lugar.tags.join(', '):lugar.tags) : '';
+        const maps = document.getElementById('modalMaps');
+        maps.href = lugar.googleMapsLink || '#';
+        const gallery = document.getElementById('modalGallery');
+        gallery.innerHTML = '';
+        const imgs = (lugar.images && lugar.images.length) ? lugar.images : ['https://via.placeholder.com/800x600?text=Sin+Imagen'];
+        imgs.forEach(src => { const i = document.createElement('img'); i.src = src; i.className = 'thumb'; gallery.appendChild(i); });
+        backdrop.style.display = 'flex'; backdrop.setAttribute('aria-hidden', 'false');
+      } catch (e) { console.error(e); }
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.classList.contains('btn-detail')) {
+        const article = e.target.closest('article');
+        if (!article) return;
+        const title = article.querySelector('.lugar-title')?.textContent || '';
+        const lugar = (window.__lugares_cache || []).find(l=>l.nombre===title) || (window.__lugares_cache||[])[0];
+        if (lugar) openLugarModal(lugar);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const closeBtn = document.getElementById('modalCloseBtn');
+      if (closeBtn) closeBtn.addEventListener('click', () => {
+        const b = document.getElementById('lugarModalBackdrop'); if (b) { b.style.display = 'none'; b.setAttribute('aria-hidden','true'); }
+      });
+    });
 
     function addToFavorites(id) { if (!id) return alert('ID no disponible'); alert('Funcionalidad de favoritos en desarrollo'); }
 

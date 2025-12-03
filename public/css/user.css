@@ -12,3 +12,26 @@
 .lugar-desc { color: #475569 }
 .chip { display:inline-block; padding:6px 10px; border-radius:9999px; background:rgba(15,23,42,0.04); font-size:12px }
 
+/* Header professional */
+.site-header { background: linear-gradient(180deg, #ffffffcc, #ffffff); backdrop-filter: blur(6px); }
+.site-header .brand { display:flex; align-items:center; gap:0.75rem }
+.site-cta { padding: 10px 16px; border-radius: 12px; font-weight:600 }
+
+/* Search input enhanced */
+.search-input { display:flex; align-items:center; gap:8px; border-radius:12px; padding:8px 12px; background:#fff; box-shadow:0 6px 20px rgba(2,6,23,0.04); }
+.search-input input { border:0; outline:0; background:transparent }
+
+/* Skeleton */
+.skeleton { background: linear-gradient(90deg,#f3f4f6 25%, #e6e7ea 37%, #f3f4f6 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+@keyframes shimmer { 0% { background-position: 100% 0 } 100% { background-position: -100% 0 } }
+.skeleton-card { height: 320px; border-radius: 1rem; }
+
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,0.6); display: none; align-items: center; justify-content: center; z-index: 60 }
+.modal { width: 96%; max-width: 920px; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px rgba(2,6,23,0.5); }
+.modal .modal-body { display:flex; gap:1rem; }
+.modal .modal-gallery { flex: 0 0 48%; background:#f8fafc }
+.modal .modal-info { flex:1; padding: 1.25rem 1.5rem }
+.modal .close-btn { position: absolute; right: 14px; top: 12px; background: transparent; border:0; font-size: 16px }
+
+
