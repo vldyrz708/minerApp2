@@ -17,6 +17,80 @@ function requireUser(req, res, next) {
   next();
 }
 
+function mapLugarReview(review) {
+  return {
+    _id: review._id,
+    rating: review.rating,
+    comment: review.comment,
+    createdAt: review.createdAt,
+    autorNombre: review.user && review.user.name ? review.user.name : 'Visitante',
+    userId: review.user && review.user._id ? review.user._id : review.user || null
+  };
+}
+
+function mapUserReview(review) {
+  return {
+    _id: review._id,
+    rating: review.rating,
+    comment: review.comment,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt,
+    lugarId: review.lugar && review.lugar._id ? review.lugar._id : review.lugar || null,
+    lugarNombre: review.lugar && review.lugar.nombre ? review.lugar.nombre : 'Lugar',
+    lugarCategoria: review.lugar && review.lugar.categoria ? review.lugar.categoria : ''
+  };
+}
+
+async function handleReviewSubmission(req, res, lugarId) {
+  const { rating, comment } = req.body || {};
+  if (!lugarId || rating === undefined) {
+    return res.status(400).json({ error: 'Lugar y calificación son obligatorios' });
+  }
+  const parsedRating = Number(rating);
+  if (Number.isNaN(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+    return res.status(400).json({ error: 'La calificación debe estar entre 1 y 5' });
+  }
+  try {
+    const lugar = await AdminLugar.findById(lugarId);
+    if (!lugar) {
+      return res.status(404).json({ error: 'Lugar no encontrado' });
+    }
+    let review = await Review.findOne({ user: req.session.userId, lugar: lugarId });
+    const isNew = !review;
+    if (!review) {
+      review = new Review({
+        user: req.session.userId,
+        lugar: lugarId,
+        rating: parsedRating,
+        comment
+      });
+    } else {
+      review.rating = parsedRating;
+      review.comment = comment;
+    }
+    await review.save();
+    const populated = await review.populate([
+      { path: 'user', select: 'name' },
+      { path: 'lugar', select: 'nombre categoria' }
+    ]);
+    const payload = {
+      _id: populated._id,
+      rating: populated.rating,
+      comment: populated.comment,
+      createdAt: populated.createdAt,
+      updatedAt: populated.updatedAt,
+      autorNombre: populated.user && populated.user.name ? populated.user.name : 'Visitante',
+      lugarNombre: populated.lugar && populated.lugar.nombre ? populated.lugar.nombre : undefined,
+      lugarCategoria: populated.lugar && populated.lugar.categoria ? populated.lugar.categoria : undefined,
+      lugar: populated.lugar && populated.lugar._id ? populated.lugar._id : lugarId
+    };
+    return res.status(isNew ? 201 : 200).json({ review: payload });
+  } catch (error) {
+    console.error('Error al crear reseña:', error);
+    return res.status(500).json({ error: 'Error al crear reseña' });
+  }
+}
+
 router.get('/session', async (req, res) => {
   try {
     if (!req.session || !req.session.userId) {
@@ -79,6 +153,19 @@ router.get('/lugares/:id', async (req, res) => {
   } catch (error) {
     console.error('Error al obtener lugar:', error);
     res.status(500).json({ error: 'Error al obtener lugar' });
+  }
+});
+
+router.get('/lugares/:id/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find({ lugar: req.params.id })
+      .populate('user', 'name')
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json({ reviews: reviews.map(mapLugarReview) });
+  } catch (error) {
+    console.error('Error al obtener reseñas del lugar:', error);
+    res.status(500).json({ error: 'Error al obtener reseñas del lugar' });
   }
 });
 
@@ -157,48 +244,83 @@ router.delete('/favorites/:lugarId', requireUser, async (req, res) => {
   }
 });
 
-router.get('/reviews', requireUser, async (req, res) => {
+async function handleUserReviewsRequest(req, res) {
   try {
     const criteria = { user: req.session.userId };
     if (req.query.lugarId) {
       criteria.lugar = req.query.lugarId;
     }
     const reviews = await Review.find(criteria)
-      .populate('lugar')
-      .sort({ createdAt: -1 });
-    res.json({ reviews });
+      .populate('lugar', 'nombre categoria')
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json({ reviews: reviews.map(mapUserReview) });
   } catch (error) {
     console.error('Error al obtener reseñas:', error);
     res.status(500).json({ error: 'Error al obtener reseñas' });
   }
+}
+
+router.get('/reviews', requireUser, handleUserReviewsRequest);
+router.get('/reviews/mine', requireUser, handleUserReviewsRequest);
+
+router.post('/reviews', requireUser, (req, res) => {
+  return handleReviewSubmission(req, res, req.body && req.body.lugarId);
 });
 
-router.post('/reviews', requireUser, async (req, res) => {
-  try {
-    const { lugarId, rating, comment } = req.body;
-    if (!lugarId || !rating) {
-      return res.status(400).json({ error: 'Lugar y calificación son obligatorios' });
-    }
-    const parsedRating = Number(rating);
+router.post('/lugares/:id/reviews', requireUser, (req, res) => {
+  return handleReviewSubmission(req, res, req.params.id);
+});
+
+router.put('/reviews/:id', requireUser, async (req, res) => {
+  const { rating, comment } = req.body || {};
+  if (rating === undefined && comment === undefined) {
+    return res.status(400).json({ error: 'Debes proporcionar al menos un campo para actualizar.' });
+  }
+  let parsedRating;
+  if (rating !== undefined) {
+    parsedRating = Number(rating);
     if (Number.isNaN(parsedRating) || parsedRating < 1 || parsedRating > 5) {
       return res.status(400).json({ error: 'La calificación debe estar entre 1 y 5' });
     }
-    const lugar = await AdminLugar.findById(lugarId);
-    if (!lugar) {
-      return res.status(404).json({ error: 'Lugar no encontrado' });
+  }
+  try {
+    const review = await Review.findOne({ _id: req.params.id, user: req.session.userId });
+    if (!review) {
+      return res.status(404).json({ error: 'Reseña no encontrada' });
     }
-    const review = new Review({
-      user: req.session.userId,
-      lugar: lugarId,
-      rating: parsedRating,
-      comment
-    });
+    if (parsedRating !== undefined) {
+      review.rating = parsedRating;
+    }
+    if (comment !== undefined) {
+      review.comment = comment;
+    }
     await review.save();
-    const populated = await review.populate('lugar');
-    res.status(201).json({ review: populated });
+    await review.populate([
+      { path: 'lugar', select: 'nombre categoria' },
+      { path: 'user', select: 'name' }
+    ]);
+    const payload = {
+      ...mapUserReview(review),
+      autorNombre: review.user && review.user.name ? review.user.name : 'Visitante'
+    };
+    res.json({ review: payload });
   } catch (error) {
-    console.error('Error al crear reseña:', error);
-    res.status(500).json({ error: 'Error al crear reseña' });
+    console.error('Error al actualizar reseña:', error);
+    res.status(500).json({ error: 'Error al actualizar la reseña' });
+  }
+});
+
+router.delete('/reviews/:id', requireUser, async (req, res) => {
+  try {
+    const review = await Review.findOneAndDelete({ _id: req.params.id, user: req.session.userId }).lean();
+    if (!review) {
+      return res.status(404).json({ error: 'Reseña no encontrada' });
+    }
+    res.json({ deleted: true, lugarId: review.lugar ? String(review.lugar) : null });
+  } catch (error) {
+    console.error('Error al eliminar reseña:', error);
+    res.status(500).json({ error: 'Error al eliminar la reseña' });
   }
 });
 

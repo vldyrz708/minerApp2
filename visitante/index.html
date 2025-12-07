@@ -23,9 +23,38 @@
     .tour-hints-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.65rem; color:#5b4639; font-size:0.9rem; }
     .tour-hints-list li { display:flex; gap:0.65rem; align-items:flex-start; line-height:1.35; }
     .tour-hint-icon { width:1.65rem; height:1.65rem; border-radius:999px; background:#fff; border:1px solid rgba(180,83,9,0.35); display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; color:#b45309; box-shadow:0 4px 8px rgba(60,43,34,0.08); flex-shrink:0; }
+    .reviews-shell { background:#fffaf4; border-radius:1.5rem; border:1px solid rgba(212,164,65,0.25); padding:1.5rem; box-shadow:0 20px 35px rgba(60,43,34,0.08); }
+    .review-card { border:1px solid rgba(99,71,54,0.12); border-radius:1.25rem; padding:1rem 1.25rem; background:white; display:flex; flex-direction:column; gap:0.5rem; }
+    .review-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+    .review-rating { display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; color:#b45309; background:rgba(180,83,9,0.08); border-radius:999px; padding:0.15rem 0.75rem; }
+    .review-meta { font-size:0.85rem; color:#7b5a46; }
+    .review-empty { text-align:center; padding:2rem; border-radius:1.25rem; background:rgba(255,255,255,0.7); border:1px dashed rgba(99,71,54,0.2); color:#7a5c4a; }
+    .modal-reviews { margin-top:2rem; border-top:1px solid rgba(99,71,54,0.15); padding-top:1.5rem; }
+    .reviews-heading { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.25rem; }
+    .reviews-eyebrow { text-transform:uppercase; letter-spacing:0.3em; font-size:0.72rem; font-weight:700; color:#c06a1c; }
+    .reviews-heading h3 { font-size:1.15rem; font-weight:700; color:#3c2b22; margin:0; }
+    .reviews-subheading { font-size:0.9rem; color:#7a5c4a; }
+    .modal-review-list { display:flex; flex-direction:column; gap:0.75rem; max-height:220px; overflow:auto; padding-right:0.25rem; }
+    .modal-review-item { border:1px solid rgba(60,43,34,0.12); border-radius:1rem; padding:0.85rem 1rem; background:#fff; }
+    .modal-review-item small { display:block; color:#7b5a46; font-size:0.75rem; margin-top:0.25rem; }
+    .review-form { margin-top:1rem; display:flex; flex-direction:column; gap:0.75rem; }
+    .review-form select,
+    .review-form textarea { width:100%; border:1px solid rgba(60,43,34,0.25); border-radius:0.75rem; padding:0.75rem; font-size:0.9rem; }
+    .review-form-actions { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .review-ghost-form { margin-top:1rem; padding:1rem 1.25rem; border-radius:1rem; border:1px dashed rgba(180,83,9,0.35); background:rgba(180,83,9,0.06); display:flex; flex-direction:column; gap:0.65rem; }
+    .review-ghost-form strong { font-size:0.95rem; color:#4b2a13; }
+    .review-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem; }
+    .review-action { border:1px solid rgba(180,83,9,0.35); border-radius:999px; padding:0.35rem 0.95rem; font-size:0.8rem; font-weight:600; color:#a34719; background:rgba(255,255,255,0.9); transition:background .2s ease, color .2s ease; }
+    .review-action:hover { background:rgba(180,83,9,0.08); }
+    .review-action.danger { border-color:rgba(220,38,38,0.35); color:#b91c1c; }
+    .review-action.danger:hover { background:rgba(220,38,38,0.12); color:#7f1d1d; }
+    .review-auth-alert { margin-top:1rem; padding:1rem; border-radius:1rem; border:1px dashed rgba(180,83,9,0.4); background:rgba(180,83,9,0.07); color:#7b4316; font-size:0.9rem; }
+    .reviews-refresh { border:1px solid rgba(180,83,9,0.4); color:#b45309; padding:0.65rem 1rem; border-radius:999px; font-size:0.85rem; font-weight:600; }
+    .reviews-refresh:hover { background:rgba(180,83,9,0.08); }
     @media (max-width: 640px) {
       .tour-hints { padding:1rem; }
       .tour-hints-list { font-size:0.85rem; }
+      .modal-review-list { max-height:180px; }
     }
   </style>
 </head>
@@ -68,6 +97,10 @@
         <a href="#lugares" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5h2l3.6 7.59a1 1 0 00.9.59H17a1 1 0 00.95-.68L20 6H6"/><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
           Lugares
+        </a>
+        <a href="/visitante/mis-resenas.html" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+          Mis reseñas
         </a>
         <button type="button" data-logout class="nav-link px-4 py-2 rounded-md text-sm flex items-center gap-2 bg-rose-500 text-white hover:bg-rose-600 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4-4-4m4 4H9"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
@@ -128,6 +161,52 @@
         Aún no tienes favoritos guardados. Agrega lugares tocando el corazón en cada tarjeta.
       </div>
       <div id="favoritesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- Mis reseñas CTA -->
+  <section id="mis-resenas" class="py-16 px-4 sm:px-6 bg-white border-t border-[#f6dcc4]">
+    <div class="max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
+      <div class="space-y-4">
+        <p class="text-sm uppercase tracking-[0.3em] text-[#c06a1c]">Tu voz cuenta</p>
+        <h3 class="text-3xl font-extrabold text-[#422515]">Panel de reseñas</h3>
+        <p class="text-[#6b4a3b] leading-relaxed">Explora todas tus reseñas, edita comentarios anteriores y consulta métricas personales en un panel dedicado. Diseñamos una vista completa para que controles cada detalle de tu experiencia.</p>
+        <ul class="list-disc pl-5 text-[#5b4639] space-y-2">
+          <li>Historial completo con filtros por categoría y calificación.</li>
+          <li>Accesos directos para editar o eliminar reseñas en segundos.</li>
+          <li>Estadísticas personales para seguir tu impacto en la comunidad.</li>
+        </ul>
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a href="/visitante/mis-resenas.html" class="brand-cta px-6 py-3 rounded-2xl text-sm uppercase tracking-wide">Abrir panel especializado</a>
+          <button type="button" class="reviews-refresh" data-reviews-refresh>Sincronizar datos</button>
+        </div>
+      </div>
+      <div class="reviews-shell space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-200 to-rose-100 flex items-center justify-center text-[#b45309] font-bold">4.8★</div>
+          <div>
+            <p class="text-sm uppercase tracking-[0.3em] text-[#c06a1c]">Vista previa</p>
+            <p class="text-[#422515] font-semibold">Más contexto en el nuevo panel</p>
+          </div>
+        </div>
+        <div class="review-card space-y-3">
+          <div class="review-header">
+            <div>
+              <p class="font-semibold text-[#3c2b22]">Museo del Sitio</p>
+              <span class="review-meta">Jun 2024 · Patrimonio</span>
+            </div>
+            <span class="review-rating">5.0 ★</span>
+          </div>
+          <p class="text-sm text-[#4b372b]">"La nueva museografía te guía por toda la historia minera. Recomiendo pedir el recorrido teatralizado."</p>
+          <div class="review-actions">
+            <span class="review-action">Explorar</span>
+            <span class="review-action">Ver estadísticas</span>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-dashed border-[#f1dac9] p-4 text-sm text-[#6b4a3b] bg-[#fffaf4]">
+          Accede al panel dedicado para revisar cada comentario con más herramientas, notas privadas y filtros avanzados.
+        </div>
+      </div>
     </div>
   </section>
 
@@ -266,6 +345,39 @@
                   <span class="fav-label">Guardar</span>
                 </button>
               </div>
+              <div class="modal-reviews" id="placeReviewsContainer">
+                <div class="reviews-heading">
+                  <span class="reviews-eyebrow">Reseñas verificadas</span>
+                  <h3>Opiniones de la comunidad</h3>
+                  <p class="reviews-subheading">Historias auténticas de exploradores que ya vivieron Real del Monte.</p>
+                </div>
+                <div id="placeReviewsLoader" class="review-empty">Cargando reseñas...</div>
+                <div id="placeReviewsList" class="modal-review-list"></div>
+                <p id="placeReviewsEmpty" class="review-empty" hidden>Sé la primera persona en compartir una reseña.</p>
+                <div id="reviewAuthPrompt" class="review-auth-alert" hidden>
+                  Necesitas iniciar sesión para dejar tu reseña. <a href="/user/login" class="underline font-semibold">Ir a iniciar sesión</a>.
+                </div>
+                <form id="reviewForm" class="review-form" novalidate>
+                  <div class="flex flex-col gap-2">
+                    <label for="reviewRating" class="font-semibold text-sm text-[#3c2b22]">Calificación</label>
+                    <select id="reviewRating" name="rating" required>
+                      <option value="5">5 - Excelente</option>
+                      <option value="4">4 - Muy bueno</option>
+                      <option value="3">3 - Bueno</option>
+                      <option value="2">2 - Regular</option>
+                      <option value="1">1 - Mejorable</option>
+                    </select>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <label for="reviewComment" class="font-semibold text-sm text-[#3c2b22]">Comparte tu experiencia</label>
+                    <textarea id="reviewComment" name="comment" rows="3" placeholder="¿Qué te encantó de este lugar?" required></textarea>
+                  </div>
+                  <div class="review-form-actions">
+                    <button type="submit" class="brand-cta px-5 py-2 rounded-md text-sm" data-review-submit>Enviar reseña</button>
+                    <button type="button" class="btn-ghost text-sm" data-review-cancel hidden>Cancelar</button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -295,7 +407,10 @@
       favoriteIds: new Set(),
       favoritesList: [],
       lugaresCache: [],
-      lugarIndex: {}
+      lugarIndex: {},
+      userReviews: [],
+      reviewsByLugar: {},
+      activeLugarId: null
     };
 
     const filtersState = { bound: false };
@@ -351,6 +466,20 @@
     }
 
     function safeQuery(selector) { return document.querySelector(selector); }
+
+    function formatDate(value) {
+      if (!value) return '';
+      try {
+        return new Date(value).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch (_) {
+        return value;
+      }
+    }
+
+    function getLugarIdentifier(lugar) {
+      if (!lugar) return '';
+      return String(lugar._id || lugar.id || lugar.nombre || '');
+    }
 
     function getGoogleMapsKey() {
       const { dataset } = document.body || {};
@@ -659,6 +788,77 @@
       document.querySelectorAll('.fade-in').forEach(el => el.classList.add('show'));
     }
 
+    function renderUserReviewsSection() {
+      const list = safeQuery('#userReviewsList');
+      const empty = safeQuery('#userReviewsEmpty');
+      if (!list || !empty) return;
+      if (!appState.currentUser) {
+        empty.textContent = 'Inicia sesión para comenzar a compartir tus reseñas.';
+        empty.style.display = '';
+        list.innerHTML = '';
+        return;
+      }
+      if (!appState.userReviews.length) {
+        empty.textContent = 'Aún no has calificado ningún lugar.';
+        empty.style.display = '';
+        list.innerHTML = '';
+        return;
+      }
+      empty.style.display = 'none';
+      list.innerHTML = appState.userReviews.map(review => {
+        const rating = typeof review.rating === 'number' ? review.rating : Number(review.rating) || 0;
+        const lugarId = review.lugarId || (review.lugar && review.lugar._id) || '';
+        return `
+          <article class="review-card" data-review-id="${review._id}" data-lugar-id="${lugarId}">
+            <div class="review-header">
+              <div>
+                <p class="font-semibold text-[#3c2b22]">${review.lugarNombre || review.lugar?.nombre || 'Lugar'}</p>
+                <span class="review-meta">${formatDate(review.createdAt || review.fecha)} · ${review.lugarCategoria || review.lugar?.categoria || ''}</span>
+              </div>
+              <span class="review-rating">${rating.toFixed(1)} ★</span>
+            </div>
+            <p class="text-sm text-[#4b372b]">${review.comment || review.comentario || ''}</p>
+            <div class="review-actions">
+              <button type="button" class="review-action" data-review-edit="${review._id}" data-lugar-id="${lugarId}">Editar</button>
+              <button type="button" class="review-action danger" data-review-delete="${review._id}" data-lugar-id="${lugarId}">Eliminar</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function getUserReviewForLugar(lugarId) {
+      if (!lugarId || !Array.isArray(appState.userReviews)) return null;
+      return appState.userReviews.find(review => String(review.lugarId || review.lugar) === String(lugarId)) || null;
+    }
+
+    async function fetchUserReviews(options = {}) {
+      const { silent = false } = options;
+      if (!appState.currentUser) {
+        appState.userReviews = [];
+        renderUserReviewsSection();
+        return;
+      }
+      try {
+        const res = await fetch('/api/reviews/mine', { credentials: 'include' });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para ver tus reseñas.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('user-reviews');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (Array.isArray(data.reviews) ? data.reviews : []);
+        appState.userReviews = list;
+      } catch (err) {
+        console.warn('No se pudieron cargar las reseñas del usuario', err);
+        if (!silent) {
+          notify('warning', { title: 'Reseñas no disponibles', message: 'Intenta actualizar tus reseñas más tarde.' });
+        }
+      }
+      renderUserReviewsSection();
+    }
+
     function getActiveFilters() {
       const search = safeQuery('#searchInput');
       const category = safeQuery('#categoryFilter');
@@ -731,7 +931,26 @@
       return appState.lugarIndex[id] || (appState.lugaresCache || []).find(l => String(l._id) === String(id));
     }
 
-    function openLugarModal(lugar) {
+    async function ensureLugarData(lugarId) {
+      if (!lugarId) return null;
+      const cached = getLugarById(lugarId);
+      if (cached) return cached;
+      try {
+        const res = await fetch(`/api/lugares/${lugarId}`, { credentials: 'include' });
+        if (!res.ok) throw new Error('lugar-not-found');
+        const data = await res.json();
+        const lugar = data.lugar || data;
+        if (lugar && lugar._id) {
+          appState.lugarIndex[String(lugar._id)] = lugar;
+        }
+        return lugar || null;
+      } catch (error) {
+        console.error('No se pudo obtener la información del lugar', error);
+        return null;
+      }
+    }
+
+    function openLugarModal(lugar, options = {}) {
       try {
         const backdrop = document.getElementById('lugarModalBackdrop');
         document.getElementById('modalTitle').textContent = lugar.nombre || 'Sin nombre';
@@ -750,14 +969,35 @@
         }
         backdrop.style.display = 'flex'; backdrop.setAttribute('aria-hidden', 'false');
         updateFavoriteButtons();
+        const lugarId = getLugarIdentifier(lugar);
+        appState.activeLugarId = lugarId;
+        const reviewToPrefill = options.prefillReview || getUserReviewForLugar(lugarId);
+        setupReviewForm(lugar, { prefillReview: reviewToPrefill, focusComment: options.focusComment });
+        appState.reviewsByLugar[lugarId] = [];
+        const loader = document.getElementById('placeReviewsLoader');
+        if (loader) loader.hidden = false;
+        loadLugarReviews(lugarId);
       } catch (e) { console.error(e); }
     }
 
     function bindModalClose() {
       const closeBtn = document.getElementById('modalCloseBtn');
       if (closeBtn) closeBtn.addEventListener('click', () => {
-        const b = document.getElementById('lugarModalBackdrop'); if (b) { b.style.display = 'none'; b.setAttribute('aria-hidden','true'); }
+        const b = document.getElementById('lugarModalBackdrop');
+        if (b) {
+          b.style.display = 'none';
+          b.setAttribute('aria-hidden','true');
+        }
+        appState.activeLugarId = null;
+        resetReviewFormState();
       });
+    }
+
+    function bindUserReviewsRefresh() {
+      const btn = document.querySelector('[data-reviews-refresh]');
+      if (!btn || btn.dataset.bound === 'true') return;
+      btn.dataset.bound = 'true';
+      btn.addEventListener('click', () => fetchUserReviews());
     }
 
     async function loadLugares(options = {}) {
@@ -858,6 +1098,222 @@
       });
     }
 
+    function renderPlaceReviews(lugarId) {
+      const list = safeQuery('#placeReviewsList');
+      const empty = safeQuery('#placeReviewsEmpty');
+      if (!list || !empty) return;
+      const reviews = appState.reviewsByLugar[lugarId] || [];
+      if (!reviews.length) {
+        list.innerHTML = '';
+        empty.textContent = 'Aún no hay reseñas para este lugar.';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      list.innerHTML = reviews.map(review => {
+        const rating = typeof review.rating === 'number' ? review.rating : Number(review.rating) || 0;
+        return `
+          <div class="modal-review-item">
+            <strong>${review.autorNombre || review.usuario?.nombre || 'Visitante'}</strong>
+            <span class="review-rating" style="margin-left:0.5rem;">${rating.toFixed(1)} ★</span>
+            <small>${formatDate(review.createdAt || review.fecha)}</small>
+            <p class="text-sm mt-2 text-[#4b372b]">${review.comment || review.comentario || ''}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadLugarReviews(lugarId) {
+      const loader = safeQuery('#placeReviewsLoader');
+      const empty = safeQuery('#placeReviewsEmpty');
+      const list = safeQuery('#placeReviewsList');
+      if (!lugarId || !loader || !empty || !list) return;
+      loader.hidden = false;
+      empty.hidden = true;
+      list.innerHTML = '';
+      try {
+        const res = await fetch(`/api/lugares/${lugarId}/reviews`, { credentials: 'include' });
+        if (!res.ok) throw new Error('place-reviews');
+        const data = await res.json();
+        const reviews = Array.isArray(data) ? data : (Array.isArray(data.reviews) ? data.reviews : []);
+        appState.reviewsByLugar[lugarId] = reviews;
+      } catch (err) {
+        console.warn('No se pudieron cargar las reseñas del lugar', err);
+        appState.reviewsByLugar[lugarId] = [];
+        empty.textContent = 'No se pudieron cargar las reseñas. Intenta nuevamente más tarde.';
+        empty.hidden = false;
+      } finally {
+        loader.hidden = true;
+        renderPlaceReviews(lugarId);
+      }
+    }
+
+    function setupReviewForm(lugar, options = {}) {
+      const form = document.getElementById('reviewForm');
+      const authPrompt = document.getElementById('reviewAuthPrompt');
+      if (!form || !authPrompt) return;
+      const lugarId = getLugarIdentifier(lugar);
+      form.dataset.lugarId = lugarId;
+      if (!appState.currentUser) {
+        form.hidden = true;
+        authPrompt.hidden = false;
+        return;
+      }
+      authPrompt.hidden = true;
+      form.hidden = false;
+      if (options.prefillReview) {
+        populateReviewForm(options.prefillReview, { focusComment: options.focusComment });
+      } else {
+        resetReviewFormState();
+      }
+    }
+
+    function resetReviewFormState() {
+      const form = document.getElementById('reviewForm');
+      if (!form) return;
+      delete form.dataset.reviewId;
+      form.dataset.mode = 'create';
+      form.reset();
+      const ratingField = form.querySelector('[name="rating"]');
+      if (ratingField) ratingField.value = '5';
+      const commentField = form.querySelector('[name="comment"]');
+      if (commentField) commentField.value = '';
+      const submitBtn = form.querySelector('[data-review-submit]');
+      if (submitBtn) submitBtn.textContent = 'Enviar reseña';
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) cancelBtn.hidden = true;
+    }
+
+    function populateReviewForm(review, options = {}) {
+      const form = document.getElementById('reviewForm');
+      if (!form || !review) return;
+      form.dataset.reviewId = review._id || '';
+      form.dataset.mode = 'edit';
+      const ratingField = form.querySelector('[name="rating"]');
+      if (ratingField) ratingField.value = String(review.rating || 5);
+      const commentField = form.querySelector('[name="comment"]');
+      if (commentField) {
+        commentField.value = review.comment || '';
+        if (options.focusComment && typeof commentField.focus === 'function') {
+          commentField.focus();
+        }
+      }
+      const submitBtn = form.querySelector('[data-review-submit]');
+      if (submitBtn) submitBtn.textContent = 'Actualizar reseña';
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) cancelBtn.hidden = false;
+    }
+
+    function bindReviewForm() {
+      const form = document.getElementById('reviewForm');
+      if (!form || form.dataset.bound === 'true') return;
+      form.dataset.bound = 'true';
+      form.addEventListener('submit', handleReviewFormSubmit);
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          resetReviewFormState();
+        });
+      }
+    }
+
+    async function handleReviewFormSubmit(event) {
+      event.preventDefault();
+      if (!appState.currentUser) {
+        notify('warning', { title: 'Inicia sesión', message: 'Debes iniciar sesión para compartir una reseña.' });
+        window.location.href = '/user/login';
+        return;
+      }
+      const form = event.target;
+      const lugarId = form.dataset.lugarId;
+      if (!lugarId) return;
+      const rating = Number(form.rating.value || 0);
+      const comment = (form.comment.value || '').trim();
+      if (!rating || !comment) {
+        notify('warning', { title: 'Información faltante', message: 'Selecciona una calificación y escribe tu reseña.' });
+        return;
+      }
+      const reviewId = form.dataset.reviewId;
+      const isEditing = Boolean(reviewId);
+      try {
+        const endpoint = isEditing ? `/api/reviews/${reviewId}` : `/api/lugares/${lugarId}/reviews`;
+        const res = await fetch(endpoint, {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ rating, comment })
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para enviar una reseña.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('submit-review');
+        resetReviewFormState();
+        notify('success', { message: isEditing ? 'Reseña actualizada' : '¡Gracias por tu reseña!' });
+        await loadLugarReviews(lugarId);
+        await fetchUserReviews({ silent: true });
+      } catch (err) {
+        console.error('No se pudo guardar la reseña', err);
+        notify('error', { title: 'No guardada', message: 'No pudimos guardar tu reseña. Intenta más tarde.' });
+      }
+    }
+
+    async function startReviewEditFlow(reviewId, lugarId) {
+      if (!reviewId) return;
+      const review = Array.isArray(appState.userReviews)
+        ? appState.userReviews.find(r => String(r._id) === String(reviewId))
+        : null;
+      if (!review) {
+        notify('info', { title: 'Reseña no encontrada', message: 'Actualiza tus reseñas e inténtalo nuevamente.' });
+        return;
+      }
+      const targetLugarId = lugarId || review.lugarId || review.lugar;
+      const lugar = await ensureLugarData(targetLugarId);
+      if (!lugar) {
+        notify('error', { title: 'Lugar no disponible', message: 'No pudimos cargar el lugar asociado a esta reseña.' });
+        return;
+      }
+      openLugarModal(lugar, { prefillReview: review, focusComment: true });
+      setTimeout(() => {
+        const form = document.getElementById('reviewForm');
+        if (form && typeof form.scrollIntoView === 'function') {
+          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 200);
+    }
+
+    async function handleReviewDelete(reviewId, lugarId) {
+      if (!reviewId) return;
+      const confirmed = window.confirm('¿Seguro que deseas eliminar esta reseña?');
+      if (!confirmed) return;
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para continuar.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('delete-review');
+        const data = await res.json();
+        const targetLugarId = lugarId || (data && data.lugarId);
+        notify('success', { message: 'Reseña eliminada.' });
+        await fetchUserReviews({ silent: true });
+        if (targetLugarId) {
+          await loadLugarReviews(targetLugarId);
+          if (String(targetLugarId) === String(appState.activeLugarId)) {
+            resetReviewFormState();
+          }
+        }
+      } catch (error) {
+        console.error('No se pudo eliminar la reseña', error);
+        notify('error', { title: 'No se pudo eliminar', message: 'Intenta nuevamente más tarde.' });
+      }
+    }
+
     async function toggleFavorite(lugarId, triggerEl) {
       if (!lugarId) return;
       if (!appState.currentUser) {
@@ -900,17 +1356,32 @@
         const card = detailBtn.closest('[data-lugar-id]');
         const lugar = card ? (getLugarById(card.dataset.lugarId) || card.__lugarData) : null;
         if (lugar) openLugarModal(lugar);
+        return;
+      }
+      const editBtn = e.target.closest('[data-review-edit]');
+      if (editBtn) {
+        e.preventDefault();
+        startReviewEditFlow(editBtn.dataset.reviewEdit, editBtn.dataset.lugarId);
+        return;
+      }
+      const deleteBtn = e.target.closest('[data-review-delete]');
+      if (deleteBtn) {
+        e.preventDefault();
+        handleReviewDelete(deleteBtn.dataset.reviewDelete, deleteBtn.dataset.lugarId);
       }
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
       bindModalClose();
+      bindReviewForm();
+      bindUserReviewsRefresh();
       initVisitorNav();
       attachLogoutHandlers();
       initImmersiveTour();
       await fetchSession();
       await loadLugares({ refreshCategories: true });
       await fetchFavorites();
+      await fetchUserReviews({ silent: true });
     });
   </script>
 </body>

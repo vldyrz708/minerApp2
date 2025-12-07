@@ -124,6 +124,10 @@
   });
   
   // --- Modal carousel & accessibility enhancements ---
+  function usesNativeCarousel(gallery) {
+    return Boolean(gallery && gallery.hasAttribute('data-native-carousel'));
+  }
+
   function trapFocus(modalEl) {
     const focusableSelectors = 'a[href], area[href], input:not([disabled]), button:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const nodes = Array.from(modalEl.querySelectorAll(focusableSelectors)).filter(n => n.offsetParent !== null);
@@ -162,6 +166,7 @@
   function nextSlide(){ showSlide(currentIndex+1); }
 
   function setupCarouselWithin(gallery){
+    if (!gallery || usesNativeCarousel(gallery)) return;
     // gallery contains img nodes; convert to slides
     slides = [];
     const imgs = Array.from(gallery.querySelectorAll('img'));
@@ -193,7 +198,10 @@
     const b = document.getElementById('lugarModalBackdrop'); if (!b) return;
     b.style.display = 'none'; b.setAttribute('aria-hidden','true');
     // remove slides
-    const gallery = document.getElementById('modalGallery'); if (gallery) gallery.innerHTML = '';
+    const gallery = document.getElementById('modalGallery');
+    if (gallery && !usesNativeCarousel(gallery)) {
+      gallery.innerHTML = '';
+    }
     // remove any existing key handlers by reloading page-level handlers via MutationObserver cleanup (no-op here)
   }
 

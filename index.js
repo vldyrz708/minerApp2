@@ -51,6 +51,10 @@ app.get('/visitante', requireUserPage, (req, res) => {
     res.sendFile(path.join(__dirname, '/visitante/index.html'));
 });
 
+app.get('/visitante/mis-resenas.html', requireUserPage, (req, res) => {
+    res.sendFile(path.join(__dirname, '/visitante/mis-resenas.html'));
+});
+
 // Rutas de Admin (solo accesibles mediante /admin/...)
 app.use('/admin', adminRouter);
 

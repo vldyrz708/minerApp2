@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MinerApp Visitante — Mis reseñas</title>
+  <meta name="theme-color" content="#4f46e5">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Playball&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/user.css">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#fff7ef; color:#2f1e16; }
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.show { opacity: 1; transform: translateY(0); }
+    .nav-link[aria-current="page"] { color:#b45309; font-weight:600; }
+    .stat-grid { display:grid; gap:1.25rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    .stat-card { border:1px solid rgba(212,164,65,0.35); border-radius:1.5rem; padding:1.5rem; background:rgba(255,255,255,0.9); box-shadow:0 20px 35px rgba(60,43,34,0.08); }
+    .stat-card h4 { text-transform:uppercase; letter-spacing:0.25em; font-size:0.72rem; color:#c06a1c; margin-bottom:0.65rem; }
+    .stat-card strong { font-size:2rem; color:#422515; display:block; }
+    .stat-card span { font-size:0.9rem; color:#7a5c4a; }
+    .panel-shell { background:#fffaf4; border-radius:1.75rem; border:1px solid rgba(212,164,65,0.25); padding:1.5rem; box-shadow:0 24px 45px rgba(60,43,34,0.08); }
+    .filters-panel { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); margin-bottom:1.5rem; }
+    .filters-panel label { display:block; text-transform:uppercase; letter-spacing:0.2em; font-size:0.68rem; color:#b08968; margin-bottom:0.35rem; }
+    .filters-panel input,
+    .filters-panel select { width:100%; border:1px solid rgba(99,71,54,0.2); border-radius:0.9rem; padding:0.85rem 0.95rem; background:#fffdf9; color:#3c2b22; font-weight:500; }
+    .reviews-shell { background:#fff; border-radius:1.5rem; border:1px solid rgba(212,164,65,0.25); padding:1.25rem; box-shadow:0 15px 25px rgba(60,43,34,0.07); }
+    .review-card { border:1px solid rgba(99,71,54,0.12); border-radius:1.25rem; padding:1.25rem; background:white; display:flex; flex-direction:column; gap:0.65rem; }
+    .review-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; }
+    .review-meta { font-size:0.85rem; color:#7b5a46; }
+    .review-rating { display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; color:#b45309; background:rgba(180,83,9,0.08); border-radius:999px; padding:0.15rem 0.75rem; }
+    .review-tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
+    .review-chip { font-size:0.78rem; padding:0.25rem 0.7rem; border-radius:999px; background:rgba(60,43,34,0.07); color:#5b4639; }
+    .review-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem; }
+    .review-action { border:1px solid rgba(180,83,9,0.35); border-radius:999px; padding:0.4rem 1rem; font-size:0.82rem; font-weight:600; color:#a34719; background:rgba(255,255,255,0.95); transition:background .2s ease, color .2s ease; }
+    .review-action:hover { background:rgba(180,83,9,0.08); }
+    .review-action.danger { border-color:rgba(220,38,38,0.35); color:#b91c1c; }
+    .review-action.danger:hover { background:rgba(220,38,38,0.12); color:#7f1d1d; }
+    .review-inline-form { margin-top:0.75rem; border-top:1px dashed rgba(180,83,9,0.25); padding-top:0.75rem; }
+    .review-inline-status { font-size:0.82rem; color:#7b5a46; }
+    .review-empty { text-align:center; padding:2rem; border-radius:1.25rem; background:rgba(255,255,255,0.75); border:1px dashed rgba(99,71,54,0.2); color:#7a5c4a; }
+    .timeline-shell { background:#fff; border-radius:1.5rem; border:1px solid rgba(212,164,65,0.3); padding:1.25rem; box-shadow:0 18px 35px rgba(60,43,34,0.08); }
+    .timeline-shell h4 { text-transform:uppercase; letter-spacing:0.3em; font-size:0.7rem; color:#c06a1c; margin-bottom:0.5rem; }
+    .timeline-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1rem; }
+    .timeline-item { position:relative; padding-left:1.5rem; }
+    .timeline-item::before { content:''; position:absolute; left:0.35rem; top:0.25rem; width:0.5rem; height:0.5rem; border-radius:999px; background:#b45309; box-shadow:0 0 0 6px rgba(180,83,9,0.15); }
+    .timeline-item strong { display:block; color:#3c2b22; }
+    .timeline-item span { font-size:0.8rem; color:#7b5a46; }
+    .review-form { margin-top:1rem; display:flex; flex-direction:column; gap:0.85rem; }
+    .review-form select,
+    .review-form textarea { width:100%; border:1px solid rgba(60,43,34,0.25); border-radius:0.8rem; padding:0.75rem; font-size:0.9rem; background:#fff; }
+    .review-form-actions { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .review-auth-alert { margin-top:0.75rem; padding:1rem; border-radius:1rem; border:1px dashed rgba(180,83,9,0.4); background:rgba(180,83,9,0.07); color:#7b4316; font-size:0.9rem; }
+    .modal-reviews { margin-top:2rem; border-top:1px solid rgba(99,71,54,0.15); padding-top:1.5rem; }
+    .reviews-heading { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.25rem; }
+    .reviews-eyebrow { text-transform:uppercase; letter-spacing:0.3em; font-size:0.72rem; font-weight:700; color:#c06a1c; }
+    .reviews-heading h3 { font-size:1.15rem; font-weight:700; color:#3c2b22; margin:0; }
+    .reviews-subheading { font-size:0.9rem; color:#7a5c4a; }
+    .modal-review-list { display:flex; flex-direction:column; gap:0.8rem; max-height:220px; overflow:auto; padding-right:0.25rem; }
+    .modal-review-item { border:1px solid rgba(60,43,34,0.12); border-radius:1rem; padding:0.85rem 1rem; background:#fff; }
+    .modal-review-item small { display:block; color:#7b5a46; font-size:0.75rem; margin-top:0.25rem; }
+    .reviews-toolbar { display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1.25rem; }
+    .reviews-toolbar button { border:1px solid rgba(180,83,9,0.4); color:#b45309; padding:0.6rem 1.2rem; border-radius:999px; font-size:0.85rem; font-weight:600; background:rgba(255,255,255,0.9); }
+    .badge-soft { display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.9rem; border-radius:999px; background:rgba(60,43,34,0.08); font-size:0.78rem; color:#5b4639; }
+    .badge-soft svg { width:0.85rem; height:0.85rem; }
+    @media (max-width: 640px) {
+      .review-header { flex-direction:column; align-items:flex-start; }
+      .reviews-toolbar { flex-direction:column; align-items:flex-start; }
+      .filters-panel { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body class="bg-[#fff7ef] text-[#3c2b22] scroll-smooth" data-google-maps-key="">
+
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#f6dcc4] shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4 relative">
+      <a href="/visitante" class="flex items-center gap-3" aria-label="Ir al inicio">
+        <div class="w-10 h-10 bg-gradient-to-tr from-rose-400 to-indigo-500 rounded-lg flex items-center justify-center shadow-md">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.761 0 5-2.239 5-5S14.761 1 12 1 7 3.239 7 6s2.239 5 5 5z"/></svg>
+        </div>
+        <div>
+          <p class="text-lg font-bold leading-tight text-[#3d2619]">Real del Monte</p>
+          <p class="text-xs text-[#a6825a] uppercase tracking-wide">Visitante</p>
+        </div>
+      </a>
+
+      <button type="button" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#f2d5b3] text-[#5b4639]" data-nav-toggle aria-controls="visitante-nav" aria-expanded="false" aria-label="Abrir menú">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <nav id="visitante-nav" data-nav-menu aria-hidden="true" role="navigation" aria-label="Menú principal visitante" class="fixed inset-y-0 right-0 z-40 flex w-72 max-w-[85vw] flex-col gap-2 bg-white/95 border-l border-[#f2d5b3] shadow-2xl px-5 py-6 transform translate-x-full transition-transform duration-300 ease-out pointer-events-none md:pointer-events-auto md:static md:inset-auto md:w-auto md:max-w-none md:flex-row md:items-center md:bg-transparent md:border-0 md:shadow-none md:px-0 md:py-0 md:translate-x-0">
+        <div class="w-full flex items-center justify-between mb-4 md:hidden">
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#a6825a]">Menú</p>
+          <button type="button" class="text-sm text-[#5b4639] px-2 py-1" data-nav-close aria-label="Cerrar menú">Cerrar ✕</button>
+        </div>
+        <a href="/visitante" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l9-8 9 8v7a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg>
+          Inicio
+        </a>
+        <a href="/visitante#historia" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 19.5A2.5 2.5 0 016.5 17h11A2.5 2.5 0 0120 19.5V21H4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 3h12v14H6z"/></svg>
+          Historia
+        </a>
+        <a href="/visitante#favoritos" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682a4.5 4.5 0 010-6.364z"/></svg>
+          Favoritos
+        </a>
+        <a href="/visitante#lugares" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5h2l3.6 7.59a1 1 0 00.9.59H17a1 1 0 00.95-.68L20 6H6"/><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+          Lugares
+        </a>
+        <a href="/visitante/mis-resenas.html" aria-current="page" class="nav-link px-3 py-2 rounded-md text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+          Mis reseñas
+        </a>
+        <button type="button" data-logout class="nav-link px-4 py-2 rounded-md text-sm flex items-center gap-2 bg-rose-500 text-white hover:bg-rose-600 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4-4-4m4 4H9"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
+          Cerrar sesión
+        </button>
+      </nav>
+    </div>
+    <div class="md:hidden fixed inset-0 z-30 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300" data-nav-backdrop></div>
+  </header>
+
+  <main>
+    <section class="relative overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 flex flex-col gap-8">
+        <div class="space-y-6">
+          <p class="text-sm uppercase tracking-[0.3em] text-[#c06a1c]">Panel dedicado</p>
+          <h1 class="text-4xl sm:text-5xl font-extrabold text-[#422515] leading-tight">Controla cada reseña que has dejado en Real del Monte</h1>
+          <p class="text-lg text-[#5b4639] max-w-3xl">Consulta tu historial completo, reabre comentarios anteriores, mide tu impacto en la comunidad y sincroniza cada ajuste con la experiencia Visitante.</p>
+          <div class="flex flex-wrap gap-4">
+            <a href="/visitante#lugares" class="brand-cta px-6 py-3 rounded-2xl text-sm uppercase tracking-wide">Volver a explorar lugares</a>
+            <button type="button" id="refreshReviewsButton" class="reviews-refresh">Sincronizar reseñas</button>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <h4>Total de reseñas</h4>
+            <strong id="reviewsCountStat">0</strong>
+            <span>Registros publicados en MinnerApp</span>
+          </div>
+          <div class="stat-card">
+            <h4>Promedio personal</h4>
+            <strong id="avgRatingStat">0.0★</strong>
+            <span>Basado en todas tus calificaciones</span>
+          </div>
+          <div class="stat-card">
+            <h4>Última actualización</h4>
+            <strong id="latestUpdateStat">—</strong>
+            <span>Fecha de la reseña más reciente</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 sm:px-6">
+      <div class="max-w-6xl mx-auto space-y-8">
+        <div class="panel-shell">
+          <div class="reviews-toolbar">
+            <div>
+              <p class="text-sm uppercase tracking-[0.3em] text-[#c06a1c]">Panel de detalle</p>
+              <h2 class="text-2xl font-extrabold text-[#422515]">Historial de reseñas</h2>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <span class="badge-soft">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12h18"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M6 18h12"/></svg>
+                Vista cronológica
+              </span>
+              <span class="badge-soft">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v12m6-6H6"/></svg>
+                Acciones rápidas
+              </span>
+            </div>
+          </div>
+
+          <div class="filters-panel">
+            <label>
+              Búsqueda global
+              <input id="reviewsSearchInput" type="search" placeholder="Lugar, comentario o fecha">
+            </label>
+            <label>
+              Categoría del lugar
+              <select id="reviewsCategoryFilter">
+                <option value="">Todas las categorías</option>
+              </select>
+            </label>
+            <label>
+              Ordenar por
+              <select id="reviewsSort">
+                <option value="recent">Más recientes</option>
+                <option value="oldest">Más antiguas</option>
+                <option value="rating-high">Calificación alta</option>
+                <option value="rating-low">Calificación baja</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="reviews-shell space-y-4">
+            <div id="userReviewsEmpty" class="review-empty">Cargando tus reseñas personalizadas...</div>
+            <div id="userReviewsList" class="space-y-4"></div>
+          </div>
+        </div>
+
+        <div class="timeline-shell">
+          <h4>Línea de tiempo de publicaciones</h4>
+          <ol id="reviewTimeline" class="timeline-list">
+            <li class="timeline-item">Sin eventos por mostrar todavía.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal detalle -->
+  <div id="lugarModalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close-btn" id="modalCloseBtn" aria-label="Cerrar">✕</button>
+      <div class="modal-body">
+        <div class="modal-gallery" id="modalGallery">
+          <div class="carousel" id="modalCarousel" aria-live="polite">
+            <button type="button" class="ctrl left" data-carousel-prev aria-label="Imagen anterior">‹</button>
+            <div class="carousel-frame">
+              <img id="modalCarouselImage" class="carousel-img" src="https://via.placeholder.com/800x600?text=Sin+Imagen" alt="Galería del lugar" loading="lazy" />
+            </div>
+            <button type="button" class="ctrl right" data-carousel-next aria-label="Imagen siguiente">›</button>
+            <div class="carousel-counter" id="modalCarouselCounter"></div>
+          </div>
+          <div class="carousel-indicators" id="modalCarouselIndicators"></div>
+        </div>
+        <div class="modal-info">
+          <p id="modalCategoria" class="chip modal-badge mb-2"></p>
+          <h2 id="modalTitle" class="text-3xl font-extrabold mb-3"></h2>
+          <p id="modalDesc" class="modal-desc mb-4"></p>
+          <div id="modalMeta" class="modal-meta-grid"></div>
+          <div id="modalTags" class="modal-tags"></div>
+          <div class="modal-actions mt-6 flex gap-3 flex-wrap">
+            <a id="modalMaps" class="brand-cta inline-block px-4 py-2 rounded-md" target="_blank" href="#">Ver en Maps</a>
+            <button id="modalFav" type="button" class="fav-toggle" data-fav-id="">
+              <span class="fav-icon" aria-hidden="true">❤</span>
+              <span class="fav-label">Guardar</span>
+            </button>
+          </div>
+          <div class="modal-reviews" id="placeReviewsContainer">
+            <div class="reviews-heading">
+              <span class="reviews-eyebrow">Reseñas verificadas</span>
+              <h3>Opiniones de la comunidad</h3>
+              <p class="reviews-subheading">Mantén un registro claro de lo que otros visitantes comparten antes de editar tu propia reseña.</p>
+            </div>
+            <div id="placeReviewsLoader" class="review-empty">Cargando reseñas...</div>
+            <div id="placeReviewsList" class="modal-review-list"></div>
+            <p id="placeReviewsEmpty" class="review-empty" hidden>Sé la primera persona en compartir una reseña.</p>
+            <div id="reviewAuthPrompt" class="review-auth-alert" hidden>
+              Necesitas iniciar sesión para dejar tu reseña. <a href="/user/login" class="underline font-semibold">Ir a iniciar sesión</a>.
+            </div>
+            <form id="reviewForm" class="review-form" novalidate>
+              <div class="flex flex-col gap-2">
+                <label for="reviewRating" class="font-semibold text-sm text-[#3c2b22]">Calificación</label>
+                <select id="reviewRating" name="rating" required>
+                  <option value="5">5 - Excelente</option>
+                  <option value="4">4 - Muy bueno</option>
+                  <option value="3">3 - Bueno</option>
+                  <option value="2">2 - Regular</option>
+                  <option value="1">1 - Mejorable</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="reviewComment" class="font-semibold text-sm text-[#3c2b22]">Actualiza tu comentario</label>
+                <textarea id="reviewComment" name="comment" rows="3" placeholder="Comparte tu experiencia" required></textarea>
+              </div>
+              <div class="review-form-actions">
+                <button type="submit" class="brand-cta px-5 py-2 rounded-md text-sm" data-review-submit>Guardar cambios</button>
+                <button type="button" class="btn-ghost text-sm" data-review-cancel hidden>Cancelar edición</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-[#1f130c] text-[#fbead6] border-t border-[#f6dcc4] mt-20">
+    <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <p class="text-lg font-bold">MinerApp Visitante</p>
+        <p class="text-sm text-[#d6b28e]">Panel personal para gestionar todas tus reseñas.</p>
+      </div>
+      <div class="flex flex-wrap gap-4 text-sm uppercase tracking-[0.2em] text-[#f7d8b3]">
+        <a href="/visitante" class="hover:text-white transition">Inicio</a>
+        <a href="/visitante#favoritos" class="hover:text-white transition">Favoritos</a>
+        <a href="/visitante#lugares" class="hover:text-white transition">Lugares</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/alerts.js"></script>
+  <script>
+    const FALLBACK_MODAL_IMAGE = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
+    const appState = {
+      currentUser: null,
+      favoriteIds: new Set(),
+      userReviews: [],
+      lugarIndex: {},
+      reviewsByLugar: {},
+      activeLugarId: null,
+      editingReviewId: null,
+      savingReviewId: null
+    };
+    const reviewFilters = { search: '', category: '', sort: 'recent' };
+    const modalGalleryState = { images: [FALLBACK_MODAL_IMAGE], index: 0, title: 'Lugar destacado' };
+
+    function notify(type, config) {
+      if (window.alertCenter && typeof window.alertCenter[type] === 'function') {
+        return window.alertCenter[type](config);
+      }
+      const msg = typeof config === 'string' ? config : (config && config.message) || 'Acción completada';
+      return alert(msg);
+    }
+
+    function safeQuery(selector) { return document.querySelector(selector); }
+
+    function formatDate(value, options) {
+      if (!value) return '';
+      try {
+        return new Date(value).toLocaleDateString('es-MX', options || { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch (_) {
+        return value;
+      }
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+      try {
+        return new Date(value).toLocaleString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      } catch (_) {
+        return value;
+      }
+    }
+
+    function getReviewById(reviewId) {
+      if (!reviewId || !Array.isArray(appState.userReviews)) return null;
+      return appState.userReviews.find(review => String(review._id) === String(reviewId)) || null;
+    }
+
+    function setEditingReview(reviewId) {
+      const nextId = reviewId ? String(reviewId) : null;
+      appState.editingReviewId = nextId;
+      renderUserReviewsSection();
+      if (!nextId) return;
+      requestAnimationFrame(() => {
+        const textarea = document.querySelector(`[data-review-id="${nextId}"] textarea[name="comment"]`);
+        if (textarea && typeof textarea.focus === 'function') {
+          textarea.focus();
+          const length = textarea.value.length;
+          if (typeof textarea.setSelectionRange === 'function') {
+            textarea.setSelectionRange(length, length);
+          }
+        }
+      });
+    }
+
+    function upsertReviewInState(updatedReview) {
+      if (!updatedReview || !updatedReview._id) return;
+      if (!Array.isArray(appState.userReviews)) {
+        appState.userReviews = [updatedReview];
+        return;
+      }
+      const idx = appState.userReviews.findIndex(review => String(review._id) === String(updatedReview._id));
+      if (idx >= 0) {
+        appState.userReviews[idx] = { ...appState.userReviews[idx], ...updatedReview };
+      } else {
+        appState.userReviews.unshift(updatedReview);
+      }
+    }
+
+    function buildRatingOptions(selectedRating) {
+      const options = [
+        { value: 5, label: '5 - Excelente' },
+        { value: 4, label: '4 - Muy bueno' },
+        { value: 3, label: '3 - Bueno' },
+        { value: 2, label: '2 - Regular' },
+        { value: 1, label: '1 - Mejorable' }
+      ];
+      const current = Number(selectedRating) || 0;
+      return options.map(option => `<option value="${option.value}" ${option.value === current ? 'selected' : ''}>${option.label}</option>`).join('');
+    }
+
+    function getLugarIdentifier(lugar) {
+      if (!lugar) return '';
+      return String(lugar._id || lugar.id || lugar.nombre || '');
+    }
+
+    function updateReviewStats(list) {
+      const total = Array.isArray(list) ? list.length : 0;
+      const avg = total ? (list.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / total) : 0;
+      const latest = appState.userReviews.slice().sort((a, b) => {
+        const bDate = new Date(b.updatedAt || b.createdAt || b.fecha || 0);
+        const aDate = new Date(a.updatedAt || a.createdAt || a.fecha || 0);
+        return bDate - aDate;
+      })[0];
+      const countEl = safeQuery('#reviewsCountStat');
+      if (countEl) countEl.textContent = total;
+      const avgEl = safeQuery('#avgRatingStat');
+      if (avgEl) avgEl.textContent = `${avg.toFixed(1)}★`;
+      const latestEl = safeQuery('#latestUpdateStat');
+      if (latestEl) latestEl.textContent = latest ? formatDateTime(latest.updatedAt || latest.createdAt || latest.fecha) : '—';
+    }
+
+    function populateCategoryFilter() {
+      const select = safeQuery('#reviewsCategoryFilter');
+      if (!select) return;
+      const categories = Array.from(new Set((appState.userReviews || []).map(review => {
+        return (review.lugarCategoria || review.lugar?.categoria || review.lugar?.categoria?.nombre || '').trim();
+      }).filter(Boolean))).sort();
+      select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    }
+
+    function applyReviewFilters() {
+      let list = Array.isArray(appState.userReviews) ? appState.userReviews.slice() : [];
+      if (reviewFilters.search) {
+        const query = reviewFilters.search.toLowerCase();
+        list = list.filter(review => {
+          const text = `${review.lugarNombre || review.lugar?.nombre || ''} ${review.comment || ''} ${review.fecha || ''}`.toLowerCase();
+          return text.includes(query);
+        });
+      }
+      if (reviewFilters.category) {
+        list = list.filter(review => {
+          const category = (review.lugarCategoria || review.lugar?.categoria || review.lugar?.categoria?.nombre || '').trim();
+          return category === reviewFilters.category;
+        });
+      }
+      switch (reviewFilters.sort) {
+        case 'oldest':
+          list.sort((a, b) => new Date(a.createdAt || a.fecha) - new Date(b.createdAt || b.fecha));
+          break;
+        case 'rating-high':
+          list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+          break;
+        case 'rating-low':
+          list.sort((a, b) => (Number(a.rating) || 0) - (Number(b.rating) || 0));
+          break;
+        default:
+          list.sort((a, b) => new Date(b.createdAt || b.fecha) - new Date(a.createdAt || a.fecha));
+          break;
+      }
+      return list;
+    }
+
+    function renderTimeline(source = []) {
+      const timeline = safeQuery('#reviewTimeline');
+      if (!timeline) return;
+      const events = (Array.isArray(source) ? source : []).slice().sort((a, b) => new Date(b.updatedAt || b.createdAt || b.fecha) - new Date(a.updatedAt || a.createdAt || a.fecha)).slice(0, 5);
+      if (!events.length) {
+        timeline.innerHTML = '<li class="timeline-item">Sin eventos por mostrar todavía.</li>';
+        return;
+      }
+      timeline.innerHTML = events.map(review => {
+        const date = formatDate(review.createdAt || review.fecha);
+        const lugar = review.lugarNombre || review.lugar?.nombre || 'Lugar';
+        return `
+          <li class="timeline-item">
+            <strong>${lugar}</strong>
+            <span>${date} · ${(Number(review.rating) || 0).toFixed(1)} ★</span>
+          </li>
+        `;
+      }).join('');
+    }
+
+    function renderReviewCard(review) {
+      const rating = typeof review.rating === 'number' ? review.rating : Number(review.rating) || 0;
+      const lugarId = review.lugarId || review.lugar?._id || '';
+      const categoria = review.lugarCategoria || review.lugar?.categoria || review.lugar?.categoria?.nombre || 'Sin categoría';
+      const updatedLabel = review.updatedAt ? `Actualizado ${formatDate(review.updatedAt)}` : `Publicado ${formatDate(review.createdAt || review.fecha)}`;
+      const tags = [];
+      if (review.visita || review.fechaVisita) tags.push(`Visita ${formatDate(review.visita || review.fechaVisita)}`);
+      if (review.detalle) tags.push(review.detalle);
+      const isEditing = String(appState.editingReviewId || '') === String(review._id);
+      const isSaving = String(appState.savingReviewId || '') === String(review._id);
+      return `
+        <article class="review-card" data-review-id="${review._id}" data-lugar-id="${lugarId}">
+          <div class="review-header">
+            <div>
+              <p class="font-semibold text-[#3c2b22] text-lg">${review.lugarNombre || review.lugar?.nombre || 'Lugar sin nombre'}</p>
+              <span class="review-meta">${categoria} · ${updatedLabel}</span>
+            </div>
+            <span class="review-rating">${rating.toFixed(1)} ★</span>
+          </div>
+          ${!isEditing ? `<p class="text-sm text-[#4b372b]">${review.comment || review.comentario || ''}</p>` : ''}
+          ${tags.length ? `<div class="review-tags">${tags.map(tag => `<span class="review-chip">${tag}</span>`).join('')}</div>` : ''}
+          ${isEditing ? `
+            <form class="review-form review-inline-form" data-review-inline-form="${review._id}">
+              <div class="flex flex-col gap-2">
+                <label for="inlineRating-${review._id}" class="font-semibold text-sm text-[#3c2b22]">Calificación</label>
+                <select id="inlineRating-${review._id}" name="rating" ${isSaving ? 'disabled' : ''}>
+                  ${buildRatingOptions(rating)}
+                </select>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="inlineComment-${review._id}" class="font-semibold text-sm text-[#3c2b22]">Comentario</label>
+                <textarea id="inlineComment-${review._id}" name="comment" rows="3" ${isSaving ? 'disabled' : ''}>${review.comment || review.comentario || ''}</textarea>
+              </div>
+              <div class="review-form-actions">
+                <button type="submit" class="brand-cta px-5 py-2 rounded-md text-sm" data-inline-save ${isSaving ? 'disabled' : ''}>Guardar cambios</button>
+                <button type="button" class="btn-ghost text-sm" data-inline-cancel ${isSaving ? 'disabled' : ''}>Cancelar</button>
+                <span class="review-inline-status" data-inline-status>${isSaving ? 'Guardando reseña...' : ''}</span>
+              </div>
+            </form>
+          ` : `
+            <div class="review-actions">
+              <button type="button" class="review-action" data-open-lugar="${lugarId}">Ver lugar</button>
+              <button type="button" class="review-action" data-review-edit="${review._id}" data-lugar-id="${lugarId}">Editar</button>
+              <button type="button" class="review-action danger" data-review-delete="${review._id}" data-lugar-id="${lugarId}">Eliminar</button>
+            </div>
+          `}
+        </article>
+      `;
+    }
+
+    function renderUserReviewsSection() {
+      const list = safeQuery('#userReviewsList');
+      const empty = safeQuery('#userReviewsEmpty');
+      if (!list || !empty) return;
+      if (!appState.currentUser) {
+        empty.textContent = 'Inicia sesión para gestionar tus reseñas.';
+        empty.style.display = '';
+        list.innerHTML = '';
+        updateReviewStats([]);
+        renderTimeline([]);
+        return;
+      }
+      const filtered = applyReviewFilters();
+      updateReviewStats(filtered);
+      if (appState.editingReviewId && !filtered.some(review => String(review._id) === String(appState.editingReviewId))) {
+        appState.editingReviewId = null;
+      }
+      if (!filtered.length) {
+        empty.textContent = 'No encontramos reseñas con los filtros actuales. Ajusta la búsqueda para ver resultados.';
+        empty.style.display = '';
+        list.innerHTML = '';
+        renderTimeline([]);
+        return;
+      }
+      empty.style.display = 'none';
+      list.innerHTML = filtered.map(renderReviewCard).join('');
+      renderTimeline(filtered);
+    }
+
+    function bindReviewFilters() {
+      const searchInput = safeQuery('#reviewsSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
+          reviewFilters.search = (event.target.value || '').trim().toLowerCase();
+          renderUserReviewsSection();
+        });
+      }
+      const categorySelect = safeQuery('#reviewsCategoryFilter');
+      if (categorySelect) {
+        categorySelect.addEventListener('change', (event) => {
+          reviewFilters.category = event.target.value;
+          renderUserReviewsSection();
+        });
+      }
+      const sortSelect = safeQuery('#reviewsSort');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (event) => {
+          reviewFilters.sort = event.target.value || 'recent';
+          renderUserReviewsSection();
+        });
+      }
+    }
+
+    function bindReviewSync() {
+      const btn = document.getElementById('refreshReviewsButton');
+      if (btn && btn.dataset.bound !== 'true') {
+        btn.dataset.bound = 'true';
+        btn.addEventListener('click', () => fetchUserReviews());
+      }
+    }
+
+    function attachLogoutHandlers() {
+      document.querySelectorAll('[data-logout]').forEach(btn => {
+        if (btn.dataset.logoutBound === 'true') return;
+        btn.dataset.logoutBound = 'true';
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          collapseNavMenu();
+          handleLogout(btn);
+        });
+      });
+    }
+
+    async function handleLogout(trigger) {
+      const btn = trigger || document.querySelector('[data-logout]');
+      const label = btn ? btn.querySelector('span') : null;
+      if (btn) btn.disabled = true;
+      if (label) {
+        label.dataset.originalText = label.textContent;
+        label.textContent = 'Cerrando...';
+      }
+      try {
+        await fetch('/user/logout', { method: 'POST', credentials: 'include' });
+      } catch (err) {
+        console.warn('No se pudo cerrar sesión', err);
+      } finally {
+        window.location.href = '/';
+      }
+    }
+
+    const navState = { toggle: null, menu: null, backdrop: null, media: null };
+
+    function setNavMenuVisibility(visible) {
+      const { menu, toggle, backdrop, media } = navState;
+      if (!menu || !toggle) return;
+      if (media && media.matches) return;
+      const showMenu = Boolean(visible);
+      menu.classList.toggle('translate-x-0', showMenu);
+      menu.classList.toggle('translate-x-full', !showMenu);
+      menu.classList.toggle('pointer-events-none', !showMenu);
+      menu.setAttribute('aria-hidden', showMenu ? 'false' : 'true');
+      toggle.setAttribute('aria-expanded', showMenu ? 'true' : 'false');
+      document.body.classList.toggle('overflow-hidden', showMenu);
+      if (backdrop) {
+        backdrop.classList.toggle('opacity-100', showMenu);
+        backdrop.classList.toggle('pointer-events-none', !showMenu);
+      }
+    }
+
+    function collapseNavMenu() {
+      if (navState.media && navState.media.matches) return;
+      setNavMenuVisibility(false);
+    }
+
+    function initVisitorNav() {
+      navState.toggle = document.querySelector('[data-nav-toggle]');
+      navState.menu = document.querySelector('[data-nav-menu]');
+      navState.backdrop = document.querySelector('[data-nav-backdrop]');
+      navState.media = window.matchMedia('(min-width: 768px)');
+      const { toggle, menu } = navState;
+      if (!toggle || !menu) return;
+
+      const handleBreakpoint = () => {
+        if (navState.media.matches) {
+          menu.classList.remove('translate-x-full');
+          menu.classList.remove('pointer-events-none');
+          menu.classList.add('md:translate-x-0');
+          menu.setAttribute('aria-hidden', 'false');
+          document.body.classList.remove('overflow-hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (navState.backdrop) {
+            navState.backdrop.classList.add('pointer-events-none');
+            navState.backdrop.classList.remove('opacity-100');
+          }
+          return;
+        }
+        menu.classList.add('translate-x-full');
+        menu.classList.remove('translate-x-0');
+        menu.classList.add('pointer-events-none');
+        menu.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('overflow-hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (navState.backdrop) {
+          navState.backdrop.classList.add('pointer-events-none');
+          navState.backdrop.classList.remove('opacity-100');
+        }
+      };
+
+      handleBreakpoint();
+      if (navState.media.addEventListener) {
+        navState.media.addEventListener('change', handleBreakpoint);
+      } else if (navState.media.addListener) {
+        navState.media.addListener(handleBreakpoint);
+      }
+
+      toggle.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('translate-x-0');
+        setNavMenuVisibility(!isOpen);
+      });
+
+      if (navState.backdrop) {
+        navState.backdrop.addEventListener('click', () => setNavMenuVisibility(false));
+      }
+
+      menu.querySelectorAll('[data-nav-close]').forEach(btn => {
+        btn.addEventListener('click', () => collapseNavMenu());
+      });
+    }
+
+    async function fetchSession() {
+      try {
+        const res = await fetch('/api/session', { credentials: 'include' });
+        if (!res.ok) throw new Error('session');
+        const data = await res.json();
+        if (!data.authenticated) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para continuar.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        appState.currentUser = data.user;
+        if (Array.isArray(data.favoriteIds)) {
+          applyFavoriteIds(data.favoriteIds);
+        }
+      } catch (err) {
+        notify('error', { title: 'Sesión no disponible', message: 'Por seguridad te redirigimos al inicio de sesión.' });
+        setTimeout(() => { window.location.href = '/user/login'; }, 800);
+      }
+    }
+
+    function applyFavoriteIds(ids) {
+      if (!Array.isArray(ids)) return;
+      appState.favoriteIds = new Set(ids.map(String));
+      updateFavoriteButtons();
+    }
+
+    async function fetchUserReviews(options = {}) {
+      const { silent = false } = options;
+      if (!appState.currentUser) {
+        appState.userReviews = [];
+        renderUserReviewsSection();
+        return;
+      }
+      try {
+        const res = await fetch('/api/reviews/mine', { credentials: 'include' });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para ver tus reseñas.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('user-reviews');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (Array.isArray(data.reviews) ? data.reviews : []);
+        appState.userReviews = list;
+        populateCategoryFilter();
+      } catch (err) {
+        console.warn('No se pudieron cargar las reseñas del usuario', err);
+        if (!silent) {
+          notify('warning', { title: 'Reseñas no disponibles', message: 'Intenta actualizar tus reseñas más tarde.' });
+        }
+      }
+      appState.editingReviewId = null;
+      appState.savingReviewId = null;
+      renderUserReviewsSection();
+    }
+
+    async function ensureLugarData(lugarId) {
+      if (!lugarId) return null;
+      if (appState.lugarIndex[lugarId]) return appState.lugarIndex[lugarId];
+      try {
+        const res = await fetch(`/api/lugares/${lugarId}`, { credentials: 'include' });
+        if (!res.ok) throw new Error('lugar-not-found');
+        const data = await res.json();
+        const lugar = data.lugar || data;
+        if (lugar && lugar._id) {
+          appState.lugarIndex[String(lugar._id)] = lugar;
+        }
+        return lugar;
+      } catch (error) {
+        console.error('No se pudo obtener la información del lugar', error);
+        return null;
+      }
+    }
+
+    function buildLugarImages(lugar) {
+      const sources = [];
+      if (Array.isArray(lugar.images)) sources.push(...lugar.images);
+      if (Array.isArray(lugar.galeria)) sources.push(...lugar.galeria);
+      ['image', 'imagen', 'fotoDestacada', 'cover', 'portada'].forEach(key => {
+        if (typeof lugar[key] === 'string') sources.push(lugar[key]);
+      });
+      const clean = sources.map(src => typeof src === 'string' ? src.trim() : '').filter(Boolean);
+      return clean.length ? Array.from(new Set(clean)) : [FALLBACK_MODAL_IMAGE];
+    }
+
+    function prepareModalGallery(lugar) {
+      modalGalleryState.images = buildLugarImages(lugar);
+      modalGalleryState.index = 0;
+      modalGalleryState.title = lugar.nombre || 'Lugar destacado';
+      updateModalCarousel();
+    }
+
+    function updateModalCarousel() {
+      const imgEl = document.getElementById('modalCarouselImage');
+      const counter = document.getElementById('modalCarouselCounter');
+      const prev = document.querySelector('[data-carousel-prev]');
+      const next = document.querySelector('[data-carousel-next]');
+      const indicators = document.getElementById('modalCarouselIndicators');
+      const total = modalGalleryState.images.length;
+      const src = modalGalleryState.images[modalGalleryState.index] || FALLBACK_MODAL_IMAGE;
+      if (imgEl) {
+        imgEl.src = src;
+        imgEl.alt = `${modalGalleryState.title} (${modalGalleryState.index + 1} de ${total})`;
+      }
+      const hasMultiple = total > 1;
+      if (counter) {
+        counter.textContent = `${modalGalleryState.index + 1} / ${total}`;
+        counter.classList.toggle('is-hidden', !hasMultiple);
+      }
+      if (prev) prev.classList.toggle('is-hidden', !hasMultiple);
+      if (next) next.classList.toggle('is-hidden', !hasMultiple);
+      if (indicators) {
+        if (!hasMultiple) {
+          indicators.innerHTML = '';
+          indicators.classList.add('is-hidden');
+        } else {
+          indicators.classList.remove('is-hidden');
+          indicators.innerHTML = modalGalleryState.images.map((_, idx) => `<button type="button" data-carousel-dot="${idx}" aria-label="Ver imagen ${idx + 1}" class="${idx === modalGalleryState.index ? 'active' : ''}"></button>`).join('');
+        }
+      }
+    }
+
+    function shiftModalCarousel(step) {
+      const total = modalGalleryState.images.length;
+      if (total <= 1) return;
+      modalGalleryState.index = (modalGalleryState.index + step + total) % total;
+      updateModalCarousel();
+    }
+
+    function bindModalCarouselControls() {
+      const prev = document.querySelector('[data-carousel-prev]');
+      if (prev && !prev.dataset.bound) {
+        prev.dataset.bound = 'true';
+        prev.addEventListener('click', () => shiftModalCarousel(-1));
+      }
+      const next = document.querySelector('[data-carousel-next]');
+      if (next && !next.dataset.bound) {
+        next.dataset.bound = 'true';
+        next.addEventListener('click', () => shiftModalCarousel(1));
+      }
+      const indicators = document.getElementById('modalCarouselIndicators');
+      if (indicators && !indicators.dataset.bound) {
+        indicators.dataset.bound = 'true';
+        indicators.addEventListener('click', (event) => {
+          const dot = event.target.closest('[data-carousel-dot]');
+          if (!dot) return;
+          const idx = Number(dot.dataset.carouselDot);
+          if (Number.isNaN(idx)) return;
+          modalGalleryState.index = idx;
+          updateModalCarousel();
+        });
+      }
+    }
+
+    function renderModalMeta(lugar) {
+      const meta = document.getElementById('modalMeta');
+      if (!meta) return;
+      const entries = [
+        { label: 'Ubicación', value: lugar.ubicacion || lugar.direccion || lugar.address || lugar.localizacion },
+        { label: 'Horario', value: lugar.horario || lugar.horarios || lugar.horarioAtencion },
+        { label: 'Contacto', value: lugar.telefono || lugar.contacto || lugar.whatsapp || lugar.email },
+        { label: 'Costo', value: lugar.precio || lugar.costo || lugar.entrada }
+      ].filter(item => item.value);
+      if (!entries.length) {
+        meta.innerHTML = '';
+        meta.classList.add('is-hidden');
+        return;
+      }
+      meta.classList.remove('is-hidden');
+      meta.innerHTML = entries.map(item => `<div class="meta-card"><p class="meta-label">${item.label}</p><p class="meta-value">${item.value}</p></div>`).join('');
+    }
+
+    function renderModalTags(lugar) {
+      const container = document.getElementById('modalTags');
+      if (!container) return;
+      let tags = [];
+      if (Array.isArray(lugar.tags)) tags = tags.concat(lugar.tags);
+      else if (typeof lugar.tags === 'string') tags = tags.concat(lugar.tags.split(',').map(tag => tag.trim()));
+      if (Array.isArray(lugar.amenidades)) tags = tags.concat(lugar.amenidades);
+      if (Array.isArray(lugar.servicios)) tags = tags.concat(lugar.servicios);
+      ['tipo', 'especialidad', 'categoriaSecundaria'].forEach(key => {
+        if (lugar[key]) tags.push(lugar[key]);
+      });
+      tags = tags.map(tag => (typeof tag === 'string' ? tag.trim() : tag)).filter(Boolean);
+      if (!tags.length) {
+        container.innerHTML = '';
+        container.classList.add('is-hidden');
+        return;
+      }
+      container.classList.remove('is-hidden');
+      container.innerHTML = tags.slice(0, 8).map(tag => `<span class="tag-pill">${tag}</span>`).join('');
+    }
+
+    function renderPlaceReviews(lugarId) {
+      const list = safeQuery('#placeReviewsList');
+      const empty = safeQuery('#placeReviewsEmpty');
+      if (!list || !empty) return;
+      const reviews = appState.reviewsByLugar[lugarId] || [];
+      if (!reviews.length) {
+        list.innerHTML = '';
+        empty.textContent = 'Aún no hay reseñas para este lugar.';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      list.innerHTML = reviews.map(review => {
+        const rating = typeof review.rating === 'number' ? review.rating : Number(review.rating) || 0;
+        return `
+          <div class="modal-review-item">
+            <strong>${review.autorNombre || review.usuario?.nombre || 'Visitante'}</strong>
+            <span class="review-rating" style="margin-left:0.5rem;">${rating.toFixed(1)} ★</span>
+            <small>${formatDate(review.createdAt || review.fecha)}</small>
+            <p class="text-sm mt-2 text-[#4b372b]">${review.comment || review.comentario || ''}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadLugarReviews(lugarId) {
+      const loader = safeQuery('#placeReviewsLoader');
+      const empty = safeQuery('#placeReviewsEmpty');
+      const list = safeQuery('#placeReviewsList');
+      if (!lugarId || !loader || !empty || !list) return;
+      loader.hidden = false;
+      empty.hidden = true;
+      list.innerHTML = '';
+      try {
+        const res = await fetch(`/api/lugares/${lugarId}/reviews`, { credentials: 'include' });
+        if (!res.ok) throw new Error('place-reviews');
+        const data = await res.json();
+        const reviews = Array.isArray(data) ? data : (Array.isArray(data.reviews) ? data.reviews : []);
+        appState.reviewsByLugar[lugarId] = reviews;
+      } catch (err) {
+        console.warn('No se pudieron cargar las reseñas del lugar', err);
+        appState.reviewsByLugar[lugarId] = [];
+        empty.textContent = 'No se pudieron cargar las reseñas. Intenta nuevamente más tarde.';
+        empty.hidden = false;
+      } finally {
+        loader.hidden = true;
+        renderPlaceReviews(lugarId);
+      }
+    }
+
+    function setupReviewForm(lugar, options = {}) {
+      const form = document.getElementById('reviewForm');
+      const authPrompt = document.getElementById('reviewAuthPrompt');
+      if (!form || !authPrompt) return;
+      const lugarId = getLugarIdentifier(lugar);
+      form.dataset.lugarId = lugarId;
+      if (!appState.currentUser) {
+        form.hidden = true;
+        authPrompt.hidden = false;
+        return;
+      }
+      authPrompt.hidden = true;
+      form.hidden = false;
+      if (options.prefillReview) {
+        populateReviewForm(options.prefillReview, { focusComment: options.focusComment });
+      } else {
+        resetReviewFormState();
+      }
+    }
+
+    function resetReviewFormState() {
+      const form = document.getElementById('reviewForm');
+      if (!form) return;
+      delete form.dataset.reviewId;
+      form.dataset.mode = 'create';
+      form.reset();
+      const ratingField = form.querySelector('[name="rating"]');
+      if (ratingField) ratingField.value = '5';
+      const commentField = form.querySelector('[name="comment"]');
+      if (commentField) commentField.value = '';
+      const submitBtn = form.querySelector('[data-review-submit]');
+      if (submitBtn) submitBtn.textContent = 'Guardar cambios';
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) cancelBtn.hidden = true;
+    }
+
+    function populateReviewForm(review, options = {}) {
+      const form = document.getElementById('reviewForm');
+      if (!form || !review) return;
+      form.dataset.reviewId = review._id || '';
+      form.dataset.mode = 'edit';
+      const ratingField = form.querySelector('[name="rating"]');
+      if (ratingField) ratingField.value = String(review.rating || 5);
+      const commentField = form.querySelector('[name="comment"]');
+      if (commentField) {
+        commentField.value = review.comment || '';
+        if (options.focusComment && typeof commentField.focus === 'function') {
+          commentField.focus();
+        }
+      }
+      const submitBtn = form.querySelector('[data-review-submit]');
+      if (submitBtn) submitBtn.textContent = 'Actualizar reseña';
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) cancelBtn.hidden = false;
+    }
+
+    function bindReviewForm() {
+      const form = document.getElementById('reviewForm');
+      if (!form || form.dataset.bound === 'true') return;
+      form.dataset.bound = 'true';
+      form.addEventListener('submit', handleReviewFormSubmit);
+      const cancelBtn = form.querySelector('[data-review-cancel]');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          resetReviewFormState();
+        });
+      }
+    }
+
+    function setInlineFormState(form, saving) {
+      if (!form) return;
+      form.querySelectorAll('select, textarea, button').forEach(control => {
+        control.disabled = Boolean(saving);
+      });
+      const status = form.querySelector('[data-inline-status]');
+      if (status) {
+        status.textContent = saving ? 'Guardando reseña...' : '';
+      }
+    }
+
+    async function handleInlineReviewSave(form) {
+      if (!form) return;
+      if (!appState.currentUser) {
+        notify('warning', { title: 'Inicia sesión', message: 'Debes iniciar sesión para editar tus reseñas.' });
+        window.location.href = '/user/login';
+        return;
+      }
+      const reviewId = form.dataset.reviewInlineForm;
+      if (!reviewId) return;
+      const rating = Number(form.rating.value || 0);
+      const comment = (form.comment.value || '').trim();
+      if (!rating || !comment) {
+        notify('warning', { title: 'Información faltante', message: 'Selecciona una calificación y escribe tu comentario.' });
+        return;
+      }
+      const card = form.closest('[data-review-id]');
+      const lugarId = card ? card.dataset.lugarId : null;
+      appState.savingReviewId = String(reviewId);
+      setInlineFormState(form, true);
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ rating, comment })
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para continuar.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('update-review');
+        const payload = await res.json();
+        const updatedReview = payload && payload.review ? payload.review : null;
+        if (updatedReview) {
+          upsertReviewInState(updatedReview);
+        }
+        notify('success', { message: 'Reseña actualizada' });
+        appState.editingReviewId = null;
+        appState.savingReviewId = null;
+        renderUserReviewsSection();
+        const targetLugarId = (updatedReview && updatedReview.lugarId) || lugarId;
+        if (targetLugarId) {
+          await loadLugarReviews(targetLugarId);
+        }
+      } catch (error) {
+        console.error('No se pudo actualizar la reseña', error);
+        notify('error', { title: 'No se guardó', message: 'Intenta nuevamente más tarde.' });
+      } finally {
+        appState.savingReviewId = null;
+        setInlineFormState(form, false);
+      }
+    }
+
+    async function handleReviewFormSubmit(event) {
+      event.preventDefault();
+      if (!appState.currentUser) {
+        notify('warning', { title: 'Inicia sesión', message: 'Debes iniciar sesión para compartir una reseña.' });
+        window.location.href = '/user/login';
+        return;
+      }
+      const form = event.target;
+      const lugarId = form.dataset.lugarId;
+      if (!lugarId) return;
+      const rating = Number(form.rating.value || 0);
+      const comment = (form.comment.value || '').trim();
+      if (!rating || !comment) {
+        notify('warning', { title: 'Información faltante', message: 'Selecciona una calificación y escribe tu reseña.' });
+        return;
+      }
+      const reviewId = form.dataset.reviewId;
+      const isEditing = Boolean(reviewId);
+      try {
+        const endpoint = isEditing ? `/api/reviews/${reviewId}` : `/api/lugares/${lugarId}/reviews`;
+        const res = await fetch(endpoint, {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ rating, comment })
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para enviar una reseña.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('submit-review');
+        resetReviewFormState();
+        notify('success', { message: isEditing ? 'Reseña actualizada' : '¡Gracias por tu reseña!' });
+        await loadLugarReviews(lugarId);
+        await fetchUserReviews({ silent: true });
+      } catch (err) {
+        console.error('No se pudo guardar la reseña', err);
+        notify('error', { title: 'No guardada', message: 'No pudimos guardar tu reseña. Intenta más tarde.' });
+      }
+    }
+
+    function updateFavoriteButtons() {
+      document.querySelectorAll('[data-fav-id]').forEach(btn => {
+        const id = btn.getAttribute('data-fav-id');
+        if (!id) return;
+        const active = appState.favoriteIds.has(String(id));
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        const label = btn.querySelector('.fav-label');
+        if (label) label.textContent = active ? 'Guardado' : 'Guardar';
+      });
+    }
+
+    async function toggleFavorite(lugarId, triggerEl) {
+      if (!lugarId) return;
+      if (!appState.currentUser) {
+        window.location.href = '/user/login';
+        return;
+      }
+      const isFav = appState.favoriteIds.has(String(lugarId));
+      if (triggerEl) triggerEl.disabled = true;
+      try {
+        const res = await fetch(`/api/favorites/${lugarId}`, {
+          method: isFav ? 'DELETE' : 'POST',
+          credentials: 'include'
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para seguir guardando lugares.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('favorite');
+        if (isFav) appState.favoriteIds.delete(String(lugarId));
+        else appState.favoriteIds.add(String(lugarId));
+        notify('success', { message: isFav ? 'Favorito eliminado' : 'Agregado a favoritos' });
+      } catch (err) {
+        console.error('No se pudo actualizar favorito', err);
+        notify('error', { title: 'Sin cambios', message: 'No pudimos actualizar tu favorito. Intenta más tarde.' });
+      } finally {
+        if (triggerEl) triggerEl.disabled = false;
+        updateFavoriteButtons();
+      }
+    }
+
+    async function openLugarModal(lugar, options = {}) {
+      try {
+        const backdrop = document.getElementById('lugarModalBackdrop');
+        const title = document.getElementById('modalTitle');
+        const categoria = document.getElementById('modalCategoria');
+        const desc = document.getElementById('modalDesc');
+        if (title) title.textContent = lugar.nombre || 'Sin nombre';
+        if (categoria) categoria.textContent = (lugar.categoria && (lugar.categoria.nombre || lugar.categoria)) || (lugar.categoriaId && lugar.categoriaId.nombre) || 'Sin categoría';
+        if (desc) desc.textContent = lugar.descripcion || 'Muy pronto añadiremos una descripción detallada.';
+        const maps = document.getElementById('modalMaps');
+        if (maps) maps.href = lugar.googleMapsLink || lugar.maps || '#';
+        renderModalMeta(lugar);
+        renderModalTags(lugar);
+        prepareModalGallery(lugar);
+        const modalFav = document.getElementById('modalFav');
+        if (modalFav) {
+          modalFav.dataset.favId = lugar._id || '';
+        }
+        if (backdrop) {
+          backdrop.style.display = 'flex';
+          backdrop.setAttribute('aria-hidden', 'false');
+        }
+        updateFavoriteButtons();
+        const lugarId = getLugarIdentifier(lugar);
+        appState.activeLugarId = lugarId;
+        const reviewToPrefill = options.prefillReview || (Array.isArray(appState.userReviews) ? appState.userReviews.find(r => String(r.lugarId || r.lugar?._id) === String(lugarId)) : null);
+        setupReviewForm(lugar, { prefillReview: reviewToPrefill, focusComment: options.focusComment });
+        appState.reviewsByLugar[lugarId] = [];
+        const loader = document.getElementById('placeReviewsLoader');
+        if (loader) loader.hidden = false;
+        loadLugarReviews(lugarId);
+      } catch (e) { console.error(e); }
+    }
+
+    function bindModalClose() {
+      const closeBtn = document.getElementById('modalCloseBtn');
+      if (closeBtn && closeBtn.dataset.bound !== 'true') {
+        closeBtn.dataset.bound = 'true';
+        closeBtn.addEventListener('click', () => {
+          const b = document.getElementById('lugarModalBackdrop');
+          if (b) {
+            b.style.display = 'none';
+            b.setAttribute('aria-hidden','true');
+          }
+          appState.activeLugarId = null;
+          resetReviewFormState();
+        });
+      }
+    }
+
+    async function handleReviewDelete(reviewId, lugarId) {
+      if (!reviewId) return;
+      const confirmed = window.confirm('¿Seguro que deseas eliminar esta reseña?');
+      if (!confirmed) return;
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        if (res.status === 401) {
+          notify('warning', { title: 'Sesión expirada', message: 'Vuelve a iniciar sesión para continuar.' });
+          window.location.href = '/user/login';
+          return;
+        }
+        if (!res.ok) throw new Error('delete-review');
+        const data = await res.json();
+        const targetLugarId = lugarId || (data && data.lugarId);
+        notify('success', { message: 'Reseña eliminada.' });
+        if (String(appState.editingReviewId || '') === String(reviewId)) {
+          appState.editingReviewId = null;
+        }
+        await fetchUserReviews({ silent: true });
+        if (targetLugarId) {
+          await loadLugarReviews(targetLugarId);
+          if (String(targetLugarId) === String(appState.activeLugarId)) {
+            resetReviewFormState();
+          }
+        }
+      } catch (error) {
+        console.error('No se pudo eliminar la reseña', error);
+        notify('error', { title: 'No se pudo eliminar', message: 'Intenta nuevamente más tarde.' });
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      const favBtn = event.target.closest('[data-fav-id]');
+      if (favBtn) {
+        event.preventDefault();
+        toggleFavorite(favBtn.dataset.favId, favBtn);
+        return;
+      }
+      const editBtn = event.target.closest('[data-review-edit]');
+      if (editBtn) {
+        event.preventDefault();
+        setEditingReview(editBtn.dataset.reviewEdit);
+        return;
+      }
+      const cancelBtn = event.target.closest('[data-inline-cancel]');
+      if (cancelBtn) {
+        event.preventDefault();
+        setEditingReview(null);
+        return;
+      }
+      const deleteBtn = event.target.closest('[data-review-delete]');
+      if (deleteBtn) {
+        event.preventDefault();
+        handleReviewDelete(deleteBtn.dataset.reviewDelete, deleteBtn.dataset.lugarId);
+        return;
+      }
+      const openBtn = event.target.closest('[data-open-lugar]');
+      if (openBtn) {
+        event.preventDefault();
+        const lugarId = openBtn.dataset.openLugar;
+        ensureLugarData(lugarId).then(lugar => {
+          if (lugar) openLugarModal(lugar);
+        });
+      }
+    });
+
+    document.addEventListener('submit', (event) => {
+      const inlineForm = event.target.closest('[data-review-inline-form]');
+      if (inlineForm) {
+        event.preventDefault();
+        handleInlineReviewSave(inlineForm);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      bindModalClose();
+      bindModalCarouselControls();
+      bindReviewForm();
+      bindReviewFilters();
+      bindReviewSync();
+      initVisitorNav();
+      attachLogoutHandlers();
+      await fetchSession();
+      await fetchUserReviews();
+    });
+  </script>
+</body>
+</html>

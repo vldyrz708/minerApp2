@@ -23,9 +23,35 @@
     .tour-hints-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.65rem; color:#5b4639; font-size:0.9rem; }
     .tour-hints-list li { display:flex; gap:0.65rem; align-items:flex-start; line-height:1.35; }
     .tour-hint-icon { width:1.65rem; height:1.65rem; border-radius:999px; background:#fff; border:1px solid rgba(180,83,9,0.35); display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; color:#b45309; box-shadow:0 4px 8px rgba(60,43,34,0.08); flex-shrink:0; }
+    .modal-reviews { margin-top:2rem; border-top:1px solid rgba(60,43,34,0.15); padding-top:1.5rem; }
+    .modal-reviews h3 { font-size:1.1rem; font-weight:700; color:#3c2b22; margin-bottom:0.75rem; }
+    .modal-review-list { display:flex; flex-direction:column; gap:0.8rem; max-height:220px; overflow:auto; padding-right:0.25rem; }
+    .modal-review-item { border:1px solid rgba(60,43,34,0.12); border-radius:1rem; padding:0.85rem 1rem; background:#fff; }
+    .modal-review-item small { display:block; color:#7b5a46; font-size:0.75rem; margin-top:0.25rem; }
+    .review-rating { display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; color:#b45309; background:rgba(180,83,9,0.08); border-radius:999px; padding:0.15rem 0.75rem; }
+    .review-empty { text-align:center; padding:1.25rem; border-radius:1rem; background:rgba(255,255,255,0.65); border:1px dashed rgba(60,43,34,0.15); color:#7a5c4a; font-size:0.9rem; }
+    .review-auth-alert { margin-top:0.75rem; font-size:0.85rem; color:#7b4316; background:rgba(180,83,9,0.08); border:1px dashed rgba(180,83,9,0.35); padding:0.8rem 1rem; border-radius:0.9rem; }
+    .reviews-heading { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.25rem; }
+    .reviews-eyebrow { text-transform:uppercase; letter-spacing:0.3em; font-size:0.72rem; font-weight:700; color:#c06a1c; }
+    .reviews-subheading { font-size:0.9rem; color:#7a5c4a; }
+    .review-ghost-form { margin-top:1rem; padding:1rem 1.25rem; border-radius:1rem; border:1px dashed rgba(180,83,9,0.35); background:rgba(180,83,9,0.06); display:flex; flex-direction:column; gap:0.65rem; }
+    .review-ghost-form strong { font-size:0.95rem; color:#4b2a13; }
+    .lugares-eyebrow { display:inline-flex; align-items:center; gap:0.4rem; text-transform:uppercase; letter-spacing:0.28em; font-size:0.8rem; color:#c06a1c; font-weight:700; }
+    .lugares-toolbar { background:rgba(255,255,255,0.92); border-radius:1.5rem; border:1px solid rgba(212,164,65,0.25); box-shadow:0 24px 50px rgba(60,43,34,0.08); padding:1.25rem; display:flex; flex-direction:column; gap:1rem; }
+    .lugares-toolbar input,
+    .lugares-toolbar select { border:1px solid rgba(99,71,54,0.2); border-radius:0.9rem; padding:0.9rem 1rem; background:#fffdf9; color:#3c2b22; font-weight:500; width:100%; }
+    .lugares-toolbar input:focus,
+    .lugares-toolbar select:focus { outline:none; box-shadow:0 0 0 3px rgba(212,164,65,0.25); }
+    .lugares-toolbar label { display:block; margin-bottom:0.35rem; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.2em; color:#b08968; font-weight:600; }
+    @media (min-width: 768px) {
+      .lugares-toolbar { flex-direction:row; align-items:center; }
+      .lugares-toolbar .toolbar-field { flex:1; }
+      .lugares-toolbar .toolbar-select { width:260px; flex-shrink:0; }
+    }
     @media (max-width: 640px) {
       .tour-hints { padding:1rem; }
       .tour-hints-list { font-size:0.85rem; }
+      .modal-review-list { max-height:180px; }
     }
   </style>
 </head>
@@ -173,14 +199,20 @@
   <!-- Lugares -->
   <section id="lugares" class="py-16 px-4 sm:px-6" style="background: linear-gradient(180deg,#fff0de 0%, #fff7ef 60%, #fffdf8 100%); color:#3c2b22;">
     <div class="max-w-6xl mx-auto">
-      <h3 class="text-3xl font-bold text-center mb-8">Lugares destacados</h3>
+      <div class="text-center space-y-3 mb-10">
+        <span class="lugares-eyebrow justify-center">Curaduría minera</span>
+        <h3 class="text-3xl font-bold">Lugares destacados</h3>
+        <p class="text-[#6b4a3b] max-w-3xl mx-auto">Descubre minas, miradores y rincones gastronómicos con el mismo lenguaje visual que usamos en la experiencia Visitante.</p>
+      </div>
 
-      <div class="mb-6 flex flex-col md:flex-row items-stretch md:items-center gap-4">
-        <div class="w-full md:flex-1">
-          <input id="searchInput" type="search" placeholder="Buscar lugares, categorías o descripciones..." class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-200" />
+      <div class="lugares-toolbar glass mb-8">
+        <div class="toolbar-field">
+          <label for="searchInput">Explora Real del Monte</label>
+          <input id="searchInput" type="search" placeholder="Buscar lugares, categorías o descripciones..." class="w-full bg-transparent focus:ring-2 focus:ring-indigo-200" />
         </div>
-        <div class="w-full md:w-auto">
-          <select id="categoryFilter" class="border border-slate-200 rounded-lg px-3 py-2 w-full md:w-56">
+        <div class="toolbar-select">
+          <label for="categoryFilter">Filtrar por categoría</label>
+          <select id="categoryFilter">
             <option value="">Todas las categorías</option>
           </select>
         </div>
@@ -197,16 +229,9 @@
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
           <button class="close-btn" id="modalCloseBtn" aria-label="Cerrar">✕</button>
           <div class="modal-body">
-            <div class="modal-gallery" id="modalGallery">
-              <div class="carousel" id="modalCarousel" aria-live="polite">
-                <button type="button" class="ctrl left" data-carousel-prev aria-label="Imagen anterior">‹</button>
-                <div class="carousel-frame">
-                  <img id="modalCarouselImage" class="carousel-img" src="https://via.placeholder.com/800x600?text=Sin+Imagen" alt="Galería del lugar" loading="lazy" />
-                </div>
-                <button type="button" class="ctrl right" data-carousel-next aria-label="Imagen siguiente">›</button>
-                <div class="carousel-counter" id="modalCarouselCounter"></div>
-              </div>
-              <div class="carousel-indicators" id="modalCarouselIndicators"></div>
+            <div class="modal-gallery gallery-stack-shell" id="modalGallery" data-native-carousel="true">
+              <div id="modalGalleryStack" class="gallery-stack" aria-live="polite"></div>
+          
             </div>
             <div class="modal-info">
               <p id="modalCategoria" class="chip modal-badge mb-2"></p>
@@ -220,6 +245,17 @@
                   <span class="fav-icon" aria-hidden="true">❤</span>
                   <span class="fav-label">Guardar</span>
                 </button>
+              </div>
+              <div class="modal-reviews" id="publicReviews">
+                <div class="reviews-heading">
+                  <span class="reviews-eyebrow">Reseñas verificadas</span>
+                  <h3>Opiniones de la comunidad</h3>
+                  <p class="reviews-subheading">Historias auténticas de exploradores que ya vivieron Real del Monte.</p>
+                </div>
+                <div id="publicReviewsLoader" class="review-empty">Cargando reseñas...</div>
+                <div id="publicReviewsList" class="modal-review-list"></div>
+                <p id="publicReviewsEmpty" class="review-empty" hidden>Sé la primera persona en compartir una reseña.</p>
+                <p class="review-auth-alert">¿Quieres dejar tu reseña? <a href="/user/login" class="underline font-semibold">Inicia sesión</a> para acceder a la experiencia Visitante completa.</p>
               </div>
             </div>
           </div>
@@ -235,7 +271,8 @@
       currentUser: null,
       favoriteIds: new Set(),
       lugaresCache: [],
-      lugarIndex: {}
+      lugarIndex: {},
+      reviewsByLugar: {}
     };
 
     const filtersState = { bound: false };
@@ -248,6 +285,7 @@
     ];
     const FALLBACK_MODAL_IMAGE = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
     const modalGalleryState = { images: [FALLBACK_MODAL_IMAGE], index: 0, title: 'Lugar destacado' };
+    let modalKeyboardBound = false;
     const immersiveTourConfig = {
       iframeSrc: 'https://www.google.com/maps/embed?pb=!4v1719525250327!6m8!1m7!1sCAoSLEFGMVFpcE5Yd29GWGhPWG5tN1EtQmtXUnpQMlM3Y1I0MngzN0dCMUpncVZh!2m2!1d20.1367594!2d-98.6723357!3f120!4f5!5f0.7820865974627469',
       stops: [
@@ -294,6 +332,20 @@
     }
 
     function safeQuery(selector) { return document.querySelector(selector); }
+
+    function formatDate(value) {
+      if (!value) return '';
+      try {
+        return new Date(value).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch (_) {
+        return value;
+      }
+    }
+
+    function getLugarIdentifier(lugar) {
+      if (!lugar) return '';
+      return String(lugar._id || lugar.id || lugar.nombre || '');
+    }
 
     function getGoogleMapsKey() {
       const body = document.body;
@@ -585,66 +637,24 @@
     }
 
     function updateModalCarousel() {
-      const imgEl = document.getElementById('modalCarouselImage');
-      const counter = document.getElementById('modalCarouselCounter');
-      const prev = document.querySelector('[data-carousel-prev]');
-      const next = document.querySelector('[data-carousel-next]');
-      const indicators = document.getElementById('modalCarouselIndicators');
+      const stack = document.getElementById('modalGalleryStack');
+      const hint = document.getElementById('modalGalleryHint');
+      if (!stack) return;
       const total = modalGalleryState.images.length;
-      const src = modalGalleryState.images[modalGalleryState.index] || FALLBACK_MODAL_IMAGE;
-      if (imgEl) {
-        imgEl.src = src;
-        imgEl.alt = `${modalGalleryState.title} (${modalGalleryState.index + 1} de ${total})`;
-      }
-      const hasMultiple = total > 1;
-      if (counter) {
-        counter.textContent = `${modalGalleryState.index + 1} / ${total}`;
-        counter.classList.toggle('is-hidden', !hasMultiple);
-      }
-      if (prev) prev.classList.toggle('is-hidden', !hasMultiple);
-      if (next) next.classList.toggle('is-hidden', !hasMultiple);
-      if (indicators) {
-        if (!hasMultiple) {
-          indicators.innerHTML = '';
-          indicators.classList.add('is-hidden');
-        } else {
-          indicators.classList.remove('is-hidden');
-          indicators.innerHTML = modalGalleryState.images.map((_, idx) => `<button type="button" data-carousel-dot="${idx}" aria-label="Ver imagen ${idx + 1}" class="${idx === modalGalleryState.index ? 'active' : ''}"></button>`).join('');
-        }
+      stack.innerHTML = modalGalleryState.images.map((src, idx) => {
+        const safeSrc = src || FALLBACK_MODAL_IMAGE;
+        return `
+          <figure class="gallery-frame">
+            <img src="${safeSrc}" alt="${modalGalleryState.title} — imagen ${idx + 1}" loading="lazy" onerror="this.src='${FALLBACK_MODAL_IMAGE}'">
+          </figure>
+        `;
+      }).join('');
+      if (hint) {
+        hint.hidden = total <= 1;
       }
     }
 
-    function shiftModalCarousel(step) {
-      const total = modalGalleryState.images.length;
-      if (total <= 1) return;
-      modalGalleryState.index = (modalGalleryState.index + step + total) % total;
-      updateModalCarousel();
-    }
-
-    function bindModalCarouselControls() {
-      const prev = document.querySelector('[data-carousel-prev]');
-      if (prev && !prev.dataset.bound) {
-        prev.dataset.bound = 'true';
-        prev.addEventListener('click', () => shiftModalCarousel(-1));
-      }
-      const next = document.querySelector('[data-carousel-next]');
-      if (next && !next.dataset.bound) {
-        next.dataset.bound = 'true';
-        next.addEventListener('click', () => shiftModalCarousel(1));
-      }
-      const indicators = document.getElementById('modalCarouselIndicators');
-      if (indicators && !indicators.dataset.bound) {
-        indicators.dataset.bound = 'true';
-        indicators.addEventListener('click', (event) => {
-          const dot = event.target.closest('[data-carousel-dot]');
-          if (!dot) return;
-          const idx = Number(dot.dataset.carouselDot);
-          if (Number.isNaN(idx)) return;
-          modalGalleryState.index = idx;
-          updateModalCarousel();
-        });
-      }
-    }
+    function bindModalCarouselControls() {}
 
     function renderModalMeta(lugar) {
       const meta = document.getElementById('modalMeta');
@@ -751,14 +761,41 @@
           backdrop.setAttribute('aria-hidden', 'false');
         }
         updateFavoriteButtons();
+        const reviewsLoader = document.getElementById('publicReviewsLoader');
+        if (reviewsLoader) reviewsLoader.hidden = false;
+        const lugarId = getLugarIdentifier(lugar);
+        appState.reviewsByLugar[lugarId] = [];
+        renderModalReviews(lugarId);
+        loadLugarReviews(lugarId);
       } catch (e) { console.error(e); }
+    }
+
+    function hideLugarModal() {
+      const backdrop = document.getElementById('lugarModalBackdrop');
+      if (!backdrop) return;
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden', 'true');
     }
 
     function bindModalClose() {
       const closeBtn = document.getElementById('modalCloseBtn');
-      if (closeBtn) closeBtn.addEventListener('click', () => {
-        const b = document.getElementById('lugarModalBackdrop'); if (b) { b.style.display = 'none'; b.setAttribute('aria-hidden','true'); }
+      if (!closeBtn || closeBtn.dataset.bound === 'true') return;
+      closeBtn.dataset.bound = 'true';
+      closeBtn.addEventListener('click', hideLugarModal);
+    }
+
+    function bindModalKeyboardNavigation() {
+      if (modalKeyboardBound) return;
+      const backdrop = document.getElementById('lugarModalBackdrop');
+      if (!backdrop) return;
+      document.addEventListener('keydown', (event) => {
+        if (backdrop.getAttribute('aria-hidden') === 'true') return;
+        if (event.key === 'Escape') {
+          hideLugarModal();
+          return;
+        }
       });
+      modalKeyboardBound = true;
     }
 
     async function loadLugares(options = {}) {
@@ -853,6 +890,55 @@
       });
     }
 
+    function renderModalReviews(lugarId) {
+      const list = safeQuery('#publicReviewsList');
+      const empty = safeQuery('#publicReviewsEmpty');
+      if (!list || !empty) return;
+      const reviews = appState.reviewsByLugar[lugarId] || [];
+      if (!reviews.length) {
+        list.innerHTML = '';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      list.innerHTML = reviews.map(review => {
+        const rating = typeof review.rating === 'number' ? review.rating : Number(review.rating) || 0;
+        return `
+          <div class="modal-review-item">
+            <strong>${review.autorNombre || 'Visitante'}</strong>
+            <span class="review-rating" style="margin-left:0.5rem;">${rating.toFixed(1)} ★</span>
+            <small>${formatDate(review.createdAt || review.fecha)}</small>
+            <p class="text-sm mt-2 text-[#4b372b]">${review.comment || review.comentario || ''}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadLugarReviews(lugarId) {
+      const loader = safeQuery('#publicReviewsLoader');
+      const empty = safeQuery('#publicReviewsEmpty');
+      const list = safeQuery('#publicReviewsList');
+      if (!lugarId || !loader || !empty || !list) return;
+      loader.hidden = false;
+      empty.hidden = true;
+      list.innerHTML = '';
+      try {
+        const res = await fetch(`/api/lugares/${lugarId}/reviews`);
+        if (!res.ok) throw new Error('public-reviews');
+        const data = await res.json();
+        const reviews = Array.isArray(data) ? data : (Array.isArray(data.reviews) ? data.reviews : []);
+        appState.reviewsByLugar[lugarId] = reviews;
+      } catch (error) {
+        console.warn('No se pudieron cargar las reseñas públicas', error);
+        appState.reviewsByLugar[lugarId] = [];
+        empty.textContent = 'No se pudieron cargar las reseñas. Intenta más tarde.';
+        empty.hidden = false;
+      } finally {
+        loader.hidden = true;
+        renderModalReviews(lugarId);
+      }
+    }
+
     async function toggleFavorite() {
       await showAuthPrompt();
     }
@@ -874,6 +960,8 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       bindModalClose();
+      bindModalCarouselControls();
+      bindModalKeyboardNavigation();
       renderFavoritesSection();
       initImmersiveTour();
       await loadLugares({ refreshCategories: true });
