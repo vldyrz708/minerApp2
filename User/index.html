@@ -17,9 +17,19 @@
     .fade-in.show { opacity: 1; transform: translateY(0); }
     .glass { background: rgba(255,247,236,0.72); backdrop-filter: blur(6px); border:1px solid rgba(213,176,109,0.25); }
     .heritage-pill { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; background:rgba(212,164,65,0.22); font-size:0.85rem; color:#7b4316; font-weight:600; }
+    .tour-panel { display:flex; flex-direction:column; gap:1.5rem; }
+    .tour-hints { padding:1.25rem; border-radius:1.25rem; background:linear-gradient(120deg,rgba(236,204,171,0.25),rgba(255,255,255,0.65)); border:1px solid rgba(199,161,120,0.45); box-shadow:0 15px 30px rgba(60,43,34,0.08) inset; }
+    .tour-hints-title { font-size:0.95rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em; color:#b45309; margin-bottom:0.75rem; display:block; }
+    .tour-hints-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.65rem; color:#5b4639; font-size:0.9rem; }
+    .tour-hints-list li { display:flex; gap:0.65rem; align-items:flex-start; line-height:1.35; }
+    .tour-hint-icon { width:1.65rem; height:1.65rem; border-radius:999px; background:#fff; border:1px solid rgba(180,83,9,0.35); display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; color:#b45309; box-shadow:0 4px 8px rgba(60,43,34,0.08); flex-shrink:0; }
+    @media (max-width: 640px) {
+      .tour-hints { padding:1rem; }
+      .tour-hints-list { font-size:0.85rem; }
+    }
   </style>
 </head>
-<body class="bg-[#fff7ef] text-[#3c2b22] scroll-smooth">
+<body class="bg-[#fff7ef] text-[#3c2b22] scroll-smooth" data-google-maps-key="">
 
   <div id="user-header-container"></div>
 
@@ -102,6 +112,64 @@
     </div>
   </section>
 
+ <!-- Recorrido inmersivo -->
+  <section id="tour" class="py-16 px-4 sm:px-6 bg-[#fffaf4] border-t border-[#f6dcc4]">
+    <div class="max-w-6xl mx-auto space-y-10">
+      <div class="tour-heading flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="tour-eyebrow">Recorrido inmersivo</p>
+          <h3 class="text-3xl font-extrabold text-[#422515]">Activa Street View y planea tus visitas</h3>
+          <p class="text-[#5b4639] max-w-2xl mt-3">Explora túneles y plazas antes de llegar. Añade tu clave de Google Maps para desbloquear el modo Street View interactivo.</p>
+        </div>
+        <div class="tour-status-chip" data-tour-status>
+          <span class="dot" aria-hidden="true"></span>
+          <span data-tour-status-label>Street View activo</span>
+        </div>
+      </div>
+
+<div class="tour-shell">
+        <div class="tour-media" data-tour-media>
+          <iframe
+            id="tourIframe"
+            class="tour-iframe"
+            title="Recorrido inmersivo por Real del Monte"
+            allowfullscreen
+            loading="lazy"
+            src="https://www.google.com/maps/embed?pb=!4v1719525250327!6m8!1m7!1sCAoSLEFGMVFpcE5Yd29GWGhPWG5tN1EtQmtXUnpQMlM3Y1I0MngzN0dCMUpncVZh!2m2!1d20.1367594!2d-98.6723357!3f120!4f5!5f0.7820865974627469"
+          ></iframe>
+          <div id="streetViewCanvas" class="streetview-canvas" hidden aria-hidden="true"></div>
+          <div class="tour-loader" data-tour-loading hidden>
+            <span class="loader-dot" aria-hidden="true"></span>
+            <p>Preparando Street View...</p>
+          </div>
+          <p class="tour-fallback" data-tour-fallback hidden>
+            Agrega tu API key de Google Maps en <code>data-google-maps-key</code> para desbloquear Street View.
+          </p>
+        </div>
+        <div class="tour-panel">
+          <div class="tour-hints" aria-live="polite" aria-label="Instrucciones de Street View">
+            <span class="tour-hints-title">Cómo usar Street View</span>
+            <ul class="tour-hints-list">
+              <li>
+                <span class="tour-hint-icon">↻</span>
+                Usa el mouse o tu dedo para girar y explorar cada rincón.
+              </li>
+              <li>
+                <span class="tour-hint-icon">＋</span>
+                Acerca o aleja con los controles + / - para ver más detalle.
+              </li>
+              <li>
+                <span class="tour-hint-icon">⚠</span>
+                Si no aparece Street View, puede que la zona aún no tenga cobertura.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
   <!-- Lugares -->
   <section id="lugares" class="py-16 px-4 sm:px-6" style="background: linear-gradient(180deg,#fff0de 0%, #fff7ef 60%, #fffdf8 100%); color:#3c2b22;">
     <div class="max-w-6xl mx-auto">
@@ -180,6 +248,42 @@
     ];
     const FALLBACK_MODAL_IMAGE = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
     const modalGalleryState = { images: [FALLBACK_MODAL_IMAGE], index: 0, title: 'Lugar destacado' };
+    const immersiveTourConfig = {
+      iframeSrc: 'https://www.google.com/maps/embed?pb=!4v1719525250327!6m8!1m7!1sCAoSLEFGMVFpcE5Yd29GWGhPWG5tN1EtQmtXUnpQMlM3Y1I0MngzN0dCMUpncVZh!2m2!1d20.1367594!2d-98.6723357!3f120!4f5!5f0.7820865974627469',
+      stops: [
+        {
+          id: 'mina-acosta',
+          title: 'Mina Acosta',
+          description: 'Ingresa a los túneles con maquinaria restaurada.',
+          badge: 'Entrada principal',
+          position: { lat: 20.13676, lng: -98.67233 },
+          pov: { heading: 125, pitch: -5, zoom: 1 }
+        },
+        {
+          id: 'plaza-principal',
+          title: 'Plaza Juárez',
+          description: 'Colores coloniales y la vida diaria del centro.',
+          badge: 'Centro histórico',
+          position: { lat: 20.13532, lng: -98.67205 },
+          pov: { heading: 200, pitch: 0, zoom: 1 }
+        },
+        {
+          id: 'museo-sitio',
+          title: 'Museo del Sitio',
+          description: 'Exposiciones que narran la bonanza minera.',
+          badge: 'Museo',
+          position: { lat: 20.13781, lng: -98.67382 },
+          pov: { heading: 75, pitch: -2, zoom: 1 }
+        }
+      ]
+    };
+    const streetViewState = {
+      sdkPromise: null,
+      panorama: null,
+      mode: 'iframe',
+      activeStop: 0,
+      loading: false
+    };
 
     function notify(type, config) {
       if (window.alertCenter && typeof window.alertCenter[type] === 'function') {
@@ -190,6 +294,222 @@
     }
 
     function safeQuery(selector) { return document.querySelector(selector); }
+
+    function getGoogleMapsKey() {
+      const body = document.body;
+      if (!body || !body.dataset) return '';
+      return (body.dataset.googleMapsKey || '').trim();
+    }
+
+    function ensureGoogleMapsSdk(key) {
+      if (window.google && window.google.maps) {
+        return Promise.resolve(window.google.maps);
+      }
+      if (!key) return Promise.reject(new Error('missing-key'));
+      if (!streetViewState.sdkPromise) {
+        streetViewState.sdkPromise = new Promise((resolve, reject) => {
+          const existingScript = document.getElementById('google-maps-sdk');
+          if (existingScript && existingScript.getAttribute('data-loaded')) {
+            return resolve(window.google.maps);
+          }
+          const script = existingScript || document.createElement('script');
+          script.id = 'google-maps-sdk';
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&v=quarterly`;
+          script.async = true;
+          script.defer = true;
+          script.onload = () => {
+            script.setAttribute('data-loaded', 'true');
+            resolve(window.google.maps);
+          };
+          script.onerror = () => reject(new Error('sdk-load-error'));
+          if (!existingScript) document.head.appendChild(script);
+        });
+      }
+      return streetViewState.sdkPromise;
+    }
+
+    function updateTourStatus(mode) {
+      const chip = document.querySelector('[data-tour-status]');
+      const label = document.querySelector('[data-tour-status-label]');
+      if (!chip || !label) return;
+      const messages = {
+        iframe: 'Modo mapa interactivo',
+        streetview: 'Street View activo',
+        loading: 'Preparando Street View'
+      };
+      label.textContent = messages[mode] || messages.iframe;
+      chip.setAttribute('data-mode', mode);
+    }
+
+    function toggleTourButtons(mode, { loading = false } = {}) {
+      const streetBtn = document.querySelector('[data-tour-action="streetview"]');
+      const iframeBtn = document.querySelector('[data-tour-action="iframe"]');
+      if (mode === 'loading') {
+        if (streetBtn) streetBtn.disabled = true;
+        if (iframeBtn) iframeBtn.disabled = true;
+        return;
+      }
+      if (streetBtn) streetBtn.disabled = loading || mode === 'streetview';
+      if (iframeBtn) iframeBtn.disabled = loading || mode === 'iframe';
+    }
+
+    function showTourFallback(message) {
+      const fallback = document.querySelector('[data-tour-fallback]');
+      if (!fallback) return;
+      if (message) {
+        fallback.innerHTML = message;
+      }
+      fallback.hidden = false;
+    }
+
+    function hideTourFallback() {
+      const fallback = document.querySelector('[data-tour-fallback]');
+      if (fallback) fallback.hidden = true;
+    }
+
+    function setTourLoaderVisible(visible) {
+      const loader = document.querySelector('[data-tour-loading]');
+      if (loader) loader.hidden = !visible;
+    }
+
+    function renderTourStops() {
+      const list = document.getElementById('tourStopsList');
+      if (!list) return;
+      list.innerHTML = immersiveTourConfig.stops.map((stop, idx) => `
+        <li>
+          <button type="button" class="tour-stop" data-stop-index="${idx}">
+            <span class="tour-stop-index">${String(idx + 1).padStart(2, '0')}</span>
+            <div class="tour-stop-copy">
+              <p class="tour-stop-title">${stop.title}</p>
+              <p class="tour-stop-desc">${stop.description}</p>
+            </div>
+            ${stop.badge ? `<span class="tour-stop-badge">${stop.badge}</span>` : ''}
+          </button>
+        </li>
+      `).join('');
+      highlightActiveStop(streetViewState.activeStop);
+    }
+
+    function highlightActiveStop(index) {
+      document.querySelectorAll('[data-stop-index]').forEach(btn => {
+        const isActive = Number(btn.dataset.stopIndex) === index;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-current', isActive ? 'true' : 'false');
+      });
+    }
+
+    function setStreetViewPosition(index) {
+      if (!streetViewState.panorama) return;
+      const stop = immersiveTourConfig.stops[index];
+      if (!stop) return;
+      streetViewState.panorama.setPosition(stop.position);
+      if (stop.pov) streetViewState.panorama.setPov(stop.pov);
+      streetViewState.activeStop = index;
+      highlightActiveStop(index);
+    }
+
+    function showIframeTour(fromError = false) {
+      const iframe = document.getElementById('tourIframe');
+      const canvas = document.getElementById('streetViewCanvas');
+      if (!iframe || !canvas) return;
+      setTourLoaderVisible(false);
+      iframe.hidden = false;
+      canvas.hidden = true;
+      canvas.setAttribute('aria-hidden', 'true');
+      streetViewState.mode = 'iframe';
+      updateTourStatus('iframe');
+      toggleTourButtons('iframe');
+      if (fromError) {
+        showTourFallback('No pudimos iniciar Street View. Revisa tu clave y vuelve a intentarlo.');
+      } else {
+        hideTourFallback();
+      }
+    }
+
+    async function activateStreetView(index = 0) {
+      const iframe = document.getElementById('tourIframe');
+      const canvas = document.getElementById('streetViewCanvas');
+      if (!iframe || !canvas) return;
+      const key = getGoogleMapsKey();
+      if (!key) {
+        showTourFallback('Agrega tu API key de Google Maps en el atributo <code>data-google-maps-key</code> del <code>&lt;body&gt;</code>.');
+        updateTourStatus('iframe');
+        toggleTourButtons('iframe');
+        return;
+      }
+      hideTourFallback();
+      setTourLoaderVisible(true);
+      updateTourStatus('loading');
+      toggleTourButtons('loading');
+      try {
+        const maps = await ensureGoogleMapsSdk(key);
+        iframe.hidden = true;
+        canvas.hidden = false;
+        canvas.setAttribute('aria-hidden', 'false');
+        if (!streetViewState.panorama) {
+          streetViewState.panorama = new maps.StreetViewPanorama(canvas, {
+            addressControl: false,
+            fullscreenControl: true,
+            motionTracking: false,
+            zoomControl: true,
+            visible: true
+          });
+        }
+        streetViewState.mode = 'streetview';
+        setStreetViewPosition(index);
+        updateTourStatus('streetview');
+        toggleTourButtons('streetview');
+      } catch (error) {
+        console.error('No se pudo iniciar Street View', error);
+        showIframeTour(true);
+      } finally {
+        setTourLoaderVisible(false);
+      }
+    }
+
+    async function handleStopSelection(index) {
+      streetViewState.activeStop = index;
+      if (streetViewState.mode !== 'streetview') {
+        await activateStreetView(index);
+        return;
+      }
+      setStreetViewPosition(index);
+    }
+
+    function bindTourControls() {
+      const streetBtn = document.querySelector('[data-tour-action="streetview"]');
+      const iframeBtn = document.querySelector('[data-tour-action="iframe"]');
+      if (streetBtn && !streetBtn.dataset.bound) {
+        streetBtn.dataset.bound = 'true';
+        streetBtn.addEventListener('click', () => activateStreetView(streetViewState.activeStop));
+      }
+      if (iframeBtn && !iframeBtn.dataset.bound) {
+        iframeBtn.dataset.bound = 'true';
+        iframeBtn.addEventListener('click', () => showIframeTour());
+      }
+      const stopsList = document.getElementById('tourStopsList');
+      if (stopsList && !stopsList.dataset.bound) {
+        stopsList.dataset.bound = 'true';
+        stopsList.addEventListener('click', (event) => {
+          const target = event.target.closest('[data-stop-index]');
+          if (!target) return;
+          const idx = Number(target.dataset.stopIndex);
+          if (Number.isNaN(idx)) return;
+          handleStopSelection(idx);
+        });
+      }
+    }
+
+    function initImmersiveTour() {
+      const iframe = document.getElementById('tourIframe');
+      const canvas = document.getElementById('streetViewCanvas');
+      if (!iframe || !canvas) return;
+      iframe.src = immersiveTourConfig.iframeSrc;
+      streetViewState.activeStop = 0;
+      renderTourStops();
+      bindTourControls();
+      showIframeTour();
+    }
 
     async function showAuthPrompt() {
       if (window.alertCenter) {
@@ -555,6 +875,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       bindModalClose();
       renderFavoritesSection();
+      initImmersiveTour();
       await loadLugares({ refreshCategories: true });
     });
   </script>

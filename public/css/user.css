@@ -58,6 +58,38 @@ body.no-scroll { overflow:hidden }
 @keyframes fav-bounce { 0% { transform:scale(1) } 40% { transform:scale(1.3) } 100% { transform:scale(1) } }
 .favorites-empty { min-height:120px }
 
+/* Immersive tour */
+.tour-eyebrow { text-transform:uppercase; letter-spacing:0.28em; font-size:0.78rem; color:#c06a1c; font-weight:700 }
+.tour-shell { display:grid; gap:1.5rem; padding:1.5rem; background:#fffdf9; border-radius:24px; border:1px solid rgba(212,164,65,0.25); box-shadow:0 24px 60px rgba(23,15,10,0.08) }
+@media (min-width: 1024px) { .tour-shell { grid-template-columns: 1.25fr 0.85fr; padding:2rem } }
+.tour-media { position:relative; min-height:320px; border-radius:22px; overflow:hidden; background:#0f172a }
+.tour-iframe { width:100%; height:100%; border:0; border-radius:inherit; min-height:360px }
+.streetview-canvas { width:100%; height:100%; min-height:360px; border-radius:inherit; display:block; background:#05070c }
+.tour-loader { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem; color:#fff; background:rgba(8,9,12,0.72); font-weight:600; letter-spacing:0.08em; text-transform:uppercase }
+.loader-dot { width:14px; height:14px; border-radius:999px; background:#facc15; animation:loader-pulse 1s ease infinite }
+@keyframes loader-pulse { 0% { transform:scale(0.8); opacity:0.4 } 50% { transform:scale(1.1); opacity:1 } 100% { transform:scale(0.8); opacity:0.4 } }
+.tour-status-chip { display:inline-flex; align-items:center; gap:0.5rem; padding:0.55rem 1rem; border-radius:999px; background:rgba(180,83,9,0.12); color:#b45309; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.15em }
+.tour-status-chip .dot { width:12px; height:12px; border-radius:999px; background:#f97316; box-shadow:0 0 0 4px rgba(249,115,22,0.2) }
+[data-tour-status][data-mode="streetview"] .dot { background:#22c55e; box-shadow:0 0 0 4px rgba(34,197,94,0.25) }
+[data-tour-status][data-mode="loading"] .dot { background:#facc15 }
+.tour-panel { background:#fff; border-radius:22px; border:1px solid rgba(212,164,65,0.25); padding:1.5rem; display:flex; flex-direction:column; gap:1.2rem }
+.tour-controls { display:flex; flex-wrap:wrap; gap:0.75rem }
+.tour-btn { border-radius:16px; border:1px solid rgba(180,83,9,0.26); padding:0.85rem 1.4rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; font-size:0.78rem; transition:transform .2s ease, box-shadow .2s ease, background .2s ease }
+.tour-btn.primary { background:linear-gradient(120deg,#a34719,#d7a043); color:#fff; border-color:transparent; box-shadow:0 22px 50px rgba(163,71,25,0.28) }
+.tour-btn.primary:disabled { opacity:0.6; box-shadow:none }
+.tour-btn.ghost { background:#fffaf0; color:#a34719 }
+.tour-btn:focus-visible { outline:3px solid rgba(58,90,64,0.25); outline-offset:3px }
+.tour-stops { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.9rem }
+.tour-stop { width:100%; border-radius:18px; border:1px solid rgba(212,164,65,0.28); background:#fff; padding:0.9rem 1rem; display:flex; align-items:center; gap:0.9rem; text-align:left; transition:border .2s ease, box-shadow .2s ease, transform .2s ease }
+.tour-stop:hover { transform:translateX(4px); border-color:rgba(58,90,64,0.5); box-shadow:0 18px 48px rgba(58,90,64,0.12) }
+.tour-stop.active { border-color:#3a5a40; background:#f4fbf6; box-shadow:0 18px 50px rgba(58,90,64,0.18) }
+.tour-stop-index { font-weight:700; color:#a34719; background:rgba(180,83,9,0.12); border-radius:999px; padding:0.35rem 0.85rem; min-width:42px; text-align:center }
+.tour-stop-copy { flex:1 }
+.tour-stop-title { margin:0; font-size:1rem; color:#422515; font-weight:700 }
+.tour-stop-desc { margin:0.15rem 0 0; font-size:0.85rem; color:#6b4a3b }
+.tour-stop-badge { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; color:#3a5a40; background:rgba(58,90,64,0.12); padding:0.3rem 0.7rem; border-radius:999px }
+.tour-hint { display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.2em; color:#7a5c4a }
+
 @media (max-width: 960px) {
 	.site-header .primary-nav { position:fixed; inset:0; top:0; left:auto; width:100%; max-width:360px; height:100vh; background:#fff4e3; flex-direction:column; align-items:flex-start; padding:4.5rem 1.75rem 2rem; box-shadow:-18px 0 50px rgba(12,8,4,0.25); transform:translateX(100%); opacity:0; pointer-events:none; transition:transform .28s ease, opacity .28s ease; z-index:60; border-left:1px solid rgba(180,83,9,0.18); }
 	.site-header .primary-nav.open,
