@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Reseñas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/admin-core.css" />
+  <link rel="stylesheet" href="/css/admin-reviews.css" />
+</head>
+<body class="admin-theme min-h-screen font-sans text-gray-900">
+  <div class="min-h-screen flex flex-col">
+    <div id="header-container"></div>
+
+    <main class="flex-1">
+      <div class="admin-shell admin-reviews-shell">
+        <header class="admin-reviews-hero">
+          <div>
+            <p class="text-xs tracking-[0.3em] uppercase text-amber-600 font-semibold">Control total</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#422515]">Reseñas de visitantes</h1>
+            <p class="text-gray-700 mt-2 max-w-2xl">Explora todas las reseñas publicadas por los usuarios, localiza comentarios problemáticos y elimínalos desde un panel centralizado.</p>
+          </div>
+          <div class="admin-reviews-hero__badge">
+            <span id="reviewsLastSync">Sincronizando...</span>
+          </div>
+        </header>
+
+        <section class="admin-review-stats" id="reviewsStats">
+          <article class="stat-card">
+            <p>Total reseñas</p>
+            <strong id="statTotal">0</strong>
+          </article>
+          <article class="stat-card">
+            <p>Promedio general</p>
+            <strong id="statAverage">0.0</strong>
+          </article>
+          <article class="stat-card">
+            <p>Última reseña</p>
+            <strong id="statLatest">--</strong>
+          </article>
+        </section>
+
+        <section class="admin-panel space-y-4">
+          <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-semibold text-[#422515]">Filtros avanzados</h2>
+              <p class="text-sm text-gray-600">Combina búsqueda, rating y filtros de usuario o lugar.</p>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="refreshReviews" class="brand-cta px-4 py-2 text-sm rounded-xl text-white">Actualizar</button>
+              <button type="button" id="clearFilters" class="px-4 py-2 text-sm rounded-xl border border-gray-300">Limpiar</button>
+            </div>
+          </header>
+
+          <form id="reviewsFilters" class="reviews-filters">
+            <label class="filter-control">
+              <span>Búsqueda rápida</span>
+              <input type="text" id="filterQuery" placeholder="Comentario, usuario o lugar" />
+            </label>
+            <label class="filter-control">
+              <span>Rating</span>
+              <select id="filterRating">
+                <option value="">Todos</option>
+                <option value="5">5 estrellas</option>
+                <option value="4">4 estrellas</option>
+                <option value="3">3 estrellas</option>
+                <option value="2">2 estrellas</option>
+                <option value="1">1 estrella</option>
+              </select>
+            </label>
+            <label class="filter-control">
+              <span>Lugar</span>
+              <select id="filterLugar">
+                <option value="">Todos</option>
+              </select>
+            </label>
+            <label class="filter-control">
+              <span>Usuario</span>
+              <select id="filterUsuario">
+                <option value="">Todos</option>
+              </select>
+            </label>
+            <label class="filter-control">
+              <span>Ordenar por</span>
+              <select id="sortBy">
+                <option value="createdAt:desc">Más recientes</option>
+                <option value="createdAt:asc">Más antiguas</option>
+                <option value="rating:desc">Mejor rating</option>
+                <option value="rating:asc">Peor rating</option>
+              </select>
+            </label>
+            <label class="filter-control">
+              <span>Por página</span>
+              <select id="perPage">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </form>
+        </section>
+
+        <section class="admin-review-results admin-panel">
+          <div class="flex items-center justify-between text-sm text-gray-500">
+            <span id="reviewsCounter">0 resultados</span>
+            <span class="italic" id="filterHint">Aplicando filtros activos</span>
+          </div>
+          <div id="reviewsList" class="review-grid" aria-live="polite"></div>
+          <div id="reviewsEmpty" class="reviews-empty" hidden>
+            <p>No se encontraron reseñas con los filtros actuales.</p>
+            <button type="button" id="resetAfterEmpty" class="brand-cta px-5 py-2 mt-3 text-white rounded-xl">Reiniciar filtros</button>
+          </div>
+          <div id="reviewsPager" class="reviews-pager"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/admin.js"></script>
+  <script>
+    const state = {
+      page: 1,
+      limit: 20,
+      sort: 'createdAt:desc',
+      filters: { q: '', rating: '', lugarId: '', userId: '' }
+    };
+
+    const ui = {
+      list: null,
+      counter: null,
+      empty: null,
+      pager: null,
+      lastSync: null,
+      stats: {
+        total: null,
+        average: null,
+        latest: null
+      }
+    };
+
+    function qs(id) { return document.getElementById(id); }
+
+    function setLoading(message = 'Cargando reseñas...') {
+      if (ui.list) {
+        ui.list.innerHTML = `<div class="reviews-loader">${message}</div>`;
+      }
+      if (ui.empty) ui.empty.hidden = true;
+    }
+
+    function formatDate(value) {
+      if (!value) return '--';
+      return new Date(value).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function formatTime(value) {
+      if (!value) return '--';
+      const date = new Date(value);
+      return `${date.toLocaleDateString('es-MX')} · ${date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    function renderStats(summary = [], total = 0, records = []) {
+      if (!ui.stats.total) return;
+      ui.stats.total.textContent = total.toString();
+      const weighted = summary.reduce((acc, item) => acc + (item.rating * item.count), 0);
+      const avg = total ? (weighted / total).toFixed(1) : '0.0';
+      ui.stats.average.textContent = avg;
+      const latest = records.length ? records[0].createdAt : null;
+      ui.stats.latest.textContent = formatDate(latest);
+    }
+
+    function renderCounter(total, page, limit) {
+      if (!ui.counter) return;
+      if (!total) {
+        ui.counter.textContent = '0 resultados';
+        return;
+      }
+      const start = ((page - 1) * limit) + 1;
+      const end = Math.min(total, page * limit);
+      ui.counter.textContent = `${start} - ${end} de ${total} reseñas`;
+    }
+
+    function renderPager(page, total, limit) {
+      if (!ui.pager) return;
+      const totalPages = Math.max(1, Math.ceil(total / limit));
+      ui.pager.innerHTML = '';
+      if (totalPages <= 1) return;
+      const buttons = document.createDocumentFragment();
+      const createButton = (label, targetPage, disabled = false) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.className = 'pager-btn' + (targetPage === page ? ' active' : '');
+        btn.disabled = disabled;
+        btn.addEventListener('click', () => loadReviews(targetPage));
+        buttons.appendChild(btn);
+      };
+      createButton('«', Math.max(1, page - 1), page === 1);
+      for (let i = 1; i <= totalPages; i += 1) {
+        if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+          createButton(String(i), i);
+        } else if (Math.abs(i - page) === 2) {
+          const sep = document.createElement('span');
+          sep.textContent = '...';
+          sep.className = 'pager-ellipsis';
+          buttons.appendChild(sep);
+        }
+      }
+      createButton('»', Math.min(totalPages, page + 1), page === totalPages);
+      ui.pager.appendChild(buttons);
+    }
+
+    function createReviewCard(item) {
+      const comment = item.comment && item.comment.trim() ? item.comment.trim() : 'Sin comentario';
+      const lugarNombre = item.lugar && item.lugar.nombre ? item.lugar.nombre : 'Lugar no disponible';
+      const lugarCategoria = item.lugar && item.lugar.categoria ? item.lugar.categoria : 'Sin categoría';
+      const userName = item.user && item.user.name ? item.user.name : 'Usuario desconocido';
+      const userEmail = item.user && item.user.email ? item.user.email : 'Sin email disponible';
+
+      const card = document.createElement('article');
+      card.className = 'review-card';
+      card.innerHTML = `
+        <div class="review-card__header">
+          <div>
+            <p class="review-card__place">${lugarNombre}</p>
+            <p class="review-card__category">${lugarCategoria}</p>
+          </div>
+          <div class="review-card__rating">
+            <span>${item.rating.toFixed ? item.rating.toFixed(1) : item.rating}</span>
+            <small>/5</small>
+          </div>
+        </div>
+        <p class="review-card__comment">${comment}</p>
+        <div class="review-card__meta">
+          <div>
+            <span class="meta-label">Usuario</span>
+            <strong>${userName}</strong>
+            <p>${userEmail}</p>
+          </div>
+          <div>
+            <span class="meta-label">Creada</span>
+            <p>${formatTime(item.createdAt)}</p>
+            <span class="meta-label">Actualizada</span>
+            <p>${formatTime(item.updatedAt)}</p>
+          </div>
+          <div class="review-card__actions">
+            <button class="danger" data-delete-review="${item._id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    async function loadReviews(page = 1) {
+      state.page = page;
+      if (ui.lastSync) {
+        ui.lastSync.textContent = 'Actualizando...';
+      }
+      setLoading();
+      const params = new URLSearchParams({
+        page: state.page,
+        limit: state.limit,
+        sort: state.sort
+      });
+      if (state.filters.q) params.set('q', state.filters.q);
+      if (state.filters.rating) params.set('rating', state.filters.rating);
+      if (state.filters.lugarId) params.set('lugarId', state.filters.lugarId);
+      if (state.filters.userId) params.set('userId', state.filters.userId);
+
+      try {
+        const res = await fetch(`/admin/reviews/data?${params.toString()}`, {
+          headers: { Accept: 'application/json' },
+          credentials: 'same-origin'
+        });
+        if (res.status === 401) {
+          window.location.href = '/admin/login';
+          return;
+        }
+        if (!res.ok) {
+          throw new Error(await res.text() || 'Error al cargar reseñas');
+        }
+        const payload = await res.json();
+        const items = Array.isArray(payload.data) ? payload.data : [];
+        ui.list.innerHTML = '';
+        if (!items.length) {
+          ui.empty.hidden = false;
+          ui.list.innerHTML = '';
+        } else {
+          ui.empty.hidden = true;
+          items.forEach(item => ui.list.appendChild(createReviewCard(item)));
+        }
+        renderStats(payload.ratingSummary || [], payload.total || 0, items);
+        renderCounter(payload.total || 0, payload.page || 1, payload.limit || state.limit);
+        renderPager(payload.page || 1, payload.total || 0, payload.limit || state.limit);
+        if (ui.lastSync) {
+          ui.lastSync.textContent = `Actualizado ${new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+      } catch (error) {
+        console.error('Error cargando reseñas', error);
+        ui.list.innerHTML = `<div class="reviews-error">${error.message || 'Error desconocido'}</div>`;
+        if (ui.lastSync) ui.lastSync.textContent = 'Error al sincronizar';
+      }
+    }
+
+    async function loadMetaOptions() {
+      try {
+        const res = await fetch('/admin/reviews/meta', { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+        if (!res.ok) return;
+        const meta = await res.json();
+        const lugares = Array.isArray(meta.lugares) ? meta.lugares : [];
+        const usuarios = Array.isArray(meta.usuarios) ? meta.usuarios : [];
+        const lugarSelect = qs('filterLugar');
+        const userSelect = qs('filterUsuario');
+        lugares.forEach(l => {
+          const option = document.createElement('option');
+          option.value = l._id;
+          option.textContent = l.nombre + (l.categoria ? ` — ${l.categoria}` : '');
+          lugarSelect.appendChild(option);
+        });
+        usuarios.forEach(u => {
+          const option = document.createElement('option');
+          option.value = u._id;
+          option.textContent = u.name ? `${u.name} (${u.email || 'sin email'})` : (u.email || u._id);
+          userSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.warn('No se pudieron cargar opciones de filtros', error);
+      }
+    }
+
+    function syncFiltersFromUI() {
+      state.filters.q = (qs('filterQuery').value || '').trim();
+      state.filters.rating = qs('filterRating').value;
+      state.filters.lugarId = qs('filterLugar').value;
+      state.filters.userId = qs('filterUsuario').value;
+      state.limit = parseInt(qs('perPage').value, 10) || state.limit;
+      state.sort = qs('sortBy').value;
+      updateFilterHint();
+    }
+
+    function updateFilterHint() {
+      const hint = qs('filterHint');
+      if (!hint) return;
+      const hasFilters = Boolean(state.filters.q || state.filters.rating || state.filters.lugarId || state.filters.userId);
+      hint.textContent = hasFilters ? 'Filtros activos' : 'Sin filtros aplicados';
+      hint.classList.toggle('filters-active', hasFilters);
+    }
+
+    function resetFilters() {
+      qs('filterQuery').value = '';
+      qs('filterRating').value = '';
+      qs('filterLugar').value = '';
+      qs('filterUsuario').value = '';
+      qs('perPage').value = '20';
+      qs('sortBy').value = 'createdAt:desc';
+      syncFiltersFromUI();
+      loadReviews(1);
+    }
+
+    async function handleDelete(reviewId) {
+      const result = await swalConfirm({ title: 'Eliminar reseña', text: 'Esta acción no se puede deshacer', confirmButtonText: 'Eliminar', icon: 'error' });
+      if (!result.isConfirmed) return;
+      try {
+        const res = await fetch(`/admin/reviews/${reviewId}`, { method: 'DELETE', credentials: 'same-origin' });
+        if (!res.ok) {
+          throw new Error(await res.text() || 'No se pudo eliminar la reseña');
+        }
+        await swalToast('success', 'Reseña eliminada');
+        loadReviews(state.page);
+      } catch (error) {
+        await swalModal('error', 'Error', error.message || 'Error al eliminar la reseña');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ui.list = qs('reviewsList');
+      ui.counter = qs('reviewsCounter');
+      ui.empty = qs('reviewsEmpty');
+      ui.pager = qs('reviewsPager');
+      ui.lastSync = qs('reviewsLastSync');
+      ui.stats.total = qs('statTotal');
+      ui.stats.average = qs('statAverage');
+      ui.stats.latest = qs('statLatest');
+
+      loadMetaOptions();
+      syncFiltersFromUI();
+      loadReviews();
+
+      const filtersForm = qs('reviewsFilters');
+      filtersForm.addEventListener('input', () => {
+        syncFiltersFromUI();
+        loadReviews(1);
+      });
+
+      filtersForm.addEventListener('change', () => {
+        syncFiltersFromUI();
+        loadReviews(1);
+      });
+
+      filtersForm.addEventListener('submit', (event) => event.preventDefault());
+
+      qs('refreshReviews').addEventListener('click', () => loadReviews(state.page));
+      qs('clearFilters').addEventListener('click', resetFilters);
+      qs('resetAfterEmpty').addEventListener('click', resetFilters);
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target && target.dataset && target.dataset.deleteReview) {
+          event.preventDefault();
+          handleDelete(target.dataset.deleteReview);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

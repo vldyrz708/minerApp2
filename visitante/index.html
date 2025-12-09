@@ -321,16 +321,9 @@
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
           <button class="close-btn" id="modalCloseBtn" aria-label="Cerrar">✕</button>
           <div class="modal-body">
-            <div class="modal-gallery" id="modalGallery">
-              <div class="carousel" id="modalCarousel" aria-live="polite">
-                <button type="button" class="ctrl left" data-carousel-prev aria-label="Imagen anterior">‹</button>
-                <div class="carousel-frame">
-                  <img id="modalCarouselImage" class="carousel-img" src="https://via.placeholder.com/800x600?text=Sin+Imagen" alt="Galería del lugar" loading="lazy" />
-                </div>
-                <button type="button" class="ctrl right" data-carousel-next aria-label="Imagen siguiente">›</button>
-                <div class="carousel-counter" id="modalCarouselCounter"></div>
-              </div>
-              <div class="carousel-indicators" id="modalCarouselIndicators"></div>
+            <div class="modal-gallery gallery-stack-shell" id="modalGallery">
+              <div id="modalGalleryStack" class="gallery-stack" aria-live="polite"></div>
+              <p id="modalGalleryHint" class="gallery-hint">Explora todas las capturas del lugar en esta lista curada.</p>
             </div>
             <div class="modal-info">
               <p id="modalCategoria" class="chip modal-badge mb-2"></p>
@@ -421,6 +414,8 @@
       { _id: '2', nombre: 'Museo del Sitio', descripcion: 'Conoce la historia minera.', images: [], categoria: 'Museo' },
       { _id: '3', nombre: 'Pastes', descripcion: 'Prueba el paste tradicional.', images: [], categoria: 'Gastronomía' }
     ];
+    const FALLBACK_MODAL_IMAGE = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
+    const modalGalleryState = { images: [FALLBACK_MODAL_IMAGE], index: 0, title: 'Lugar destacado' };
     const immersiveTourConfig = {
       stops: [
         {
@@ -888,6 +883,44 @@
       }, 220);
     }
 
+    function buildLugarImages(lugar) {
+      const sources = [];
+      if (Array.isArray(lugar.images)) sources.push(...lugar.images);
+      if (Array.isArray(lugar.galeria)) sources.push(...lugar.galeria);
+      ['image', 'imagen', 'fotoDestacada', 'cover', 'portada'].forEach(key => {
+        if (typeof lugar[key] === 'string') sources.push(lugar[key]);
+      });
+      const clean = sources.map(src => typeof src === 'string' ? src.trim() : '').filter(Boolean);
+      return clean.length ? Array.from(new Set(clean)) : [FALLBACK_MODAL_IMAGE];
+    }
+
+    function prepareModalGallery(lugar) {
+      modalGalleryState.images = buildLugarImages(lugar);
+      modalGalleryState.index = 0;
+      modalGalleryState.title = lugar.nombre || 'Lugar destacado';
+      updateModalCarousel();
+    }
+
+    function updateModalCarousel() {
+      const stack = document.getElementById('modalGalleryStack');
+      const hint = document.getElementById('modalGalleryHint');
+      if (!stack) return;
+      const total = modalGalleryState.images.length;
+      stack.innerHTML = modalGalleryState.images.map((src, idx) => {
+        const safeSrc = src || FALLBACK_MODAL_IMAGE;
+        return `
+          <figure class="gallery-frame">
+            <img src="${safeSrc}" alt="${modalGalleryState.title} — imagen ${idx + 1}" loading="lazy" onerror="this.src='${FALLBACK_MODAL_IMAGE}'">
+          </figure>
+        `;
+      }).join('');
+      if (hint) {
+        hint.hidden = total <= 1;
+      }
+    }
+
+    function bindModalCarouselControls() {}
+
     function createLugarCard(lugar) {
       const card = document.createElement('article');
       card.className = 'bg-white rounded-2xl p-0 shadow-sm hover:shadow-md transition fade-in lugar-card';
@@ -959,10 +992,7 @@
         document.getElementById('modalMeta').textContent = lugar.tags ? 'Tags: ' + (Array.isArray(lugar.tags)?lugar.tags.join(', '):lugar.tags) : '';
         const maps = document.getElementById('modalMaps');
         maps.href = lugar.googleMapsLink || '#';
-        const gallery = document.getElementById('modalGallery');
-        gallery.innerHTML = '';
-        const imgs = (lugar.images && lugar.images.length) ? lugar.images : ['https://via.placeholder.com/800x600?text=Sin+Imagen'];
-        imgs.forEach(src => { const i = document.createElement('img'); i.src = src; i.className = 'thumb'; gallery.appendChild(i); });
+        prepareModalGallery(lugar);
         const modalFav = document.getElementById('modalFav');
         if (modalFav) {
           modalFav.dataset.favId = lugar._id || '';
@@ -1372,6 +1402,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
+      bindModalCarouselControls();
       bindModalClose();
       bindReviewForm();
       bindUserReviewsRefresh();

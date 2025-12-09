@@ -5,62 +5,72 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nuevo Lugar</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/admin-core.css" />
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+<body class="admin-theme min-h-screen font-sans text-gray-900">
   <div class="min-h-screen flex flex-col">
     <div id="header-container"></div>
 
-    <main class="flex-1 p-6">
-      <div class="container mx-auto max-w-2xl">
-        <div class="bg-white p-6 rounded-lg shadow">
-          <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-bold">Crear / Editar Lugar</h1>
+    <main class="flex-1">
+      <div class="admin-shell">
+        <section class="admin-hero admin-hero--compact">
+          <span class="admin-eyebrow">Ficha destacada</span>
+          <h1>Crear o editar lugar</h1>
+          <p>Completa los detalles con la misma guía visual del directorio público para mantener coherencia entre lo interno y lo que ve el visitante.</p>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-eyebrow">Información general</p>
+              <h2>Datos principales del lugar</h2>
+            </div>
           </div>
 
-          <form id="form" enctype="multipart/form-data" class="space-y-4">
+          <form id="form" enctype="multipart/form-data" class="admin-form">
             <input type="hidden" id="id" />
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Nombre</label>
-              <input id="nombre" name="nombre" class="w-full border p-2 rounded-lg bg-gray-50" required />
+            <div class="admin-input-group">
+              <label class="admin-label" for="nombre">Nombre</label>
+              <input id="nombre" name="nombre" class="admin-input" required />
             </div>
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Descripción</label>
-              <textarea id="descripcion" name="descripcion" class="w-full border p-2 rounded-lg bg-gray-50"></textarea>
+            <div class="admin-input-group">
+              <label class="admin-label" for="descripcion">Descripción</label>
+              <textarea id="descripcion" name="descripcion" class="admin-textarea" rows="4"></textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Categoría</label>
-                <select id="categoria" name="categoria" class="w-full border p-2 rounded-lg bg-gray-50">
+            <div class="admin-form-grid">
+              <div class="admin-input-group">
+                <label class="admin-label" for="categoria">Categoría</label>
+                <select id="categoria" name="categoria" class="admin-select">
                   <option value="">-- Seleccionar categoría --</option>
                 </select>
               </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Tags (separados por coma)</label>
-                <input id="tags" name="tags" class="w-full border p-2 rounded-lg bg-gray-50" placeholder="ej: museo,gastronomico,natural" />
+              <div class="admin-input-group">
+                <label class="admin-label" for="tags">Tags (separados por coma)</label>
+                <input id="tags" name="tags" class="admin-input" placeholder="ej: museo, gastronomía, natural" />
               </div>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Link de Google Maps (pega el enlace)</label>
-              <input id="googleMapsLink" name="googleMapsLink" type="url" placeholder="https://maps.google.com/..." class="w-full border p-2 rounded-lg bg-gray-50" />
-              <p class="text-xs text-gray-500 mt-1">Si completas este campo, no es necesario ingresar lat/lng.</p>
+            <div class="admin-input-group">
+              <label class="admin-label" for="googleMapsLink">Link de Google Maps</label>
+              <input id="googleMapsLink" name="googleMapsLink" type="url" placeholder="https://maps.google.com/..." class="admin-input" />
+              <p class="admin-input-note">Si completas este campo, no es necesario ingresar lat/lng.</p>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Imágenes (puedes subir varias)</label>
-              <input id="images" name="images" type="file" accept="image/*" multiple class="w-full" />
-              <div id="existingImages" class="mt-3 flex gap-2 flex-wrap"></div>
+            <div class="admin-input-group">
+              <label class="admin-label" for="images">Imágenes (puedes subir varias)</label>
+              <input id="images" name="images" type="file" accept="image/*" multiple class="admin-input" />
+              <div id="existingImages" class="admin-image-grid mt-3"></div>
             </div>
 
-            <div class="flex gap-2">
-              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Guardar</button>
-              <a href="/admin/lugares" class="px-4 py-2 text-gray-600">Cancelar</a>
+            <div class="admin-form-actions">
+              <button type="submit" class="admin-btn admin-btn--primary">Guardar</button>
+              <a href="/admin/lugares" class="admin-btn admin-btn--ghost">Cancelar</a>
             </div>
           </form>
-        </div>
+        </section>
       </div>
     </main>
   </div>
@@ -90,7 +100,7 @@
       replacementFiles.clear();
       existingImagesContainer.innerHTML = '';
       if (!images.length) {
-        existingImagesContainer.innerHTML = '<p class="text-sm text-gray-500">Sin imágenes cargadas.</p>';
+        existingImagesContainer.innerHTML = '<p class="admin-muted text-sm">Sin imágenes cargadas.</p>';
         return;
       }
       images.forEach((src) => {
@@ -100,29 +110,29 @@
 
     function createImageCard(src) {
       const wrapper = document.createElement('div');
-      wrapper.className = 'relative flex flex-col items-center gap-2 p-2 border rounded-lg bg-white shadow-sm';
+      wrapper.className = 'admin-image-card';
       wrapper.dataset.originalSrc = src;
 
       const img = document.createElement('img');
       img.src = src;
       img.alt = 'Imagen del lugar';
-      img.className = 'w-24 h-24 object-cover rounded';
+      img.className = 'admin-image-card__thumb';
       wrapper.appendChild(img);
 
       const statusEl = document.createElement('p');
-      statusEl.className = 'text-xs text-gray-500';
+      statusEl.className = 'admin-image-card__status';
       statusEl.style.minHeight = '1rem';
       wrapper.appendChild(statusEl);
 
       const actions = document.createElement('div');
-      actions.className = 'flex gap-2 text-xs';
+      actions.className = 'admin-image-card__actions';
       const replaceBtn = document.createElement('button');
       replaceBtn.type = 'button';
-      replaceBtn.className = 'text-blue-600 hover:underline';
+      replaceBtn.className = 'admin-link text-xs';
       replaceBtn.textContent = 'Reemplazar';
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'text-red-600 hover:underline';
+      removeBtn.className = 'text-red-600 font-semibold text-xs';
       removeBtn.textContent = 'Eliminar';
       actions.appendChild(replaceBtn);
       actions.appendChild(removeBtn);
@@ -143,9 +153,9 @@
           wrapper.dataset.previewUrl = '';
         }
         wrapper.dataset.state = '';
-        wrapper.classList.remove('opacity-60', 'ring-2', 'ring-red-500', 'ring-amber-500');
+        wrapper.classList.remove('is-removed', 'is-updated');
         statusEl.textContent = '';
-        statusEl.className = 'text-xs text-gray-500';
+        statusEl.className = 'admin-image-card__status';
         img.src = originalSrc;
         imagesToRemove.delete(originalSrc);
         replacementFiles.delete(originalSrc);
@@ -161,10 +171,10 @@
           img.src = originalSrc;
         }
         wrapper.dataset.state = 'removed';
-        wrapper.classList.remove('ring-amber-500');
-        wrapper.classList.add('opacity-60', 'ring-2', 'ring-red-500');
+        wrapper.classList.remove('is-updated');
+        wrapper.classList.add('is-removed');
         statusEl.textContent = 'Se eliminará al guardar';
-        statusEl.className = 'text-xs text-red-600';
+        statusEl.className = 'admin-image-card__status admin-image-card__status--danger';
         imagesToRemove.add(originalSrc);
         replacementFiles.delete(originalSrc);
         fileInput.value = '';
@@ -173,10 +183,10 @@
 
       function markReplaced(file) {
         wrapper.dataset.state = 'replaced';
-        wrapper.classList.remove('opacity-60', 'ring-red-500');
-        wrapper.classList.add('ring-2', 'ring-amber-500');
+        wrapper.classList.remove('is-removed');
+        wrapper.classList.add('is-updated');
         statusEl.textContent = 'Se reemplazará por ' + file.name;
-        statusEl.className = 'text-xs text-amber-600';
+        statusEl.className = 'admin-image-card__status admin-image-card__status--warn';
         imagesToRemove.add(originalSrc);
         replacementFiles.set(originalSrc, file);
         removeBtn.textContent = 'Restaurar';
@@ -292,6 +302,5 @@
     // admin.js cargará el header y manejará logout
   </script>
   <script src="/js/admin.js"></script>
-  </script>
 </body>
 </html>

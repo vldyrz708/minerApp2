@@ -216,16 +216,9 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="close-btn" id="modalCloseBtn" aria-label="Cerrar">✕</button>
       <div class="modal-body">
-        <div class="modal-gallery" id="modalGallery">
-          <div class="carousel" id="modalCarousel" aria-live="polite">
-            <button type="button" class="ctrl left" data-carousel-prev aria-label="Imagen anterior">‹</button>
-            <div class="carousel-frame">
-              <img id="modalCarouselImage" class="carousel-img" src="https://via.placeholder.com/800x600?text=Sin+Imagen" alt="Galería del lugar" loading="lazy" />
-            </div>
-            <button type="button" class="ctrl right" data-carousel-next aria-label="Imagen siguiente">›</button>
-            <div class="carousel-counter" id="modalCarouselCounter"></div>
-          </div>
-          <div class="carousel-indicators" id="modalCarouselIndicators"></div>
+        <div class="modal-gallery gallery-stack-shell" id="modalGallery">
+          <div id="modalGalleryStack" class="gallery-stack" aria-live="polite"></div>
+          <p id="modalGalleryHint" class="gallery-hint">Explora todas las capturas del lugar en esta lista curada.</p>
         </div>
         <div class="modal-info">
           <p id="modalCategoria" class="chip modal-badge mb-2"></p>
@@ -778,66 +771,24 @@
     }
 
     function updateModalCarousel() {
-      const imgEl = document.getElementById('modalCarouselImage');
-      const counter = document.getElementById('modalCarouselCounter');
-      const prev = document.querySelector('[data-carousel-prev]');
-      const next = document.querySelector('[data-carousel-next]');
-      const indicators = document.getElementById('modalCarouselIndicators');
+      const stack = document.getElementById('modalGalleryStack');
+      const hint = document.getElementById('modalGalleryHint');
+      if (!stack) return;
       const total = modalGalleryState.images.length;
-      const src = modalGalleryState.images[modalGalleryState.index] || FALLBACK_MODAL_IMAGE;
-      if (imgEl) {
-        imgEl.src = src;
-        imgEl.alt = `${modalGalleryState.title} (${modalGalleryState.index + 1} de ${total})`;
-      }
-      const hasMultiple = total > 1;
-      if (counter) {
-        counter.textContent = `${modalGalleryState.index + 1} / ${total}`;
-        counter.classList.toggle('is-hidden', !hasMultiple);
-      }
-      if (prev) prev.classList.toggle('is-hidden', !hasMultiple);
-      if (next) next.classList.toggle('is-hidden', !hasMultiple);
-      if (indicators) {
-        if (!hasMultiple) {
-          indicators.innerHTML = '';
-          indicators.classList.add('is-hidden');
-        } else {
-          indicators.classList.remove('is-hidden');
-          indicators.innerHTML = modalGalleryState.images.map((_, idx) => `<button type="button" data-carousel-dot="${idx}" aria-label="Ver imagen ${idx + 1}" class="${idx === modalGalleryState.index ? 'active' : ''}"></button>`).join('');
-        }
+      stack.innerHTML = modalGalleryState.images.map((src, idx) => {
+        const safeSrc = src || FALLBACK_MODAL_IMAGE;
+        return `
+          <figure class="gallery-frame">
+            <img src="${safeSrc}" alt="${modalGalleryState.title} — imagen ${idx + 1}" loading="lazy" onerror="this.src='${FALLBACK_MODAL_IMAGE}'">
+          </figure>
+        `;
+      }).join('');
+      if (hint) {
+        hint.hidden = total <= 1;
       }
     }
 
-    function shiftModalCarousel(step) {
-      const total = modalGalleryState.images.length;
-      if (total <= 1) return;
-      modalGalleryState.index = (modalGalleryState.index + step + total) % total;
-      updateModalCarousel();
-    }
-
-    function bindModalCarouselControls() {
-      const prev = document.querySelector('[data-carousel-prev]');
-      if (prev && !prev.dataset.bound) {
-        prev.dataset.bound = 'true';
-        prev.addEventListener('click', () => shiftModalCarousel(-1));
-      }
-      const next = document.querySelector('[data-carousel-next]');
-      if (next && !next.dataset.bound) {
-        next.dataset.bound = 'true';
-        next.addEventListener('click', () => shiftModalCarousel(1));
-      }
-      const indicators = document.getElementById('modalCarouselIndicators');
-      if (indicators && !indicators.dataset.bound) {
-        indicators.dataset.bound = 'true';
-        indicators.addEventListener('click', (event) => {
-          const dot = event.target.closest('[data-carousel-dot]');
-          if (!dot) return;
-          const idx = Number(dot.dataset.carouselDot);
-          if (Number.isNaN(idx)) return;
-          modalGalleryState.index = idx;
-          updateModalCarousel();
-        });
-      }
-    }
+    function bindModalCarouselControls() {}
 
     function renderModalMeta(lugar) {
       const meta = document.getElementById('modalMeta');

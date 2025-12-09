@@ -5,41 +5,72 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin - Lugares</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/admin-core.css" />
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+<body class="admin-theme min-h-screen font-sans text-gray-900">
   <div class="min-h-screen flex flex-col">
     <div id="header-container"></div>
 
-    <main class="flex-1 p-6">
-      <div class="container mx-auto">
-        <div class="mb-6 flex flex-col gap-3">
-          <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Lugares</h1>
-            <div class="text-sm text-gray-600">Administra los lugares registrados</div>
+    <main class="flex-1">
+      <div class="admin-shell">
+        <section class="admin-hero">
+          <span class="admin-eyebrow">Inventario activo</span>
+          <h1>Gestión de lugares</h1>
+          <p>Busca, filtra y prioriza los espacios destacados por categorías, etiquetas o popularidad. Comparte el mismo lenguaje visual del sitio público para evitar inconsistencias.</p>
+          <div class="admin-pill-row">
+            <span class="admin-pill">Estado sincronizado</span>
+            <span class="admin-pill">Favoritos visibles</span>
           </div>
+        </section>
 
-          <form id="filtros" class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-            <input id="q" placeholder="Buscar por nombre o descripción" class="md:col-span-2 border p-2 rounded" />
-            <div class="flex gap-2 items-center">
-              <select id="categoria" class="border p-2 rounded">
+        <section class="admin-panel admin-panel--soft">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-eyebrow">Filtros</p>
+              <h2>Refina tu búsqueda</h2>
+            </div>
+            <div class="admin-toolbar__actions">
+              <a href="/admin/lugares/nuevo" class="admin-btn admin-btn--primary text-xs">Nuevo lugar</a>
+            </div>
+          </div>
+          <form id="filtros" class="admin-filter-grid">
+            <div class="admin-input-group">
+              <label for="q" class="admin-label">Palabras clave</label>
+              <input id="q" placeholder="Nombre, descripción o tags" class="admin-input" />
+            </div>
+            <div class="admin-input-group">
+              <label for="categoria" class="admin-label">Categoría</label>
+              <select id="categoria" class="admin-select">
                 <option value="">-- Todas las categorías --</option>
               </select>
-              <a href="/admin/categorias" id="addCategoria" class="px-3 py-2 text-sm bg-green-600 text-white rounded">Agregar categoría</a>
+              <a href="/admin/categorias" id="addCategoria" class="admin-link text-sm">Gestionar categorías</a>
             </div>
-            <div class="flex items-center gap-2">
-              <select id="limit" class="border p-2 rounded">
-                <option value="10">10</option>
-                <option value="20" selected>20</option>
-                <option value="50">50</option>
-              </select>
-              <button type="submit" class="bg-indigo-600 text-white px-3 py-2 rounded">Buscar</button>
-              <button type="button" id="clear" class="px-3 py-2">Limpiar</button>
+            <div class="admin-input-group">
+              <label for="limit" class="admin-label">Resultados por página</label>
+              <div class="flex flex-wrap gap-2">
+                <select id="limit" class="admin-select w-32">
+                  <option value="10">10</option>
+                  <option value="20" selected>20</option>
+                  <option value="50">50</option>
+                </select>
+                <button type="submit" class="admin-btn admin-btn--primary">Buscar</button>
+                <button type="button" id="clear" class="admin-btn admin-btn--ghost">Limpiar</button>
+              </div>
             </div>
           </form>
-        </div>
+        </section>
 
-        <div id="lista" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div id="pager" class="mt-6 flex justify-center items-center gap-2"></div>
+        <section class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-eyebrow">Resultados</p>
+              <h2>Listado de lugares</h2>
+            </div>
+            <p id="statusLabel" class="admin-muted text-sm">Cargando...</p>
+          </div>
+          <div id="lista" class="space-y-4" aria-live="polite"></div>
+          <div id="pager" class="admin-pager"></div>
+        </section>
       </div>
     </main>
   </div>
@@ -60,44 +91,47 @@
       if (categoria) params.set('categoria', categoria);
 
       const listaEl = el('lista');
+      const statusLabel = el('statusLabel');
       if (!listaEl) return;
 
-      listaEl.innerHTML = '<div class="text-gray-500">Cargando...</div>';
+      listaEl.innerHTML = '<div class="admin-empty">Cargando lugares...</div>';
+      if (statusLabel) statusLabel.textContent = 'Cargando datos';
 
       let body = { data: [], total: 0, page: 1, limit: parseInt(limit, 10) };
       try {
         const res = await fetch('/admin/lugares?' + params.toString(), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
         if (!res.ok) {
           if (res.status === 401) {
-            listaEl.innerHTML = '<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">Debes iniciar sesión para ver los lugares. <a href="/admin/login" class="text-blue-600 underline">Iniciar sesión</a></div>';
+            listaEl.innerHTML = '<div class="admin-empty">Debes iniciar sesión para ver los lugares. <a href="/admin/login" class="admin-link">Iniciar sesión</a></div>';
             return;
           }
           const txt = await res.text();
-          listaEl.innerHTML = '<div class="text-red-600">Error al cargar lugares: ' + (txt || res.statusText) + '</div>';
+          listaEl.innerHTML = '<div class="admin-empty text-red-600">Error al cargar lugares: ' + (txt || res.statusText) + '</div>';
           return;
         }
         body = await res.json();
       } catch (err) {
         console.error('Error fetch lugares:', err);
-        listaEl.innerHTML = '<div class="text-red-600">Error al conectar con el servidor</div>';
+        listaEl.innerHTML = '<div class="admin-empty text-red-600">Error al conectar con el servidor</div>';
         return;
       }
 
       const lugares = body.data || [];
       listaEl.innerHTML = '';
+      if (statusLabel) statusLabel.textContent = `${body.total || 0} resultados`;
       if (!lugares.length) {
-        listaEl.innerHTML = '<div class="text-gray-600">No se encontraron lugares.</div>';
+        listaEl.innerHTML = '<div class="admin-empty">No se encontraron lugares.</div>';
         renderPager(body.page, body.limit, body.total);
         return;
       }
 
       lugares.forEach(l => {
         const item = document.createElement('div');
-        item.className = 'bg-white p-4 rounded shadow flex gap-4 items-start';
+        item.className = 'admin-list-card';
 
         const imgHtml = (l.images && l.images.length)
-          ? `<img src="${l.images[0]}" class="w-28 h-20 object-cover rounded" alt="${(l.nombre||'')}."/>`
-          : `<div class="w-28 h-20 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">Sin imagen</div>`;
+          ? `<div class="admin-list-card__media"><img src="${l.images[0]}" alt="${(l.nombre || '')}" /></div>`
+          : `<div class="admin-list-card__media">Sin imagen</div>`;
 
         const favoriteCount = Number(l.favoriteCount || 0);
         const favoriteUsers = Array.isArray(l.favoriteUsers) ? l.favoriteUsers : [];
@@ -106,20 +140,25 @@
         const favoriteText = favoriteCount
           ? `${favoriteCount} ${favoriteCount === 1 ? 'usuario' : 'usuarios'} lo tienen en favoritos${usersLabel ? ' (' + usersLabel + ')' : ''}`
           : 'Sin favoritos todavía';
-        const favoriteClass = favoriteCount ? 'text-amber-600' : 'text-gray-400';
+        const favoriteClass = favoriteCount ? 'admin-list-card__favorite' : 'admin-muted';
 
         const infoHtml = `
-          <div class="flex-1">
-            <h3 class="font-bold text-lg">${l.nombre || ''}</h3>
-            <p class="text-sm text-gray-700 mt-1">${l.descripcion || ''}</p>
-            <p class="text-sm text-gray-500 mt-2">${l.categoria ? 'Categoría: ' + l.categoria : ''}${l.tags && l.tags.length ? ' • Tags: ' + l.tags.join(', ') : ''}</p>
-            <p class="text-sm ${favoriteClass} mt-2">${favoriteText}</p>
-          </div>
-          <div class="flex flex-col justify-between text-right">
-            <div class="text-sm text-gray-500">${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ''}</div>
-            <div class="mt-2">
-              <button onclick="edit('${l._id}')" class="mr-2 text-blue-600">Editar</button>
-              <button onclick="del('${l._id}')" class="text-red-600">Eliminar</button>
+          <div class="admin-list-card__body">
+            <div>
+              <h3 class="text-xl font-semibold text-[#3c2c20]">${l.nombre || ''}</h3>
+              <p class="admin-muted">${l.descripcion || ''}</p>
+            </div>
+            <p class="admin-list-card__meta">
+              ${l.categoria ? `<span>Categoría: ${l.categoria}</span>` : ''}
+              ${l.tags && l.tags.length ? `<span>Tags: ${l.tags.join(', ')}</span>` : ''}
+            </p>
+            <p class="${favoriteClass}">${favoriteText}</p>
+            <div class="admin-list-card__actions">
+              <span class="text-xs admin-muted">${l.createdAt ? new Date(l.createdAt).toLocaleDateString('es-MX') : ''}</span>
+              <div class="flex gap-3 text-sm">
+                <button onclick="edit('${l._id}')" class="admin-link">Editar</button>
+                <button onclick="del('${l._id}')" class="text-red-600 font-semibold">Eliminar</button>
+              </div>
             </div>
           </div>
         `;
@@ -179,11 +218,12 @@
       const pager = el('pager');
       if (!pager) return;
       pager.innerHTML = '';
+      pager.className = 'admin-pager';
       const pages = Math.max(1, Math.ceil((total || 0) / (limit || 1)));
       for (let i = 1; i <= pages; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
-        btn.className = 'px-3 py-1 border rounded ' + (i === page ? 'bg-gray-300' : '');
+        btn.className = i === page ? 'active' : '';
         btn.addEventListener('click', () => { currentPage = i; load(i); });
         pager.appendChild(btn);
       }

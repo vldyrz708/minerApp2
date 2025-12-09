@@ -1,34 +1,26 @@
-<header class="bg-white border-b shadow-sm">
-  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <img src="/logo.png" alt="logo" class="w-10 h-10 rounded" onerror="this.style.display='none'" />
-      <h1 class="text-lg font-semibold">Real del Monte — Admin</h1>
-    </div>
+<header class="admin-header">
+  <div class="admin-header__inner">
+    <a href="/admin/dashboard" class="admin-brand">
+      <span class="admin-brand__mark">RM</span>
+      <span class="admin-brand__copy">
+        <span class="admin-brand__title">Real del Monte</span>
+        <small class="admin-muted">Panel admin</small>
+      </span>
+    </a>
 
-    <div class="flex items-center gap-4">
-      <!-- mobile toggle -->
-      <button id="mobileNavToggle" class="md:hidden px-2 py-1 border rounded" aria-label="Abrir menú">☰</button>
-      <nav id="adminNavLinks" class="hidden md:flex items-center gap-4 text-sm text-gray-600">
-        <a href="/admin/dashboard" class="nav-link hover:text-gray-900">Inicio</a>
-        <a href="/admin/lugares" class="nav-link hover:text-gray-900">Lugares</a>
-        <a href="/admin/categorias" class="nav-link hover:text-gray-900">Categorías</a>
-        <a href="/" class="nav-link hover:text-gray-900">Sitio público</a>
-        <button id="partialLogout" class="bg-red-600 text-white px-3 py-1 rounded">Cerrar sesión</button>
+    <div class="admin-nav">
+      <button id="mobileNavToggle" class="admin-nav__toggle" aria-label="Abrir menú" aria-expanded="false">
+        <span class="sr-only">Abrir menú</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <nav id="adminNavLinks" class="admin-nav__links" aria-label="Navegación principal">
+        <a href="/admin/dashboard" class="nav-link" data-nav-protected>Inicio</a>
+        <a href="/admin/lugares" class="nav-link" data-nav-protected>Lugares</a>
+        <a href="/admin/categorias" class="nav-link" data-nav-protected>Categorías</a>
+        <a href="/admin/reviews" class="nav-link" data-nav-protected>Reseñas</a>
+        <a href="/" class="nav-link nav-link--public">Sitio público</a>
+        <button id="partialLogout" class="admin-nav__logout" data-nav-protected>Cerrar sesión</button>
       </nav>
     </div>
   </div>
-
-  <script>
-    // logout desde el partial (compatibilidad)
-    document.addEventListener('click', function (e) {
-      if (e.target && e.target.id === 'partialLogout') {
-        window.location.href = '/admin/logout';
-      }
-      // mobile toggle handler (progressive enhancement)
-      if (e.target && e.target.id === 'mobileNavToggle') {
-        const nav = document.getElementById('adminNavLinks');
-        if (nav) nav.style.display = (nav.style.display === 'flex' ? 'none' : 'flex');
-      }
-    });
-  </script>
 </header>

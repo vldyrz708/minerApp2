@@ -12,6 +12,7 @@ async function loadAdminHeader() {
             if (typeof markActiveNav === 'function') markActiveNav();
             // enable mobile toggle behavior for the newly added elements
             if (typeof setupMobileNavToggle === 'function') setupMobileNavToggle();
+            if (typeof applyAdminNavVisibility === 'function') applyAdminNavVisibility();
             // notify any other listeners that header is ready
             document.dispatchEvent(new Event('admin:headerLoaded'));
           } catch (e) {
@@ -55,10 +56,10 @@ function markActiveNav() {
     const links = document.querySelectorAll('.nav-link');
     const path = window.location.pathname;
     links.forEach(a => {
-      a.classList.remove('text-indigo-600', 'font-semibold');
+      a.classList.remove('text-indigo-600', 'font-semibold', 'active');
       // consider startsWith for routes
       if (path === a.getAttribute('href') || path.startsWith(a.getAttribute('href'))) {
-        a.classList.add('text-indigo-600', 'font-semibold');
+        a.classList.add('text-indigo-600', 'font-semibold', 'active');
       }
     });
   } catch (e) { /* ignore */ }
@@ -68,19 +69,30 @@ function setupMobileNavToggle() {
   const toggle = document.getElementById('mobileNavToggle');
   const nav = document.getElementById('adminNavLinks');
   if (!toggle || !nav) return;
-  toggle.addEventListener('click', () => {
-    if (nav.style.display === 'flex') {
-      nav.style.display = 'none';
+  const toggleNav = () => {
+    nav.classList.toggle('admin-nav--open');
+    toggle.setAttribute('aria-expanded', nav.classList.contains('admin-nav--open'));
+  };
+  toggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    toggleNav();
+  });
+  document.addEventListener('click', (event) => {
+    if (!nav.contains(event.target) && event.target !== toggle) {
+      nav.classList.remove('admin-nav--open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+function applyAdminNavVisibility() {
+  const isGuest = document.body && document.body.dataset && document.body.dataset.adminGuest === 'true';
+  const protectedEls = document.querySelectorAll('[data-nav-protected]');
+  protectedEls.forEach((el) => {
+    if (isGuest) {
+      el.setAttribute('hidden', 'hidden');
     } else {
-      nav.style.display = 'flex';
-      nav.style.flexDirection = 'column';
-      nav.style.position = 'absolute';
-      nav.style.top = '64px';
-      nav.style.right = '24px';
-      nav.style.background = '#fff';
-      nav.style.padding = '8px';
-      nav.style.borderRadius = '8px';
-      nav.style.boxShadow = '0 6px 20px rgba(0,0,0,0.08)';
+      el.removeAttribute('hidden');
     }
   });
 }

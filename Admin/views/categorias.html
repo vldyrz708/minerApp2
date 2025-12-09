@@ -5,40 +5,57 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Categorías - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/admin-core.css" />
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
-  <div id="header-container"></div>
-  <main class="p-6 container mx-auto">
-    <div class="bg-white p-6 rounded shadow w-full">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h1 class="text-2xl font-bold">Categorías</h1>
-          <p class="text-sm text-gray-500">Gestiona las categorías usadas en lugares. Crea, elimina y mantén ordenada la lista.</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <a href="/admin/lugares" class="text-sm text-indigo-600 hover:underline">Volver a Lugares</a>
-          <input id="searchCat" placeholder="Buscar categoría..." class="px-3 py-2 border rounded text-sm" />
-          <button id="btnRefreshCats" title="Recargar" class="px-3 py-2 border rounded text-sm hover:bg-gray-100">Recargar</button>
-          <button id="btnAddCat" class="bg-green-600 text-white px-4 py-2 rounded shadow text-sm hover:bg-green-700">+ Agregar categoría</button>
-        </div>
+<body class="admin-theme min-h-screen font-sans text-gray-900">
+  <div class="min-h-screen flex flex-col">
+    <div id="header-container"></div>
+    <main class="flex-1">
+      <div class="admin-shell">
+        <section class="admin-hero admin-hero--compact">
+          <span class="admin-eyebrow">Colección viva</span>
+          <h1>Categorías curatoriales</h1>
+          <p>Organiza los ejes temáticos que estructuran la experiencia del directorio. Mantén etiquetas consistentes para lograr búsquedas más precisas.</p>
+          <div class="admin-pill-row">
+            <span class="admin-pill">Lista verificada</span>
+            <span class="admin-pill">Cambios auditados</span>
+          </div>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-toolbar w-full">
+            <div>
+              <p class="admin-eyebrow">Inventario</p>
+              <h2>Gestión de categorías</h2>
+              <p class="admin-muted text-sm">Crea, edita o elimina en segundos. Todos los cambios impactan inmediatamente a los formularios de lugares.</p>
+            </div>
+            <div class="admin-toolbar__actions w-full md:w-auto">
+              <a href="/admin/lugares" class="admin-link text-sm">Ver lugares</a>
+              <input id="searchCat" placeholder="Buscar categoría..." class="admin-input admin-toolbar__input" />
+              <button id="btnRefreshCats" title="Recargar" class="admin-btn admin-btn--ghost text-xs">Recargar</button>
+              <button id="btnAddCat" class="admin-btn admin-btn--primary text-xs">+ Agregar categoría</button>
+            </div>
+          </div>
+
+          <div id="catsContainer" class="space-y-4">
+            <div id="catsLoader" class="admin-empty flex items-center justify-center gap-3">
+              <svg class="animate-spin h-6 w-6 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+              Cargando categorías
+            </div>
+
+            <div id="lista" class="admin-card-list"></div>
+
+            <div id="catsEmpty" class="admin-empty hidden">
+              No hay categorías aún. Usa «Agregar categoría» para crear la primera.
+            </div>
+          </div>
+        </section>
       </div>
-
-      <div id="catsContainer">
-        <div id="catsLoader" class="flex items-center justify-center py-8">
-          <svg class="animate-spin h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-          </svg>
-        </div>
-
-        <div id="lista" class="grid gap-3"></div>
-
-        <div id="catsEmpty" class="hidden text-center text-gray-500 py-8">
-          No hay categorías aún. Usa "Agregar categoría" para crear la primera.
-        </div>
-      </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <script src="/js/admin.js"></script>
   <script>
@@ -57,20 +74,24 @@
           loader.classList.add('hidden');
           return;
         }
-        // responsive grid: 1-col mobile, 2-cols sm, 3-cols lg
-        cont.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
+        cont.className = 'admin-card-list';
         // aplicar filtro de búsqueda si hay término
         const q = (document.getElementById('searchCat')?.value || '').trim().toLowerCase();
         const filtered = q ? cats.filter(x => x.nombre.toLowerCase().includes(q)) : cats;
         filtered.forEach(c => {
           const card = document.createElement('div');
-          card.className = 'border p-3 rounded flex flex-col justify-between h-28';
-          card.innerHTML = `<div class="font-medium">${c.nombre}</div>
-            <div class="mt-3 flex items-center justify-between">
-              <small class="text-xs text-gray-500">id: ${c._id.slice(-6)}</small>
-              <div class="flex gap-2">
-                <button data-id="${c._id}" class="btn-edit-cat text-indigo-600 text-sm">Editar</button>
-                <button data-id="${c._id}" class="btn-delete-cat text-red-600 text-sm">Eliminar</button>
+          card.className = 'admin-card-list__item';
+          card.innerHTML = `
+            <div>
+              <p class="admin-eyebrow text-xs">Categoría</p>
+              <h3 class="text-lg font-semibold" data-cat-name>${c.nombre}</h3>
+            </div>
+            <div class="admin-divider"></div>
+            <div class="admin-list-actions">
+              <small class="text-xs admin-muted">ID · ${c._id.slice(-6)}</small>
+              <div class="flex gap-3 text-sm">
+                <button data-id="${c._id}" class="btn-edit-cat admin-link">Editar</button>
+                <button data-id="${c._id}" class="btn-delete-cat text-red-600 font-semibold">Eliminar</button>
               </div>
             </div>`;
           cont.appendChild(card);
@@ -128,8 +149,8 @@
           try {
             const Swal = await ensureSwal();
             // obtener nombre actual (podríamos pedir al servidor, pero usamos texto del card)
-            const card = e.target.closest('div.border');
-            const current = card ? card.querySelector('.font-medium')?.textContent.trim() : '';
+            const card = e.target.closest('.admin-card-list__item');
+            const current = card ? card.querySelector('[data-cat-name]')?.textContent.trim() : '';
             const { value: nombre } = await Swal.fire({
               position: 'center',
               title: 'Editar categoría',
