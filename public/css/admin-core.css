@@ -21,6 +21,7 @@ body.admin-theme {
   background: radial-gradient(circle at 12% 18%, rgba(255, 240, 218, 0.9), transparent 40%),
     radial-gradient(circle at 86% 8%, rgba(255, 214, 193, 0.65), transparent 38%),
     var(--admin-bg);
+  padding-top: 92px;
 }
 
 body.admin-theme::before {
@@ -477,9 +478,11 @@ body.admin-theme::before {
 }
 
 .admin-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 40;
+  left: 0;
+  right: 0;
+  z-index: 60;
   background: rgba(255, 250, 245, 0.95);
   border-bottom: 1px solid var(--admin-border);
   box-shadow: 0 12px 40px rgba(18, 10, 6, 0.06);
